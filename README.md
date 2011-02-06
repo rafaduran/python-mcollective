@@ -3,10 +3,12 @@ mcollective-python
 
 This is an example Python binding for Marionette Collective RPC.
 
-As with many open-source projects, the documentation is lacking. The main class
-is `Message`, and you create an instance of this to initiate some RPC. It takes a
-dictionary which contains the actual request (following [the MCollective
-RPC documentation][rpc]) and a stomp.Client instance for future use.
+[API Documentation](http://insom.github.com/mcollective-python/)
+
+The main class is `Message`, and you create an instance of this to initiate
+some RPC. It takes a dictionary which contains the actual request (following
+[the MCollective RPC documentation][rpc]) and a stomp.Client instance for
+future use.
 
 You can then .sign() a request, with your private key, .subscribe_to_replies(),
 manually .send() and then .collect_results() - or just do a
