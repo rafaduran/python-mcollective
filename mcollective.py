@@ -29,7 +29,7 @@ class Message:
         }
         r[":requestid"] = self.rid
         r[":msgtarget"] = self.target
-        r[':body'] = dump(body, explicit_start=True, explicit_end=False)
+        self.body = dump(body, explicit_start=True, explicit_end=False, default_flow_style=False)
         self.request = r
     
     def subscribe_to_replies(self):
@@ -48,7 +48,7 @@ class Message:
         :type certificate_name: str'''
         self.request[":callerid"] = 'cert=%s' % certificate_name
         self.request[":senderid"] = sender_id
-        hashed_signature = private_key.sign(sha1(self.request[':body']).digest(), 'sha1')
+        hashed_signature = private_key.sign(sha1(self.body).digest(), 'sha1')
         self.request[':hash'] = hashed_signature.encode('base64').replace("\n", "").strip()
 
     def send(self, debug=False):
@@ -61,6 +61,8 @@ class Message:
         if self.sent:
             raise AlreadySentException()
         data = dump(self.request, explicit_start=True, explicit_end=False)
+        body = "\n".join(['  %s' % line for line in self.body.split("\n")])
+        data = data + ":body: |\n" + body
         if debug:
             import sys
             print >>sys.stderr, data
