@@ -6,18 +6,30 @@ from stompy.simple import Client
 from sys import argv, exit, stderr
 from math import floor
 
-if len(argv) < 6:
-    print >>stderr, '%s <stomp server> <stomp username> <stomp password> <key filename> <key name> <command> <args>' % argv[0]
+config = {}
+execfile('/etc/check_mc.rc', config)
+
+if len(argv) < 2:
+    print >>stderr, '%s <check> [args]' % argv[0]
     exit(-1)
 
-certificate_name = argv[5]
-stomp_client = Client(argv[1])
-stomp_client.connect(argv[2], argv[3])
-private_key = load_key(argv[4])
+certificate_name = config['certificate_name']
+stomp_client = Client(config.get('host', 'localhost'))
+stomp_client.connect(config['username'], config['password'])
+private_key = load_key(config['private_key'])
 
-body = {':caller': 'cert=%s' % certificate_name, ':data': {':process_results':
-True, ':args': argv[7], ':plugin': argv[6]}, ':action':
-'runcommand', ':agent': 'icinga'}
+args = ' '.join(argv[2:])
+
+body = {
+    ':caller': 'cert=%s' % certificate_name, 
+    ':data': {
+        ':process_results': True, 
+        ':args': args, 
+        ':plugin': argv[1],
+    }, 
+    ':action': 'runcommand', 
+    ':agent': 'icinga'
+}
 
 m = Message(body, stomp_client, target='icinga')
 m.sign(private_key, certificate_name)
