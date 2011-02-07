@@ -14,7 +14,7 @@ if len(argv) < 2:
     exit(-1)
 
 certificate_name = config['certificate_name']
-stomp_client = Client(config.get('host', 'localhost'))
+stomp_client = Client(config.get('host', 'localhost'), port=config.get('port', 61613))
 stomp_client.connect(config['username'], config['password'])
 private_key = load_key(config['private_key'])
 
@@ -33,7 +33,7 @@ body = {
 
 m = Message(body, stomp_client, target='icinga')
 m.sign(private_key, certificate_name)
-results = m.send_and_await_results()
+results = m.send_and_await_results(timeout=config.get('timeout', 5))
 
 data = [load(q[':body'])[':data'] for q in results]
 
