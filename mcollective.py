@@ -5,7 +5,28 @@ from hashlib import sha1
 class AlreadySentException(Exception):
     pass
 
-class Message:
+
+class Filter(object):
+
+    def __init__(self, cf_class='', agent='', identity='', fact={}):
+        self.cf_class = cf_class
+        self.agent = agent
+        self.identity = identity
+        self.fact = fact
+
+    def add_fact(self, name, value):
+        self.fact[name] = value
+
+    def dump(self):
+        return {
+            'cf_class' : [self.cf_class],
+            'agent' : [self.agent],
+            'identity' : [self.identity],
+            'fact' : [self.fact],
+        }
+
+
+class Message(object):
     def __init__(self, body, stomp_client, prefix='mcollective', target='rpcutil'):
         '''Create a new message.
         
