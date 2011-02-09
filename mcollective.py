@@ -8,26 +8,40 @@ class AlreadySentException(Exception):
 
 class Filter(object):
 
-    def __init__(self, cf_class='', agent='', identity='', fact={}):
+    def __init__(self, cf_class='', agent='', identity=''):
+        '''Filter which nodes respond to a message
+     
+        :param cf_class: Match classes applied by puppet etc
+        :param agent: Match the list of agents
+        :param identity: Match the identity configured in the configuration file
+        '''
         self.cf_class = cf_class
         self.agent = agent
         self.identity = identity
-        self.fact = fact
+        self.fact = []
 
     def add_fact(self, name, value):
-        self.fact[name] = value
+        '''Add a fact to the collection of filters
+
+        :param name: Name of the fact
+        :param value: Value to match
+        '''
+        self.fact.append({name : value})
 
     def dump(self):
+        '''Dump this filter into a dictionary
+        
+        :rtype: Dictionary of filter parameters'''
         return {
-            'cf_class' : [self.cf_class],
-            'agent' : [self.agent],
-            'identity' : [self.identity],
-            'fact' : [self.fact],
+            'cf_class' : self.cf_class and [self.cf_class] or [],
+            'agent' : self.agent and [self.agent] or [],
+            'identity' : self.identity and [self.identity] or [],
+            'fact' : self.fact,
         }
 
 
 class Message(object):
-    def __init__(self, body, stomp_client, prefix='mcollective', target='rpcutil'):
+    def __init__(self, body, stomp_client, filter_=None, prefix='mcollective', target='rpcutil'):
         '''Create a new message.
         
         :param body: Correctly encoded RPC message.
@@ -42,12 +56,7 @@ class Message(object):
         self.sent = False
         r = dict()
         r[':msgtime'] = int(time())
-        r[':filter'] = {
-            'identity': [],
-            'fact': [],
-            'agent': [],
-            'cf_class': [],
-        }
+        r[':filter'] = filter_ or Filter().dump()
         r[":requestid"] = self.rid
         r[":msgtarget"] = self.target
         self.body = dump(body, explicit_start=True, explicit_end=False, default_flow_style=False)

@@ -10,7 +10,8 @@ if len(argv) < 7:
     exit(-1)
 
 certificate_name = argv[5]
-stomp_client = Client(argv[1])
+host, port = argv[1].split(':')
+stomp_client = Client(host, int(port))
 stomp_client.connect(argv[2], argv[3])
 private_key = load_key(argv[4])
 
