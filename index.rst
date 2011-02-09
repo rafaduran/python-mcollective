@@ -20,3 +20,6 @@ API Documentation
 
 .. autoclass:: Message
   :members: __init__, sign, subscribe_to_replies, send, collect_results, send_and_await_results
+
+.. autoclass:: Filter
+  :members: __init__, add_fact, dump
