@@ -26,7 +26,7 @@ class Filter(object):
         :param name: Name of the fact
         :param value: Value to match
         '''
-        self.fact.append({name : value})
+        self.fact.append({':fact' : name, ':value' : value})
 
     def dump(self):
         '''Dump this filter into a dictionary

@@ -39,20 +39,19 @@ class TestFilter(unittest.TestCase):
     def test_fact(self):
         f = Filter()
         f.add_fact('country', 'uk')
-        self.assertEqual(f.fact, [{'country' : 'uk'}])
+        self.assertEqual(f.fact, [{':fact' : 'country', ':value' : 'uk'}])
         self.assertEqual(
             f.dump()['fact'],
-            [{'country' : 'uk'}],
+            [{':fact' : 'country', ':value' : 'uk'}],
         )
 
     def test_add_multiple_facts(self):
         f = Filter()
         f.add_fact('country', 'us')
-        self.assertEqual(f.fact, [{'country' : 'us'}])
         f.add_fact('processorcount', '4')
         self.assertEqual(f.fact,[
-            {'country' : 'us'},
-            {'processorcount' : '4'},
+            {':fact' : 'country', ':value' : 'us'},
+            {':fact' : 'processorcount', ':value'  : '4'},
         ])
         self.assertEqual(f.dump()['fact'], f.fact)
 
@@ -80,8 +79,8 @@ class TestFilter(unittest.TestCase):
             'agent' : ['smith'],
             'identity' : ['the.bourne'],
             'fact' : [
-                {'country' : 'uk'},
-                {'processorcount' : '4'},
+                {':fact' : 'country', ':value' : 'uk'},
+                {':fact' : 'processorcount', ':value' : '4'},
             ],
         })
 
