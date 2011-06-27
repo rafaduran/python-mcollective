@@ -110,7 +110,7 @@ class Message(object):
                 message = self.stomp_client.get_nowait()
             except Exception, e:
                 break
-            decoded_message = load(message.body)
+            decoded_message = load(message.body.replace('!ruby/sym ', ':'))
             if decoded_message[':requestid'] == self.rid:
                 results.append(decoded_message)
         return results
