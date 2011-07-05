@@ -4,7 +4,7 @@ import mcollective
 
 
 setup(name='mcollective',
-      version='0.1',
+      version=mcollective.__version__,
       author='Aaron Brady',
       author_email='bradya@gmail.com',
       url='https://github.com/insom/mcollective-python',
