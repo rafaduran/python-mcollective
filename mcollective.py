@@ -2,6 +2,8 @@ from yaml import load, dump
 from time import time, sleep
 from hashlib import sha1
 
+__version__ = '0.1'
+
 class AlreadySentException(Exception):
     pass
 
