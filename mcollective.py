@@ -1,8 +1,8 @@
-from yaml import load, dump
+from yaml import load, safe_dump
 from time import time, sleep
 from hashlib import sha1
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 class AlreadySentException(Exception):
     pass
@@ -61,7 +61,7 @@ class Message(object):
         r[':filter'] = filter_ or Filter().dump()
         r[":requestid"] = self.rid
         r[":msgtarget"] = self.target
-        self.body = dump(body, explicit_start=True, explicit_end=False, default_flow_style=False)
+        self.body = safe_dump(body, explicit_start=True, explicit_end=False, default_flow_style=False)
         self.request = r
     
     def subscribe_to_replies(self):
@@ -92,7 +92,7 @@ class Message(object):
         You can only send each message once. Subsequent calls will raise :class:`AlreadySentException`'''
         if self.sent:
             raise AlreadySentException()
-        data = dump(self.request, explicit_start=True, explicit_end=False)
+        data = safe_dump(self.request, explicit_start=True, explicit_end=False)
         body = "\n".join(['  %s' % line for line in self.body.split("\n")])
         data = data + ":body: |\n" + body
         if debug:
