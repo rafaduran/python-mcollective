@@ -2,6 +2,7 @@ from yaml import load, safe_dump
 from time import time, sleep
 from hashlib import sha1
 from os.path import exists
+from stompy.simple import Client
 
 __version__ = '0.2'
 
@@ -105,6 +106,23 @@ class Message(object):
 
 class SimpleRPC(object):
 
-    def __init__(self, agent, action):
+    def __init__(self, agent, action, config=None, stomp_client=None, autoconnect=True, **kwargs):
         self.agent = agent
         self.action = action
+        self.config = config or Config()
+        self.params = kwargs
+        self.stomp_target = '%s.%s.command' % (config.topicprefix, agent)
+        self.stomp_target_reply = '%s.%s.reply' % (config.topicprefix, agent)
+        self.stomp_client = stomp_client
+        if autoconnect and not stomp_client:
+            self.connect_stomp()
+
+    def connect_stomp(self):
+        self.stomp_client = Client(
+            self.config.pluginconf['stomp.host'],
+            int(self.config.pluginconf['stomp.port']),
+        )
+        self.stomp_client.connect(
+            self.config.pluginconf['stomp.user'],
+            self.config.pluginconf['stomp.password'],
+        )
