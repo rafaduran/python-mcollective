@@ -18,3 +18,20 @@ class TestMessage(unittest.TestCase):
             '---\n:foo: bar\n',
             m.body
         )
+        self.assertEqual(
+            'rpcutil',
+            m.target,
+        )
+        self.assertFalse(m.sent)
+
+    def test_custom_filter(self):
+        f = Filter(identity='foo.bar.baz.com')
+        m = Message(
+            body={':foo' : 'bar'},
+            filter_=f,
+        )
+        self.assertEqual(
+            f.dump(),
+            m.request[':filter'],
+            "Custom filter not correct",
+        )
