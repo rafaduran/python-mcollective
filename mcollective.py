@@ -15,8 +15,19 @@ class Config(object):
         '''MCollective Configuration State'''
         self.configfile = configfile
         self.pluginconf = {}
+        self.topicprefix = ''
+
         if parse:
             self.parse_config()
+
+    def _handle_plugin(self, line):
+        k, v = [v.strip() for v in line.split('=')]
+        k = k.split('.')[1]
+        self.pluginconf[k] = v
+
+    def _handle_default(self, line):
+        k, v = [v.strip() for v in line.split('=')]
+        setattr(self, k, v)
 
     def parse_config(self):
         if not exists(self.configfile):
@@ -24,11 +35,16 @@ class Config(object):
         lines = open(self.configfile).readlines()
         # Remove empty lines, lowercase everything
         lines = [l.lower() for l in lines if l]
+        dispatch = {
+            'plugin.' : self._handle_plugin,
+            'topicprefix' : self._handle_default
+        }
         for l in lines:
-            if l.startswith('plugin.'):
-                k, v = [v.strip() for v in l.split('=')]
-                k = k.split('.')[1]
-                self.pluginconf[k] = v
+            for k in dispatch.keys():
+                if l.startswith(k):
+                    dispatch[k](l)
+                    break
+
 
 class Filter(object):
 

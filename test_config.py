@@ -13,6 +13,8 @@ class TestConfig(unittest.TestCase):
         c = Config(parse=False)
         self.assertEqual('/etc/mcollective/client.cfg', c.configfile)
         self.assertEqual({}, c.pluginconf)
+        self.assertEqual('', c.topicprefix)
+
 
     def test_different_config_file(self):
         c = Config(TEST_CFG)
@@ -36,6 +38,10 @@ class TestConfig(unittest.TestCase):
             '/tmp/mcserver-public.pem',
             c.pluginconf['ssl_server_public']
         )
+
+    def test_topicprefix(self):
+        c = Config(TEST_CFG)
+        self.assertEqual('/topic/mcollective', c.topicprefix)
 
 
 if __name__ == '__main__':
