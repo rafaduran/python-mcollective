@@ -22,7 +22,7 @@ class Config(object):
 
     def _handle_plugin(self, line):
         k, v = [v.strip() for v in line.split('=')]
-        k = k.split('.')[1]
+        k = k.split('.', 1)[1]
         self.pluginconf[k] = v
 
     def _handle_default(self, line):
@@ -81,7 +81,7 @@ class Filter(object):
 
 
 class Message(object):
-    def __init__(self, body, stomp_client, filter_=None, prefix='mcollective', target='rpcutil'):
+    def __init__(self, body, filter_=None, prefix='mcollective', target='rpcutil'):
         '''Create a new message.
         
         :param body: Correctly encoded RPC message.
@@ -89,7 +89,6 @@ class Message(object):
         :param stomp_client: Open connection to STOMP server
         :param prefix: MCollective prefix
         :param target: MCollective target'''
-        self.stomp_client = stomp_client
         self.target = '/topic/%s.%s.command' % (prefix, target)
         self.target_reply = '/topic/%s.%s.reply' % (prefix, target)
         self.rid = sha1(str(time())).hexdigest()

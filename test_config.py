@@ -43,6 +43,25 @@ class TestConfig(unittest.TestCase):
         c = Config(TEST_CFG)
         self.assertEqual('/topic/mcollective', c.topicprefix)
 
+    def test_stomp_config(self):
+        c = Config(TEST_CFG)
+        self.assertEqual(
+            '127.0.0.1',
+            c.pluginconf['stomp.host']
+        )
+        self.assertEqual(
+            '6163',
+            c.pluginconf['stomp.port']
+        )
+        self.assertEqual(
+            'user',
+            c.pluginconf['stomp.user']
+        )
+        self.assertEqual(
+            'pass',
+            c.pluginconf['stomp.password']
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
