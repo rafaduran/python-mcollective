@@ -101,3 +101,10 @@ class Message(object):
         r[":msgtarget"] = self.target
         self.body = safe_dump(body, explicit_start=True, explicit_end=False, default_flow_style=False)
         self.request = r
+
+
+class SimpleRPC(object):
+
+    def __init__(self, agent, action):
+        self.agent = agent
+        self.action = action
