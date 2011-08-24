@@ -1,6 +1,7 @@
 from yaml import load, safe_dump
 from time import time, sleep
 from hashlib import sha1
+from os.path import exists
 
 __version__ = '0.2'
 
@@ -10,10 +11,24 @@ class AlreadySentException(Exception):
 
 class Config(object):
 
-    def __init__(self, configfile='/etc/mcollective/client.cfg'):
+    def __init__(self, configfile='/etc/mcollective/client.cfg', parse=True):
         '''MCollective Configuration State'''
         self.configfile = configfile
+        self.pluginconf = {}
+        if parse:
+            self.parse_config()
 
+    def parse_config(self):
+        if not exists(self.configfile):
+            raise ValueError('Config file %s doesnt exist' % self.configfile)
+        lines = open(self.configfile).readlines()
+        # Remove empty lines, lowercase everything
+        lines = [l.lower() for l in lines if l]
+        for l in lines:
+            if l.startswith('plugin.'):
+                k, v = [v.strip() for v in l.split('=')]
+                k = k.split('.')[1]
+                self.pluginconf[k] = v
 
 class Filter(object):
 
