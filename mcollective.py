@@ -8,6 +8,13 @@ class AlreadySentException(Exception):
     pass
 
 
+class Config(object):
+
+    def __init__(self, configfile='/etc/mcollective/client.cfg'):
+        '''MCollective Configuration State'''
+        self.configfile = configfile
+
+
 class Filter(object):
 
     def __init__(self, cf_class='', agent='', identity=''):
