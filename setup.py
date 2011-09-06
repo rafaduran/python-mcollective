@@ -1,18 +1,16 @@
 from distutils.core import setup
 import sys
-import mcollective
-
 
 setup(name='mcollective',
-      version=mcollective.__version__,
+      version='0.3',
       author='Aaron Brady',
       author_email='bradya@gmail.com',
-      url='https://github.com/insom/mcollective-python',
+      url='https://github.com/iwebhosting/mcollective-python',
       description="Python library for using Marionette Collective's RPC",
       #long_description=mcollective.__doc__,
       py_modules=['mcollective',],
       provides=['mcollective',],
-      requires=['M2Crypto',],
+      install_requires=['M2Crypto','pyyaml', 'stompy'],
       keywords='mcollective',
       classifiers=['Development Status :: 3 - Alpha',
                    'Intended Audience :: Developers',
