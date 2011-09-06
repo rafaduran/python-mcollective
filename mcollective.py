@@ -134,3 +134,10 @@ class Signer(object):
     def __init__(self, private_key_path, caller_id):
         self.private_key = load_key(private_key_path)
         self.caller_id = 'cert=' + caller_id
+
+    def sign(self, message):
+        message.request[":callerid"] = self.caller_id
+        hashed_signature = self.private_key.sign(sha1(message.body).digest(), 'sha1')
+        message.request[':hash'] = hashed_signature.encode('base64').replace("\n", "").strip()
+
+        
