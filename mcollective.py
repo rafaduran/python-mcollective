@@ -143,7 +143,11 @@ class SimpleRPC(object):
             self.config.pluginconf['stomp.password'],
         )
 
-    def send(self, body):
+    def send(self, **kwargs):
+        body = dict()
+        body[':action'] = self.action
+        body[':agent'] = self.agent
+        body[':data'] = dict([(':%s' % k, v) for k, v in kwargs.items()])
         m = Message(body, self.stomp_target)
         if self.signer:
             self.signer.sign(m)
@@ -203,7 +207,7 @@ class SimpleRPCProxyAgent(object):
                 action=action_name,
                 config=self.config,
             )
-            r.send(kwargs)
+            r.send(**kwargs)
             return r
         return x
 

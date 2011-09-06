@@ -77,7 +77,7 @@ class TestSimpleRPC(unittest.TestCase):
                 action='bar',
                 config=TEST_CFG,
             )
-            rpc.send('SendNoResponse')
+            rpc.send(ham='eggs')
             put = rpc.stomp_client.put
             put.assert_called()
 
