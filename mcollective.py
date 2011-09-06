@@ -5,7 +5,7 @@ from os.path import exists, basename
 from stompy.simple import Client
 from M2Crypto.RSA import load_key
 
-__version__ = '0.2'
+__version__ = '0.3'
 
 class AlreadySentException(Exception):
     pass
