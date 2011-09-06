@@ -190,6 +190,32 @@ class Signer(object):
         message.request[':hash'] = hashed_signature.encode('base64').replace("\n", "").strip()
 
 
+class SimpleRPCProxyAgent(object):
+
+    def __init__(self, config, agent_name):
+        self.config = config
+        self.agent_name = agent_name
+
+    def __getattr__(self, action_name):
+        def x(**kwargs):
+            r = SimpleRPC(
+                agent=self.agent_name,
+                action=action_name,
+                config=self.config,
+            )
+            r.send(kwargs)
+            return r
+        return x
+
+
+class SimpleRPCProxy(object):
+
+    def __init__(self, config):
+        self.config = config
+
+    def __getattr__(self, agent_name):
+        return SimpleRPCProxyAgent(self.config, agent_name)
+
 PROVIDERS = {
     'ssl' : Signer,
 }
