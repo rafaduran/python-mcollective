@@ -2,7 +2,7 @@
 
 import unittest
 import mcollective
-from mcollective import SimpleRPC, Config, SimpleRPCProxy, SimpleRPCProxyAgent
+from mcollective import Config, SimpleRPCAction as SimpleRPC
 from test_config import TEST_CFG
 import mock
 
