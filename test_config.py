@@ -13,7 +13,7 @@ class TestConfig(unittest.TestCase):
         c = Config(parse=False)
         self.assertEqual('/etc/mcollective/client.cfg', c.configfile)
         self.assertEqual({}, c.pluginconf)
-        self.assertEqual('', c.topicprefix)
+        self.assertEqual('/topic/mcollectivemcollective', c.topicprefix)
 
 
     def test_different_config_file(self):
@@ -23,11 +23,11 @@ class TestConfig(unittest.TestCase):
     def test_ssl_paths(self):
         c = Config(TEST_CFG)
         self.assertEqual(
-            '/tmp/test-private.pem',
+            'testkey-private.pem',
             c.pluginconf['ssl_client_private']
         )
         self.assertEqual(
-            '/tmp/test-public.pem',
+            'testkey-public.pem',
             c.pluginconf['ssl_client_public']
         )
         self.assertEqual(
@@ -35,13 +35,20 @@ class TestConfig(unittest.TestCase):
             c.pluginconf['ssl_serializer']
         )
         self.assertEqual(
-            '/tmp/mcserver-public.pem',
+            'mcserver-public.pem',
             c.pluginconf['ssl_server_public']
         )
 
     def test_topicprefix(self):
         c = Config(TEST_CFG)
-        self.assertEqual('/topic/mcollective', c.topicprefix)
+        self.assertEqual('/topic/mcollectivemcollective', c.topicprefix)
+
+    def test_subcollective(self):
+        c = Config(TEST_CFG)
+        self.assertEqual(
+            'mcollective',
+            c.subcollective,
+        )
 
     def test_stomp_config(self):
         c = Config(TEST_CFG)

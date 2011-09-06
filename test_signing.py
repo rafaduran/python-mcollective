@@ -5,7 +5,7 @@ from mcollective import Signer, Message
 from os.path import dirname, join
 from M2Crypto.RSA import RSA
 
-PRIVATE_KEY = join(dirname(__file__), 'testkey.pem')
+PRIVATE_KEY = join(dirname(__file__), 'testkey-private.pem')
 
 
 class TestSigning(unittest.TestCase):
@@ -25,7 +25,7 @@ class TestSigning(unittest.TestCase):
         )
 
     def test_sign(self):
-        m = Message('Testing123')
+        m = Message('Testing123', '/topic/foo')
         s = Signer(
             PRIVATE_KEY,
             'test-public',
