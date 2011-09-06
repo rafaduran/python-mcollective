@@ -3,6 +3,7 @@ from time import time, sleep
 from hashlib import sha1
 from os.path import exists
 from stompy.simple import Client
+from M2Crypto.RSA import load_key
 
 __version__ = '0.2'
 
@@ -126,3 +127,10 @@ class SimpleRPC(object):
             self.config.pluginconf['stomp.user'],
             self.config.pluginconf['stomp.password'],
         )
+
+
+class Signer(object):
+
+    def __init__(self, private_key_path, caller_id):
+        self.private_key = load_key(private_key_path)
+        self.caller_id = 'cert=' + caller_id
