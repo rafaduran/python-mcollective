@@ -80,22 +80,3 @@ class TestSimpleRPC(unittest.TestCase):
             rpc.send(ham='eggs')
             put = rpc.stomp_client.put
             put.assert_called()
-
-    def test_send_simpler_message(self):
-        with mock.patch('mcollective.Client') as mocked:
-            rpc = SimpleRPCProxy(
-                config=TEST_CFG,
-            )
-            x = rpc.foo.bar(ham='eggs')
-            put = x.stomp_client.put
-            put.assert_called()
-
-    def test_send_even_simpler_message(self):
-        with mock.patch('mcollective.Client') as mocked:
-            foo = SimpleRPCProxyAgent(
-                config=TEST_CFG,
-                agent_name = 'foo',
-            )
-            x = foo.bar(ham='spam')
-            put = x.stomp_client.put
-            put.assert_called()

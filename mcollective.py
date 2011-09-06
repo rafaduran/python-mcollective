@@ -158,9 +158,9 @@ class SimpleRPC(object):
         self.stomp_client.put(data, self.stomp_target)
         return m.rid
 
-    def send_and_collect(self, body):
+    def send_and_collect(self, **kwargs):
         self.stomp_client.subscribe(self.stomp_target_reply)
-        rid = self.send(body)
+        rid = self.send(**kwargs)
         sleep(2)
         self.stomp_client.unsubscribe(self.stomp_target_reply)
         return self.collect_results(rid)
@@ -196,29 +196,28 @@ class Signer(object):
 
 class SimpleRPCProxyAgent(object):
 
-    def __init__(self, config, agent_name):
-        self.config = config
+    def __init__(self, agent_name, **kwargs):
         self.agent_name = agent_name
+        self.kwargs = kwargs
 
     def __getattr__(self, action_name):
         def x(**kwargs):
             r = SimpleRPC(
                 agent=self.agent_name,
                 action=action_name,
-                config=self.config,
+                **self.kwargs
             )
-            r.send(**kwargs)
-            return r
+            return r.send_and_collect(**kwargs)
         return x
 
 
 class SimpleRPCProxy(object):
 
-    def __init__(self, config):
-        self.config = config
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
 
     def __getattr__(self, agent_name):
-        return SimpleRPCProxyAgent(self.config, agent_name)
+        return SimpleRPCProxyAgent(agent_name, **self.kwargs)
 
 PROVIDERS = {
     'ssl' : Signer,
