@@ -143,11 +143,12 @@ class SimpleRPCAction(object):
             self.config.pluginconf['stomp.password'],
         )
 
-    def send(self, **kwargs):
+    def send(self, process_results=True, **kwargs):
         body = dict()
         body[':action'] = self.action
         body[':agent'] = self.agent
         body[':data'] = dict([(':%s' % k, v) for k, v in kwargs.items()])
+        body[':data'][':process_results'] = process_results
         m = Message(body, self.stomp_target)
         if self.signer:
             self.signer.sign(m)
@@ -155,15 +156,13 @@ class SimpleRPCAction(object):
         body = "\n".join(['  %s' % line for line in m.body.split("\n")])
         data = data + ":body: |\n" + body
         self.data = data
+        if process_results:
+            self.stomp_client.subscribe(self.stomp_target_reply)
+            self.stomp_client.put(data, self.stomp_target)
+            sleep(2)
+            self.stomp_client.unsubscribe(self.stomp_target_reply)
+            return self.collect_results(m.rid)
         self.stomp_client.put(data, self.stomp_target)
-        return m.rid
-
-    def send_and_collect(self, **kwargs):
-        self.stomp_client.subscribe(self.stomp_target_reply)
-        rid = self.send(**kwargs)
-        sleep(2)
-        self.stomp_client.unsubscribe(self.stomp_target_reply)
-        return self.collect_results(rid)
 
     def collect_results(self, request_id):
         '''Collect the results from a previous :func:`Message.send` call.
@@ -206,7 +205,7 @@ class SimpleRPCAgent(object):
             action=action_name,
             **self.kwargs
         )
-        return r
+        return r.send
 
 PROVIDERS = {
     'ssl' : Signer,
