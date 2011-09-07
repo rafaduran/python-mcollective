@@ -5,7 +5,7 @@ from os.path import exists, basename
 from stompy.simple import Client
 from M2Crypto.RSA import load_key
 
-__version__ = '0.3'
+__version__ = '0.4'
 
 class AlreadySentException(Exception):
     pass
@@ -143,13 +143,13 @@ class SimpleRPCAction(object):
             self.config.pluginconf['stomp.password'],
         )
 
-    def send(self, process_results=True, **kwargs):
+    def send(self, filter_=None, process_results=True, **kwargs):
         body = dict()
         body[':action'] = self.action
         body[':agent'] = self.agent
         body[':data'] = dict([(':%s' % k, v) for k, v in kwargs.items()])
         body[':data'][':process_results'] = process_results
-        m = Message(body, self.stomp_target)
+        m = Message(body, self.stomp_target, filter_=filter_)
         if self.signer:
             self.signer.sign(m)
         data = safe_dump(m.request, explicit_start=True, explicit_end=False)

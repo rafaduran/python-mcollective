@@ -2,7 +2,7 @@ from distutils.core import setup
 import sys
 
 setup(name='mcollective',
-      version='0.3',
+      version='0.4',
       author='Aaron Brady',
       author_email='bradya@gmail.com',
       url='https://github.com/iwebhosting/mcollective-python',
