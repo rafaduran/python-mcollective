@@ -3,7 +3,6 @@ from time import time, sleep
 from hashlib import sha1
 from os.path import exists, basename
 from stompy.simple import Client
-from M2Crypto.RSA import load_key
 
 __version__ = '0.4'
 
@@ -184,6 +183,7 @@ class SimpleRPCAction(object):
 class Signer(object):
 
     def __init__(self, private_key_path, caller_id):
+        from M2Crypto.RSA import load_key
         self.private_key = load_key(private_key_path)
         self.caller_id = 'cert=' + caller_id
 
