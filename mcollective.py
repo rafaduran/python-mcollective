@@ -176,7 +176,8 @@ class SimpleRPCAction(object):
         self.data = data
         if process_results:
             self.stomp_client.subscribe(self.stomp_target_reply)
-            self.stomp_client.put(data, self.stomp_target)
+            self.stomp_client.put(data, self.stomp_target,
+                                  conf={'reply-to': self.stomp_target_reply})
             sleep(2)
             self.stomp_client.unsubscribe(self.stomp_target_reply)
             return self.collect_results(m.rid)
