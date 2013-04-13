@@ -1,5 +1,7 @@
-from distutils.core import setup
-import sys
+import distribute_setup
+distribute_setup.use_setuptools()
+
+from setuptools import setup
 
 setup(name='mcollective',
       version='0.4',
