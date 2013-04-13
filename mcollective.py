@@ -1,3 +1,5 @@
+import getpass
+
 from yaml import load, safe_dump
 from time import time, sleep
 from hashlib import sha1
@@ -125,11 +127,7 @@ class SimpleRPCAction(object):
         self.stomp_client = stomp_client
         self.signer = PROVIDERS.get(self.config.securityprovider)
         if self.signer:
-            caller = basename(self.config.pluginconf['ssl_client_public']).split('.')[0]
-            self.signer = self.signer(
-                self.config.pluginconf['ssl_client_private'],
-                caller,
-            )
+            self.signer = self.signer(config)
         if autoconnect and not stomp_client:
             self.connect_stomp()
 
@@ -151,7 +149,14 @@ class SimpleRPCAction(object):
         body[':data'][':process_results'] = process_results
         m = Message(body, self.stomp_target, filter_=filter_)
         if self.signer:
+            body[':caller'] = self.signer.caller_id
+            m = Message(body, self.stomp_target, filter_=filter_,
+                        agent=self.agent, identity=self.config.identity)
             self.signer.sign(m)
+        else:
+            m = Message(body, self.stomp_target, filter_=filter_,
+                        agent=self.agent, identity=self.config.identity)
+
         data = safe_dump(m.request, explicit_start=True, explicit_end=False)
         body = "\n".join(['  %s' % line for line in m.body.split("\n")])
         data = data + ":body: |\n" + body
@@ -183,8 +188,11 @@ class SimpleRPCAction(object):
 
 class Signer(object):
 
-    def __init__(self, private_key_path, caller_id):
+    def __init__(self, config):
         from M2Crypto.RSA import load_key
+        private_key_path = config.pluginconf['ssl_client_private'],
+        caller_id = basename(
+            config.pluginconf['ssl_client_public']).split('.')[0]
         self.private_key = load_key(private_key_path)
         self.caller_id = 'cert=' + caller_id
 
@@ -192,6 +200,15 @@ class Signer(object):
         message.request[":callerid"] = self.caller_id
         hashed_signature = self.private_key.sign(sha1(message.body).digest(), 'sha1')
         message.request[':hash'] = hashed_signature.encode('base64').replace("\n", "").strip()
+
+
+class NoneSigner(object):
+    def __init__(self, config):
+        self.caller_id = "user={0}".format(getpass.getuser())
+
+    def sign(self, message):
+        message.request[':callerid'] = self.caller_id
+        return message
 
 
 class SimpleRPCAgent(object):
@@ -208,6 +225,8 @@ class SimpleRPCAgent(object):
         )
         return r.send
 
+
 PROVIDERS = {
     'ssl' : Signer,
+    'none': NoneSigner,
 }
