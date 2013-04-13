@@ -144,13 +144,14 @@ class SimpleRPCAction(object):
             )
 
     def connect_stomp(self):
+        # FIXME(rafaduran): take advantage of multiple stomp servers
         self.stomp_client = Client(
-            self.config.pluginconf['stomp.host'],
-            int(self.config.pluginconf['stomp.port']),
+            self.config.pluginconf['activemq.pool.1.host'],
+            int(self.config.pluginconf['activemq.pool.1.port']),
         )
         self.stomp_client.connect(
-            self.config.pluginconf['stomp.user'],
-            self.config.pluginconf['stomp.password'],
+            self.config.pluginconf['activemq.pool.1.user'],
+            self.config.pluginconf['activemq.pool.1.password'],
         )
 
     def send(self, filter_=None, process_results=True, **kwargs):
