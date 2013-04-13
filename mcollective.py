@@ -125,14 +125,23 @@ class SimpleRPCAction(object):
         self.action = action
         self.config = config or Config()
         self.params = kwargs
-        self.stomp_target = '%s.%s.command' % (self.config.topicprefix, agent)
-        self.stomp_target_reply = '%s.%s.reply' % (self.config.topicprefix, agent)
+        self.stomp_target = '%s.agent' % self.target
+        self.stomp_target_reply = '%s.reply' % self.target
         self.stomp_client = stomp_client
         self.signer = PROVIDERS.get(self.config.securityprovider)
         if self.signer:
             self.signer = self.signer(config)
         if autoconnect and not stomp_client:
             self.connect_stomp()
+
+    @property
+    def target(self):
+        return "{topicprefix}{collective}.{agent}".format(
+            topicprefix=self.config.topicprefix,
+            collective=self.params.get('collective',
+                                       self.config.main_collective),
+            agent=self.agent,
+            )
 
     def connect_stomp(self):
         self.stomp_client = Client(
