@@ -99,7 +99,7 @@ class Filter(object):
 
 class Message(object):
 
-    def __init__(self, body, target, filter_=None):
+    def __init__(self, body, target, filter_=None, agent=None, identity=None):
         '''Create a new message.
         
         :param body: Correctly encoded RPC message.
@@ -110,17 +110,30 @@ class Message(object):
         :param target: MCollective target'''
         self.rid = sha1(str(time())).hexdigest()
         r = dict()
+
+        # TODO (rafaduran): needs review
+        for key, value in ((':agent', agent),
+                           (':senderid', identity),):
+            if value:
+                r[key] = value
+        r[':collective'] = 'dev'
+
         r[':msgtime'] = int(time())
         r[':filter'] = (filter_ or Filter()).dump()
         r[":requestid"] = self.rid
-        r[":msgtarget"] = target
-        self.body = safe_dump(body, explicit_start=True, explicit_end=False, default_flow_style=False)
+        # r[":msgtarget"] = target
+        if isinstance(body, basestring):
+            self.body = body
+        else:
+            self.body = '\n' + safe_dump(body, explicit_start=False,
+                explicit_end=False, default_flow_style=False)
         self.request = r
 
 
 class SimpleRPCAction(object):
 
-    def __init__(self, agent, action, config=None, stomp_client=None, autoconnect=True, **kwargs):
+    def __init__(self, agent, action, config=None, stomp_client=None,
+                 autoconnect=True, **kwargs):
         self.agent = agent
         self.action = action
         self.config = config or Config()
@@ -155,12 +168,16 @@ class SimpleRPCAction(object):
         )
 
     def send(self, filter_=None, process_results=True, **kwargs):
-        body = dict()
-        body[':action'] = self.action
-        body[':agent'] = self.agent
-        body[':data'] = dict([(':%s' % k, v) for k, v in kwargs.items()])
-        body[':data'][':process_results'] = process_results
-        m = Message(body, self.stomp_target, filter_=filter_)
+        if (self.agent == 'discovery') and (self.action == 'ping'):
+            body = 'ping'
+        else:
+            body = dict()
+            body[':action'] = self.action
+            body[':agent'] = self.agent
+
+            body[':data'] = dict([(':%s' % k, v) for k, v in kwargs.items()])
+            body[':data'][':process_results'] = process_results
+
         if self.signer:
             body[':caller'] = self.signer.caller_id
             m = Message(body, self.stomp_target, filter_=filter_,
@@ -172,7 +189,7 @@ class SimpleRPCAction(object):
 
         data = safe_dump(m.request, explicit_start=True, explicit_end=False)
         body = "\n".join(['  %s' % line for line in m.body.split("\n")])
-        data = data + ":body: |\n" + body
+        data = data + ":body: " + body
         self.data = data
         if process_results:
             self.stomp_client.subscribe(self.stomp_target_reply)
