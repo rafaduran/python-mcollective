@@ -62,7 +62,7 @@ class Config(object):
 
 class Filter(object):
 
-    def __init__(self, cf_class='', agent='', identity=''):
+    def __init__(self, cf_class='', agent='', identity='', compound=''):
         '''Filter which nodes respond to a message
      
         :param cf_class: Match classes applied by puppet etc
@@ -73,6 +73,8 @@ class Filter(object):
         self.agent = agent
         self.identity = identity
         self.fact = []
+        self.compound = compound
+        # TODO(rafaduran): TTL support
 
     def add_fact(self, name, value):
         '''Add a fact to the collection of filters
@@ -91,6 +93,7 @@ class Filter(object):
             'agent' : self.agent and [self.agent] or [],
             'identity' : self.identity and [self.identity] or [],
             'fact' : self.fact,
+            'compound': self.compound or []
         }
 
 
