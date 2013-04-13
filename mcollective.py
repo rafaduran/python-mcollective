@@ -16,8 +16,10 @@ class Config(object):
         '''MCollective Configuration State'''
         self.configfile = configfile
         self.pluginconf = {}
-        self.tp = '/topic/mcollective'
-        self.subcollective = 'mcollective'
+        self.topicprefix = '/topic/'
+        self.main_collective = 'mcollective'
+        self.subcollectives = []
+        self.identity = None  # TODO (rafaduran): required??
 
         if parse:
             self.parse_config()
@@ -31,13 +33,9 @@ class Config(object):
         k, v = [v.strip() for v in line.split('=')]
         setattr(self, k, v)
 
-    def _handle_topic(self, line):
+    def _handle_collectives(self, line):
         k, v = [v.strip() for v in line.split('=')]
-        self.tp = v
-
-    @property
-    def topicprefix(self):
-        return self.tp + self.subcollective
+        self.collectives = v.split(',')
 
     def parse_config(self):
         if not exists(self.configfile):
@@ -47,8 +45,11 @@ class Config(object):
         lines = [l.lower() for l in lines if l]
         dispatch = {
             'plugin.' : self._handle_plugin,
-            'topicprefix' : self._handle_topic,
+            'topicprefix' : self._handle_default,
             'securityprovider' : self._handle_default,
+            'main_collective' : self._handle_default,
+            'collectives' : self._handle_collectives,
+            'identity' : self._handle_default,
         }
         for l in lines:
             for k in dispatch.keys():
