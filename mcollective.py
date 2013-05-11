@@ -221,9 +221,10 @@ class Signer(object):
 
     def __init__(self, config):
         from M2Crypto.RSA import load_key
-        private_key_path = config.pluginconf['ssl_client_private'],
+        private_key_path = config.pluginconf['ssl_client_private']
         caller_id = basename(
             config.pluginconf['ssl_client_public']).split('.')[0]
+
         self.private_key = load_key(private_key_path)
         self.caller_id = 'cert=' + caller_id
 
