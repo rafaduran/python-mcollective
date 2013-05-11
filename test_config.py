@@ -8,65 +8,66 @@ from mcollective import Config
 TEST_CFG = join(dirname(__file__), 'test_client.cfg')
 
 class TestConfig(unittest.TestCase):
+    def setUp(self):
+        super(TestConfig, self).setUp()
+        self.conf = Config(TEST_CFG)
 
     def test_init(self):
         c = Config(parse=False)
         self.assertEqual('/etc/mcollective/client.cfg', c.configfile)
         self.assertEqual({}, c.pluginconf)
-        self.assertEqual('/topic/mcollectivemcollective', c.topicprefix)
+        self.assertEqual('/topic/', c.topicprefix)
 
 
     def test_different_config_file(self):
-        c = Config(TEST_CFG)
-        self.assertEqual(TEST_CFG, c.configfile)
+        self.assertEqual(TEST_CFG, self.conf.configfile)
 
     def test_ssl_paths(self):
-        c = Config(TEST_CFG)
         self.assertEqual(
             'testkey-private.pem',
-            c.pluginconf['ssl_client_private']
+            self.conf.pluginconf['ssl_client_private']
         )
         self.assertEqual(
             'testkey-public.pem',
-            c.pluginconf['ssl_client_public']
+            self.conf.pluginconf['ssl_client_public']
         )
         self.assertEqual(
             'yaml',
-            c.pluginconf['ssl_serializer']
+            self.conf.pluginconf['ssl_serializer']
         )
         self.assertEqual(
             'mcserver-public.pem',
-            c.pluginconf['ssl_server_public']
+            self.conf.pluginconf['ssl_server_public']
         )
 
     def test_topicprefix(self):
-        c = Config(TEST_CFG)
-        self.assertEqual('/topic/mcollectivemcollective', c.topicprefix)
+        self.assertEqual('/topic/', self.conf.topicprefix)
 
-    def test_subcollective(self):
-        c = Config(TEST_CFG)
+    def test_maincollective(self):
         self.assertEqual(
             'mcollective',
-            c.subcollective,
+            self.conf.main_collective,
         )
 
+    def test_collectives(self):
+        self.assertListEqual(['mcollective'], self.conf.collectives)
+
     def test_stomp_config(self):
-        c = Config(TEST_CFG)
         self.assertEqual(
-            '127.0.0.1',
-            c.pluginconf['stomp.host']
+            'localhost',
+            self.conf.pluginconf['stomp.host']
         )
         self.assertEqual(
-            '6163',
-            c.pluginconf['stomp.port']
+            '61613',
+            self.conf.pluginconf['stomp.port']
         )
         self.assertEqual(
-            'user',
-            c.pluginconf['stomp.user']
+            'mcollective',
+            self.conf.pluginconf['stomp.user']
         )
         self.assertEqual(
-            'pass',
-            c.pluginconf['stomp.password']
+            'secret',
+            self.conf.pluginconf['stomp.password']
         )
 
 
