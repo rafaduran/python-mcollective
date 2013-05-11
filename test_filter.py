@@ -63,6 +63,7 @@ class TestFilter(unittest.TestCase):
             'agent' : [],
             'identity' : [],
             'fact' : [],
+            'compound': [],
         })
 
     def test_full_dump(self):
@@ -82,6 +83,7 @@ class TestFilter(unittest.TestCase):
                 {':fact' : 'country', ':value' : 'uk'},
                 {':fact' : 'processorcount', ':value' : '4'},
             ],
+            'compound': [],
         })
 
 
