@@ -1,41 +1,43 @@
 #!/usr/bin/env python
 
 import unittest
-from mcollective import Signer, Message
+import mcollective
 from os.path import dirname, join
 from M2Crypto.RSA import RSA
 
 PRIVATE_KEY = join(dirname(__file__), 'testkey-private.pem')
+PUBLIC_KEY = join(dirname(__file__), 'testkey-public.pem')
 
 
 class TestSigning(unittest.TestCase):
+    def setUp(self):
+        self.conf = mcollective.Config(parse=False)
+        self.conf.pluginconf['ssl_client_private'] = PRIVATE_KEY
+        self.conf.pluginconf['ssl_client_public'] = PUBLIC_KEY
+        self.signer = mcollective.Signer(self.conf)
 
     def test_init(self):
-        s = Signer(
-            PRIVATE_KEY,
-            'test-public',
-        )
         self.assertIsInstance(
-            s.private_key,
+            self.signer.private_key,
             RSA,
         )
         self.assertEqual(
-            'cert=test-public',
-            s.caller_id,
+            'cert=testkey-public',
+            self.signer.caller_id,
         )
 
     def test_sign(self):
-        m = Message('Testing123', '/topic/foo')
-        s = Signer(
-            PRIVATE_KEY,
-            'test-public',
-        )
-        s.sign(m)
+        m = mcollective.Message('Testing123', '/topic/foo')
+        self.signer.sign(m)
         self.assertEqual(
-            'cert=test-public',
+            'cert=testkey-public',
             m.request[':callerid'],
         )
         self.assertEqual(
-            'MVLizyhmBLtvw0SpOZNazatmXhSAjeBH0BvuRlDZrdn2mAwpWBxoNwKvsT8V/01NpBodhxosBeNeBeg/7X/T7g==',
+            "hWBxnfroy5XJmnl25UnnQGjJjbkkG248vnzj5kxdh5dKLX8QZpEquV5BLul/uovz"
+            "L9D47SWREc7cVcIcL8WBLQ==",
             m.request[':hash'],
         )
+
+if __name__ == '__main__':
+    unittest.main()
