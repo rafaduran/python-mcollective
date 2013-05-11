@@ -5,6 +5,7 @@ from mcollective import Message, Filter
 
 EMPTY_FILTER = Filter()
 
+
 class TestMessage(unittest.TestCase):
 
     def test_init(self):
@@ -15,7 +16,7 @@ class TestMessage(unittest.TestCase):
             "Default filter not empty",
         )
         self.assertEqual(
-            '---\n:foo: bar\n',
+            '\n:foo: bar\n',
             m.body
         )
 
@@ -31,3 +32,6 @@ class TestMessage(unittest.TestCase):
             m.request[':filter'],
             "Custom filter not correct",
         )
+
+if __name__ == '__main__':
+    unittest.main()
