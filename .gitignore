@@ -3,3 +3,4 @@ build/
 *.pyc
 dist/
 *.egg
+tests/fixtures/test_client.cfg

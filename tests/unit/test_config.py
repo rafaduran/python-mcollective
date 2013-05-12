@@ -1,10 +1,19 @@
 #!/usr/bin/env python
-from os.path import dirname
-from os.path import join
+import io
+import os
 import unittest
+
 from mcollective import Config
 
-TEST_CFG = join(dirname(__file__), 'fixtures/test_client.cfg')
+TEST_CFG = os.path.join(os.path.dirname(__file__),
+                        '../fixtures/test_client.cfg')
+PATH = os.path.abspath(os.path.dirname(TEST_CFG))
+
+if not os.path.exists(TEST_CFG):
+    with io.open(TEST_CFG + '.template', 'rt') as fin:
+        with io.open(TEST_CFG, 'wt') as fout:
+            contents = fin.read().format(path=PATH)
+            fout.write(contents)
 
 
 class TestConfig(unittest.TestCase):
@@ -23,11 +32,11 @@ class TestConfig(unittest.TestCase):
 
     def test_ssl_paths(self):
         self.assertEqual(
-            'tests/fixtures/testkey-private.pem',
+            '{path}/testkey-private.pem'.format(path=PATH),
             self.conf.pluginconf['ssl_client_private']
         )
         self.assertEqual(
-            'tests/fixtures/testkey-public.pem',
+            '{path}/testkey-public.pem'.format(path=PATH),
             self.conf.pluginconf['ssl_client_public']
         )
         self.assertEqual(
