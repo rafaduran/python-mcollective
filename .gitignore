@@ -4,3 +4,4 @@ build/
 dist/
 *.egg
 tests/fixtures/test_client.cfg
+tests/integration/vendor/

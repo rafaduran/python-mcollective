@@ -23,5 +23,5 @@ setup(name='mcollective',
           'Programming Language :: Python :: 2',
       ],
       test_suite='tests',
-      test_requires=['mock'],
+      test_requires=['mock', 'GitPython'],
       )
