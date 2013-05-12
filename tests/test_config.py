@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-
 from os.path import dirname
 from os.path import join
 import unittest
 from mcollective import Config
 
 TEST_CFG = join(dirname(__file__), 'fixtures/test_client.cfg')
+
 
 class TestConfig(unittest.TestCase):
     def setUp(self):
@@ -17,7 +17,6 @@ class TestConfig(unittest.TestCase):
         self.assertEqual('/etc/mcollective/client.cfg', c.configfile)
         self.assertEqual({}, c.pluginconf)
         self.assertEqual('/topic/', c.topicprefix)
-
 
     def test_different_config_file(self):
         self.assertEqual(TEST_CFG, self.conf.configfile)

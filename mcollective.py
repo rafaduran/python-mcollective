@@ -1,3 +1,4 @@
+'''Python MCollective bidings'''
 import getpass
 
 from yaml import load, safe_dump
@@ -8,19 +9,16 @@ from stompy.simple import Client
 
 __version__ = '0.4'
 
-class AlreadySentException(Exception):
-    pass
-
 
 class Config(object):
-
+    '''MCollective configuration reader.'''
     def __init__(self, configfile='/etc/mcollective/client.cfg', parse=True):
         '''MCollective Configuration State'''
         self.configfile = configfile
         self.pluginconf = {}
         self.topicprefix = '/topic/'
         self.main_collective = 'mcollective'
-        self.subcollectives = []
+        self.collectives = []
         self.identity = None  # TODO (rafaduran): required??
 
         if parse:
@@ -40,18 +38,19 @@ class Config(object):
         self.collectives = v.split(',')
 
     def parse_config(self):
+        '''Parses MCollective configuration file contents'''
         if not exists(self.configfile):
             raise ValueError('Config file %s doesnt exist' % self.configfile)
         lines = open(self.configfile).readlines()
         # Remove empty lines, lowercase everything
         lines = [l.lower() for l in lines if l]
         dispatch = {
-            'plugin.' : self._handle_plugin,
-            'topicprefix' : self._handle_default,
-            'securityprovider' : self._handle_default,
-            'main_collective' : self._handle_default,
-            'collectives' : self._handle_collectives,
-            'identity' : self._handle_default,
+            'plugin.': self._handle_plugin,
+            'topicprefix': self._handle_default,
+            'securityprovider': self._handle_default,
+            'main_collective': self._handle_default,
+            'collectives': self._handle_collectives,
+            'identity': self._handle_default,
             'connector': self._handle_default,
         }
         for l in lines:
@@ -65,10 +64,11 @@ class Filter(object):
 
     def __init__(self, cf_class='', agent='', identity='', compound=''):
         '''Filter which nodes respond to a message
-     
+
         :param cf_class: Match classes applied by puppet etc
         :param agent: Match the list of agents
-        :param identity: Match the identity configured in the configuration file
+        :param identity: Match the identity configured in the configuration
+                         file
         '''
         self.cf_class = cf_class
         self.agent = agent
@@ -83,26 +83,25 @@ class Filter(object):
         :param name: Name of the fact
         :param value: Value to match
         '''
-        self.fact.append({':fact' : name, ':value' : value})
+        self.fact.append({':fact': name, ':value': value})
 
     def dump(self):
         '''Dump this filter into a dictionary
-        
+
         :rtype: Dictionary of filter parameters'''
         return {
-            'cf_class' : self.cf_class and [self.cf_class] or [],
-            'agent' : self.agent and [self.agent] or [],
-            'identity' : self.identity and [self.identity] or [],
-            'fact' : self.fact,
+            'cf_class': self.cf_class and [self.cf_class] or [],
+            'agent': self.agent and [self.agent] or [],
+            'identity': self.identity and [self.identity] or [],
+            'fact': self.fact,
             'compound': self.compound or []
         }
 
 
 class Message(object):
-
     def __init__(self, body, target, filter_=None, agent=None, identity=None):
         '''Create a new message.
-        
+
         :param body: Correctly encoded RPC message.
         :type body: dict
         :param filter_: An mcollective.Filter instance
@@ -126,8 +125,10 @@ class Message(object):
         if isinstance(body, basestring):
             self.body = body
         else:
-            self.body = '\n' + safe_dump(body, explicit_start=False,
-                explicit_end=False, default_flow_style=False)
+            self.body = '\n' + safe_dump(body,
+                                         explicit_start=False,
+                                         explicit_end=False,
+                                         default_flow_style=False)
         self.request = r
 
 
@@ -150,14 +151,15 @@ class SimpleRPCAction(object):
 
     @property
     def target(self):
+        '''MColletive target, based on topic and collective'''
+        collective = self.params.get('collective', self.config.main_collective)
         return "{topicprefix}{collective}.{agent}".format(
             topicprefix=self.config.topicprefix,
-            collective=self.params.get('collective',
-                                       self.config.main_collective),
-            agent=self.agent,
-            )
+            collective=collective,
+            agent=self.agent)
 
     def connect_stomp(self):
+        '''Connect to stomp server'''
         if self.config.connector == 'stomp':
             key = 'stomp'
         elif self.config.connector == 'activemq':
@@ -209,7 +211,8 @@ class SimpleRPCAction(object):
     def collect_results(self, request_id):
         '''Collect the results from a previous :func:`Message.send` call.
 
-        :rtype: list of STOMP messages which match this object's `:requestid`'''
+        :rtype: list of STOMP messages which match this object's `:requestid`
+        '''
         results = []
         while True:
             message = None
@@ -223,8 +226,8 @@ class SimpleRPCAction(object):
         return results
 
 
-class Signer(object):
-
+class SSLSigner(object):
+    '''SSL signer'''
     def __init__(self, config):
         from M2Crypto.RSA import load_key
         private_key_path = config.pluginconf['ssl_client_private']
@@ -236,11 +239,14 @@ class Signer(object):
 
     def sign(self, message):
         message.request[":callerid"] = self.caller_id
-        hashed_signature = self.private_key.sign(sha1(message.body).digest(), 'sha1')
-        message.request[':hash'] = hashed_signature.encode('base64').replace("\n", "").strip()
+        hashed_signature = self.private_key.sign(sha1(message.body).digest(),
+                                                 'sha1')
+        message.request[':hash'] = hashed_signature.encode('base64').replace(
+            "\n", "").strip()
 
 
 class NoneSigner(object):
+    '''None signer for the none security plugin provider'''
     def __init__(self, config):
         self.caller_id = "user={0}".format(getpass.getuser())
 
@@ -250,7 +256,7 @@ class NoneSigner(object):
 
 
 class SimpleRPCAgent(object):
-
+    '''Simple MCollective RPC agent'''
     def __init__(self, agent_name, **kwargs):
         self.agent_name = agent_name
         self.kwargs = kwargs
@@ -265,6 +271,6 @@ class SimpleRPCAgent(object):
 
 
 PROVIDERS = {
-    'ssl' : Signer,
+    'ssl': SSLSigner,
     'none': NoneSigner,
 }

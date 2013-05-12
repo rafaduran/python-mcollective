@@ -35,7 +35,7 @@ class TestSimpleRPC(unittest.TestCase):
         )
         self.assertIsInstance(
             rpc.signer,
-            mcollective.Signer
+            mcollective.SSLSigner
         )
 
     def test_configparse(self):

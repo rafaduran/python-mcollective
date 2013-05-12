@@ -14,7 +14,7 @@ class TestSigning(unittest.TestCase):
         self.conf = mcollective.Config(parse=False)
         self.conf.pluginconf['ssl_client_private'] = PRIVATE_KEY
         self.conf.pluginconf['ssl_client_public'] = PUBLIC_KEY
-        self.signer = mcollective.Signer(self.conf)
+        self.signer = mcollective.SSLSigner(self.conf)
 
     def test_init(self):
         self.assertIsInstance(
