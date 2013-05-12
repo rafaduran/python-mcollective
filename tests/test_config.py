@@ -5,7 +5,7 @@ from os.path import join
 import unittest
 from mcollective import Config
 
-TEST_CFG = join(dirname(__file__), 'test_client.cfg')
+TEST_CFG = join(dirname(__file__), 'fixtures/test_client.cfg')
 
 class TestConfig(unittest.TestCase):
     def setUp(self):
@@ -24,11 +24,11 @@ class TestConfig(unittest.TestCase):
 
     def test_ssl_paths(self):
         self.assertEqual(
-            'testkey-private.pem',
+            'tests/fixtures/testkey-private.pem',
             self.conf.pluginconf['ssl_client_private']
         )
         self.assertEqual(
-            'testkey-public.pem',
+            'tests/fixtures/testkey-public.pem',
             self.conf.pluginconf['ssl_client_public']
         )
         self.assertEqual(

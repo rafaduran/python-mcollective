@@ -5,8 +5,8 @@ import mcollective
 from os.path import dirname, join
 from M2Crypto.RSA import RSA
 
-PRIVATE_KEY = join(dirname(__file__), 'testkey-private.pem')
-PUBLIC_KEY = join(dirname(__file__), 'testkey-public.pem')
+PRIVATE_KEY = join(dirname(__file__), 'fixtures/testkey-private.pem')
+PUBLIC_KEY = join(dirname(__file__), 'fixtures/testkey-public.pem')
 
 
 class TestSigning(unittest.TestCase):

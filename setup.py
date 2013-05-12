@@ -21,4 +21,6 @@ setup(name='mcollective',
                    'Operating System :: OS Independent',
                    'Programming Language :: Python :: 2',
                   ],
+      test_suite='tests',
+      test_requires=['mock'],
      )
