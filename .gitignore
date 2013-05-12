@@ -1,4 +1,5 @@
 build/
-mcollective.egg-info/
+*.egg-info/
 *.pyc
 dist/
+*.egg

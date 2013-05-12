@@ -1,15 +1,15 @@
 #!/usr/bin/env python
-
 import unittest
 import mcollective
 from mcollective import Config, SimpleRPCAction as SimpleRPC
 from test_config import TEST_CFG
 import mock
+import stompy
 
 TEST_CFG = Config(TEST_CFG)
 
-class TestSimpleRPC(unittest.TestCase):
 
+class TestSimpleRPC(unittest.TestCase):
     def test_init(self):
         rpc = SimpleRPC(
             agent='foo',
@@ -46,11 +46,11 @@ class TestSimpleRPC(unittest.TestCase):
             autoconnect=False,
         )
         self.assertEqual(
-            '/topic/mcollectivemcollective.foo.command',
+            '/topic/mcollective.foo.agent',
             rpc.stomp_target,
         )
         self.assertEqual(
-            '/topic/mcollectivemcollective.foo.reply',
+            '/topic/mcollective.foo.reply',
             rpc.stomp_target_reply,
         )
 
@@ -62,16 +62,19 @@ class TestSimpleRPC(unittest.TestCase):
                 config=TEST_CFG,
             )
             mocked.assert_called_with(
-                '127.0.0.1',
-                6163,
+                'localhost',
+                61613,
             )
             rpc.stomp_client.connect.assert_called_with(
-                'user',
-                'pass',
+                'mcollective',
+                'secret',
             )
 
     def test_send_message(self):
+
         with mock.patch('mcollective.Client') as mocked:
+            instance = mocked.return_value
+            instance.get_nowait = mock.Mock(side_effect=stompy.Empty)
             rpc = SimpleRPC(
                 agent='foo',
                 action='bar',
@@ -80,3 +83,7 @@ class TestSimpleRPC(unittest.TestCase):
             rpc.send(ham='eggs')
             put = rpc.stomp_client.put
             put.assert_called()
+
+
+if __name__ == '__main__':
+    unittest.main()

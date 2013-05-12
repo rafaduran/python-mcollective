@@ -52,6 +52,7 @@ class Config(object):
             'main_collective' : self._handle_default,
             'collectives' : self._handle_collectives,
             'identity' : self._handle_default,
+            'connector': self._handle_default,
         }
         for l in lines:
             for k in dispatch.keys():
@@ -157,14 +158,19 @@ class SimpleRPCAction(object):
             )
 
     def connect_stomp(self):
-        # FIXME(rafaduran): take advantage of multiple stomp servers
+        if self.config.connector == 'stomp':
+            key = 'stomp'
+        elif self.config.connector == 'activemq':
+            # FIXME(rafaduran): take advantage of multiple stomp servers
+            key = 'activemq.pool.1'
+
         self.stomp_client = Client(
-            self.config.pluginconf['activemq.pool.1.host'],
-            int(self.config.pluginconf['activemq.pool.1.port']),
+            self.config.pluginconf['{key}.host'.format(key=key)],
+            int(self.config.pluginconf['{key}.port'.format(key=key)]),
         )
         self.stomp_client.connect(
-            self.config.pluginconf['activemq.pool.1.user'],
-            self.config.pluginconf['activemq.pool.1.password'],
+            self.config.pluginconf['{key}.user'.format(key=key)],
+            self.config.pluginconf['{key}.password'.format(key=key)],
         )
 
     def send(self, filter_=None, process_results=True, **kwargs):
@@ -179,7 +185,7 @@ class SimpleRPCAction(object):
             body[':data'][':process_results'] = process_results
 
         if self.signer:
-            body[':caller'] = self.signer.caller_id
+            # body[':caller'] = self.signer.caller_id
             m = Message(body, self.stomp_target, filter_=filter_,
                         agent=self.agent, identity=self.config.identity)
             self.signer.sign(m)
