@@ -23,5 +23,10 @@ setup(name='mcollective',
           'Programming Language :: Python :: 2',
       ],
       test_suite='tests',
-      test_requires=['mock', 'GitPython', 'CoilMQ'],
+      test_requires=[
+          'mock',
+          'GitPython',
+          'CoilMQ',
+          'jinja2',
+      ],
       )

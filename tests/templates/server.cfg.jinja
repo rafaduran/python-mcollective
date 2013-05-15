@@ -1,0 +1,22 @@
+topicprefix = /{{ topic }}/
+collectives = {{ ','.join(collectives) }}
+main_collective = {{ maincollective }}
+libdir = {{ root }}/tests/integration/vendor/plugins
+logfile = {{ root }}/mcollective.log
+loglevel = {{ loglevel }}
+daemonize = {{ daemonize }}
+identity = {{ identity }}
+
+# Plugins
+securityprovider = {{ securityprovider }}
+
+direct_addressing = yes
+direct_addressing_threshold = 5
+
+connector = {{ connector['name'] }}
+{%- for key, value in connector['options'].items() %}
+plugin.{{ connector['name'] }}.{{ key }} = {{ value }}
+{%- endfor %}
+
+factsource = yaml
+plugin.yaml = {{ root }}/tests/fixtures/facts.yaml
