@@ -8,7 +8,10 @@ daemonize = {{ daemonize }}
 identity = {{ identity }}
 
 # Plugins
-securityprovider = {{ securityprovider }}
+securityprovider = {{ securityprovider['name'] }}
+{%- for key, value in securityprovider['options'].items() %}
+plugin.{{ key }} = {{ value }}
+{%- endfor %}
 
 direct_addressing = yes
 direct_addressing_threshold = 5

@@ -5,15 +5,9 @@ import unittest
 
 from mcollective import Config
 
-TEST_CFG = os.path.join(os.path.dirname(__file__),
-                        '../fixtures/test_client.cfg')
-PATH = os.path.abspath(os.path.dirname(TEST_CFG))
+from .. import base
 
-if not os.path.exists(TEST_CFG):
-    with io.open(TEST_CFG + '.template', 'rt') as fin:
-        with io.open(TEST_CFG, 'wt') as fout:
-            contents = fin.read().format(path=PATH)
-            fout.write(contents)
+TEST_CFG = base.TEST_CFG
 
 
 class TestConfig(unittest.TestCase):
@@ -31,12 +25,13 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(TEST_CFG, self.conf.configfile)
 
     def test_ssl_paths(self):
+        fixtures_path = os.path.join(base.ROOT, 'fixtures')
         self.assertEqual(
-            '{path}/testkey-private.pem'.format(path=PATH),
+            '{path}/testkey-private.pem'.format(path=fixtures_path),
             self.conf.pluginconf['ssl_client_private']
         )
         self.assertEqual(
-            '{path}/testkey-public.pem'.format(path=PATH),
+            '{path}/testkey-public.pem'.format(path=fixtures_path),
             self.conf.pluginconf['ssl_client_public']
         )
         self.assertEqual(
@@ -53,30 +48,23 @@ class TestConfig(unittest.TestCase):
 
     def test_maincollective(self):
         self.assertEqual(
-            'mcollective',
+            base.DEFAULT_CTXT['maincollective'],
             self.conf.main_collective,
         )
 
     def test_collectives(self):
-        self.assertListEqual(['mcollective'], self.conf.collectives)
+        self.assertListEqual(base.DEFAULT_CTXT['collectives'],
+                             self.conf.collectives)
 
     def test_stomp_config(self):
-        self.assertEqual(
-            'localhost',
-            self.conf.pluginconf['stomp.host']
-        )
-        self.assertEqual(
-            '61613',
-            self.conf.pluginconf['stomp.port']
-        )
-        self.assertEqual(
-            'mcollective',
-            self.conf.pluginconf['stomp.user']
-        )
-        self.assertEqual(
-            'secret',
-            self.conf.pluginconf['stomp.password']
-        )
+        connector = base.DEFAULT_CTXT['connector']
+        self.assertEqual(self.conf.connector, connector['name'])
+        for key, expected in connector['options'].items():
+            value = self.conf.pluginconf['{name}.{key}'.format(
+                name=connector['name'],
+                key=key)]
+
+            assert expected == value
 
 
 if __name__ == '__main__':
