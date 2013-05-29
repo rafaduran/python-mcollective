@@ -1,9 +1,12 @@
 import threading
 import os
+import subprocess
 
 from coilmq.auth import simple
 from coilmq.tests import functional
 import git
+
+from .. import base
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 VENDOR_PATH = os.path.join(ROOT, 'integration/vendor')
@@ -38,6 +41,23 @@ class IntegrationTestCaseMixin(object):
         repo.head.reference = reference
         repo.head.reset(index=True, working_tree=True)
         return repo
+
+    def setup_mcollective(self):
+        """Runs MCollective in an out-of-process shell"""
+        cmd = [
+            'ruby',
+            '-I',
+            '{root}/integration/vendor/lib'.format(root=base.ROOT),
+            '-I',
+            '{root}/fixtures/plugins/'.format(root=base.ROOT),
+            '{root}/integration/vendor/bin/mcollectived'.format(root=base.ROOT),
+            '--config',
+            '{root}/server.cfg'.format(root=base.ROOT),
+        ]
+        self.proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+
+    def teardown_mcollective(self):
+        self.proc.terminate()
 
 
 # Most CoilMQ code is borrowed from CoilMQ functional tests
@@ -121,6 +141,8 @@ class CoilMQIntegration(IntegrationTestCaseMixin):
 class TestCase(object):
     def setup(self):
         self.setup_server()
+        self.setup_mcollective()
 
     def teardown(self):
+        self.teardown_mcollective()
         self.teardown_server()
