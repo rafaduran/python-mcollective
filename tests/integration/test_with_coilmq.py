@@ -1,11 +1,5 @@
-import unittest
-
 import base
 
 
-class CoilMQIntegrationTests(base.TestCase, base.TestWithCoilMQ):
+class TestWithCoilMQIntegration(base.TestCase, base.CoilMQIntegration):
     pass
-
-
-if __name__ == '__main__':
-    unittest.main()

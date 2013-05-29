@@ -1,6 +1,5 @@
 import threading
 import os
-import unittest
 
 from coilmq.auth import simple
 from coilmq.tests import functional
@@ -42,8 +41,8 @@ class IntegrationTestCaseMixin(object):
 
 
 # Most CoilMQ code is borrowed from CoilMQ functional tests
-class TestWithCoilMQ(IntegrationTestCaseMixin):
-    def setup(self):
+class CoilMQIntegration(IntegrationTestCaseMixin):
+    def setup_server(self):
         self.clients = []
         self.server = None  # This gets set in the server thread.
         self.server_address = None # This gets set in the server thread.
@@ -90,7 +89,7 @@ class TestWithCoilMQ(IntegrationTestCaseMixin):
         """
         return functional.TopicManager()
 
-    def teardown(self):
+    def teardown_server(self):
         for c in self.clients:
             print "Disconnecting %s" % c
             c.close()
@@ -119,11 +118,9 @@ class TestWithCoilMQ(IntegrationTestCaseMixin):
         return client
 
 
-class TestCase(unittest.TestCase):
-    def setUp(self):
-        super(TestCase, self).setUp()
-        self.setup()
+class TestCase(object):
+    def setup(self):
+        self.setup_server()
 
-    def tearDown(self):
-        self.teardown()
-        super(TestCase, self).tearDown()
+    def teardown(self):
+        self.teardown_server()
