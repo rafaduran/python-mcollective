@@ -1,0 +1,7 @@
+-r base.txt
+M2Crypto
+mock
+GitPython
+CoilMQ
+jinja2
+pytest

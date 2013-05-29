@@ -7,3 +7,4 @@ tests/fixtures/test_client.cfg
 tests/integration/vendor/
 Gemfile.lock
 tests/server.cfg
+distribute-*.tar.gz

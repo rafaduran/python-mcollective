@@ -38,7 +38,7 @@ setup(name='mcollective',
           'Programming Language :: Python :: 2',
       ],
       cmdclass = {'test': PyTest},
-      test_requires=[
+      tests_require=[
           'mock',
           'GitPython',
           'CoilMQ',
