@@ -17,30 +17,18 @@ BIND_PORT = 6163
 
 
 class IntegrationTestCaseMixin(object):
-    def get_vendor_ref(self, rev):
+    def get_vendor_rev(self, rev):
         if not os.path.exists(VENDOR_PATH):
             repo = git.Repo.clone_from(VENDOR, VENDOR_PATH)
         else:
             repo = git.Repo(VENDOR_PATH)
 
-        try:
-            reference = repo.rev_parse(rev)
-        except git.BadObject:
-            # Let's try remote branch, probably origin
-            remote = repo.remote()
-            for ref in remote.refs:
-                if ref.name == '{name}/{rev}'.format(name=remote.name,
-                                                     rev=rev):
-                    remote_ref = ref
-                    break
-            else:
-                raise git.Badobject(rev)
-            new_branch = repo.create_head(rev)
-            new_branch.set_tracking_branch(remote_ref)
-            reference = new_branch
-        repo.head.reference = reference
-        repo.head.reset(index=True, working_tree=True)
-        return repo
+        if repo.active_branch.name == rev:
+            return
+
+        gcmd = git.cmd.Git(VENDOR_PATH)
+        gcmd.checkout(rev)
+        gcmd.pull()
 
     def setup_mcollective(self):
         """Runs MCollective in an out-of-process shell"""
@@ -116,6 +104,7 @@ class CoilMQIntegration(IntegrationTestCaseMixin):
         self.server.shutdown()
         self.server_thread.join()
         self.ready_event.clear()
+        self.server.socket.close()
         del self.server_thread
 
     def _new_client(self, connect=True):
