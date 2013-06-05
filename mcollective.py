@@ -141,7 +141,11 @@ class SimpleRPCAction(object):
         self.action = action
         self.config = config or Config()
         self.params = kwargs
-        self.stomp_target = '%s.agent' % self.target
+        if self.config.connector == 'stomp':
+            suffix = 'command'
+        else:
+            suffix = 'agent'
+        self.stomp_target = "{0}.{1}".format(self.target, suffix)
         self.stomp_target_reply = '%s.reply' % self.target
         self.stomp_client = stomp_client
         self.signer = PROVIDERS.get(self.config.securityprovider)
@@ -205,8 +209,11 @@ class SimpleRPCAction(object):
         self.data = data
         if process_results:
             self.stomp_client.subscribe(self.stomp_target_reply)
-            self.stomp_client.put(data, self.stomp_target,
-                                  conf={'reply-to': self.stomp_target_reply})
+            if self.config.connector == 'activemq':
+                conf = {'reply-to': self.stomp_target_reply}
+            else:
+                conf = None
+            self.stomp_client.put(data, self.stomp_target, conf=conf)
             sleep(2)
             self.stomp_client.unsubscribe(self.stomp_target_reply)
             return self.collect_results(m.rid)

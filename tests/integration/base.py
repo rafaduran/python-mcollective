@@ -22,14 +22,12 @@ CTXT = {
         'options': {},
     },
     'connector': {
-        'name': 'rabbitmq',
+        'name': 'stomp',
         'options': {
-            'vhost': '/',
-            'pool.size': 1,
-            'pool.1.host': 'localhost',
-            'pool.1.port': 61613,
-            'pool.1.user': 'guest',
-            'pool.1.password': 'guest',
+            'host': 'localhost',
+            'port': 61613,
+            'user': 'guest',
+            'password': 'guest',
         },
     },
 }
