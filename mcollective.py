@@ -99,7 +99,8 @@ class Filter(object):
 
 
 class Message(object):
-    def __init__(self, body, target, filter_=None, agent=None, identity=None):
+    def __init__(self, body, target, collective='mcollective', filter_=None,
+                 agent=None, identity=None):
         '''Create a new message.
 
         :param body: Correctly encoded RPC message.
@@ -116,7 +117,7 @@ class Message(object):
                            (':senderid', identity),):
             if value:
                 r[key] = value
-        r[':collective'] = 'dev'
+        r[':collective'] = collective
 
         r[':msgtime'] = int(time())
         r[':filter'] = (filter_ or Filter()).dump()
@@ -186,14 +187,17 @@ class SimpleRPCAction(object):
             body[':data'] = dict([(':%s' % k, v) for k, v in kwargs.items()])
             body[':data'][':process_results'] = process_results
 
+        collective = self.params.get('collective', self.config.main_collective)
         if self.signer:
             # body[':caller'] = self.signer.caller_id
             m = Message(body, self.stomp_target, filter_=filter_,
-                        agent=self.agent, identity=self.config.identity)
+                        agent=self.agent, identity=self.config.identity,
+                        collective=collective)
             self.signer.sign(m)
         else:
             m = Message(body, self.stomp_target, filter_=filter_,
-                        agent=self.agent, identity=self.config.identity)
+                        agent=self.agent, identity=self.config.identity,
+                        collective=collective)
 
         data = safe_dump(m.request, explicit_start=True, explicit_end=False)
         body = "\n".join(['  %s' % line for line in m.body.split("\n")])
