@@ -203,6 +203,7 @@ class SimpleRPCAction(object):
                         agent=self.agent, identity=self.config.identity,
                         collective=collective)
 
+        self.request = m.request
         data = safe_dump(m.request, explicit_start=True, explicit_end=False)
         body = "\n".join(['  %s' % line for line in m.body.split("\n")])
         data = data + ":body: " + body

@@ -12,8 +12,11 @@ class TestWithCoilMQIntegration(base.TestCase, base.CoilMQIntegration):
 class MCollectiveTests(object):
     def test_simple_agent(self, simple_rpc_action):
         agent = mcollective.SimpleRPCAction(**simple_rpc_action)
-        # TODO (rafaduran): check length and content (currently broken)
-        agent.send()
+        result = agent.send()
+        assert len(result) == 1
+        msg = result[0]
+        assert msg[':senderagent'] == simple_rpc_action['agent']
+        assert msg[':requestid'] == agent.request[':requestid']
 
 
 @pytest.mark.usefixture('simple_rpc_action')
