@@ -1,16 +1,18 @@
 import pytest
 
-import base
+from . import base
 
 import mcollective
 
 
-class TestWithCoilMQIntegration(base.TestCase, base.CoilMQIntegration):
-    pass
+class TestWithRabbitMQ(base.TestCase):
+    '''RabbitMQ integration test case.'''
 
 
 class MCollectiveTests(object):
+    '''MCollective integration test case.'''
     def test_simple_agent(self, simple_rpc_action):
+        '''Tests simple RPC actions.'''
         agent = mcollective.SimpleRPCAction(**simple_rpc_action)
         result = agent.send()
         assert len(result) == 1
@@ -19,20 +21,13 @@ class MCollectiveTests(object):
         assert msg[':requestid'] == agent.request[':requestid']
 
 
-@pytest.mark.usefixture('simple_rpc_action')
-class TestWithCoilMQ22x(TestWithCoilMQIntegration, MCollectiveTests):
+class TestWithRabbitMco22x(TestWithRabbitMQ, MCollectiveTests):
+    '''Mcollective 2.2.x branch integration tests with RabbitMQ'''
     def setup(self):
         self.get_vendor_rev('2.2.x')
-        super(TestWithCoilMQ22x, self).setup()
-
-    def teardown(self):
-        base.TestCase.teardown(self)
 
 
-class TestWithCoilMQ20x(TestWithCoilMQIntegration, MCollectiveTests):
+class TestWithRabbitMco20x(TestWithRabbitMQ, MCollectiveTests):
+    '''Mcollective 2.0.x branch integration tests with RabbitMQ'''
     def setup(self):
         self.get_vendor_rev('2.0.x')
-        super(TestWithCoilMQ20x, self).setup()
-
-    def teardown(self):
-        base.TestCase.teardown(self)
