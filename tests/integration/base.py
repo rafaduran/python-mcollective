@@ -23,7 +23,7 @@ CTXT = {
     'connector': {
         'name': 'stomp',
         'options': {
-            'host': '127.0.0.1',
+            'host': 'localhost',
             'port': 61613,
             'user': 'guest',
             'password': 'guest',
