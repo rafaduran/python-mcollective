@@ -43,7 +43,9 @@ def get_template(name, package=__package__):
     return env.get_template(name)
 
 
-def configfile():
+def configfile(ctxt=None):
+    if not ctxt:
+        ctxt = DEFAULT_CTXT
     with open(TEST_CFG, 'wt') as cfg:
-        cfg.write(get_template('server.cfg.jinja').render(DEFAULT_CTXT))
+        cfg.write(get_template('server.cfg.jinja').render(ctxt))
     return TEST_CFG
