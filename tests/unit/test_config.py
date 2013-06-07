@@ -1,10 +1,16 @@
 #!/usr/bin/env python
-from os.path import dirname
-from os.path import join
-import unittest
+import io
+import os
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
+
 from mcollective import Config
 
-TEST_CFG = join(dirname(__file__), 'fixtures/test_client.cfg')
+from .. import base
+
+TEST_CFG = base.TEST_CFG
 
 
 class TestConfig(unittest.TestCase):
@@ -22,12 +28,13 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(TEST_CFG, self.conf.configfile)
 
     def test_ssl_paths(self):
+        fixtures_path = os.path.join(base.ROOT, 'fixtures')
         self.assertEqual(
-            'tests/fixtures/testkey-private.pem',
+            '{path}/testkey-private.pem'.format(path=fixtures_path),
             self.conf.pluginconf['ssl_client_private']
         )
         self.assertEqual(
-            'tests/fixtures/testkey-public.pem',
+            '{path}/testkey-public.pem'.format(path=fixtures_path),
             self.conf.pluginconf['ssl_client_public']
         )
         self.assertEqual(
@@ -44,30 +51,23 @@ class TestConfig(unittest.TestCase):
 
     def test_maincollective(self):
         self.assertEqual(
-            'mcollective',
+            base.DEFAULT_CTXT['maincollective'],
             self.conf.main_collective,
         )
 
     def test_collectives(self):
-        self.assertListEqual(['mcollective'], self.conf.collectives)
+        self.assertListEqual(base.DEFAULT_CTXT['collectives'],
+                             self.conf.collectives)
 
     def test_stomp_config(self):
-        self.assertEqual(
-            'localhost',
-            self.conf.pluginconf['stomp.host']
-        )
-        self.assertEqual(
-            '61613',
-            self.conf.pluginconf['stomp.port']
-        )
-        self.assertEqual(
-            'mcollective',
-            self.conf.pluginconf['stomp.user']
-        )
-        self.assertEqual(
-            'secret',
-            self.conf.pluginconf['stomp.password']
-        )
+        connector = base.DEFAULT_CTXT['connector']
+        self.assertEqual(self.conf.connector, connector['name'])
+        for key, expected in connector['options'].items():
+            value = self.conf.pluginconf['{name}.{key}'.format(
+                name=connector['name'],
+                key=key)]
+
+            assert expected == value
 
 
 if __name__ == '__main__':

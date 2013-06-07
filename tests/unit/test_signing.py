@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
-import unittest
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 import mcollective
 from os.path import dirname, join
 from M2Crypto.RSA import RSA
 
-PRIVATE_KEY = join(dirname(__file__), 'fixtures/testkey-private.pem')
-PUBLIC_KEY = join(dirname(__file__), 'fixtures/testkey-public.pem')
+PRIVATE_KEY = join(dirname(__file__), '../fixtures/testkey-private.pem')
+PUBLIC_KEY = join(dirname(__file__), '../fixtures/testkey-public.pem')
 
 
 class TestSigning(unittest.TestCase):

@@ -1,20 +1,25 @@
 #!/usr/bin/env python
-import unittest
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 import mcollective
 from mcollective import Config, SimpleRPCAction as SimpleRPC
 from test_config import TEST_CFG
 import mock
 import stompy
 
-TEST_CFG = Config(TEST_CFG)
-
 
 class TestSimpleRPC(unittest.TestCase):
+    def setUp(self):
+        super(TestSimpleRPC, self).setUp()
+        self.cfg = Config(TEST_CFG)
+
     def test_init(self):
         rpc = SimpleRPC(
             agent='foo',
             action='bar',
-            config=TEST_CFG,
+            config=self.cfg,
             autoconnect=False,
         )
         self.assertEqual(
@@ -26,7 +31,7 @@ class TestSimpleRPC(unittest.TestCase):
             rpc.action,
         )
         self.assertEqual(
-            TEST_CFG,
+            self.cfg,
             rpc.config,
         )
         self.assertEqual(
@@ -42,7 +47,7 @@ class TestSimpleRPC(unittest.TestCase):
         rpc = SimpleRPC(
             agent='foo',
             action='bar',
-            config=TEST_CFG,
+            config=self.cfg,
             autoconnect=False,
         )
         self.assertEqual(
@@ -59,11 +64,11 @@ class TestSimpleRPC(unittest.TestCase):
             rpc = SimpleRPC(
                 agent='foo',
                 action='bar',
-                config=TEST_CFG,
+                config=self.cfg,
             )
             mocked.assert_called_with(
                 'localhost',
-                61613,
+                6163,
             )
             rpc.stomp_client.connect.assert_called_with(
                 'mcollective',
@@ -78,7 +83,7 @@ class TestSimpleRPC(unittest.TestCase):
             rpc = SimpleRPC(
                 agent='foo',
                 action='bar',
-                config=TEST_CFG,
+                config=self.cfg,
             )
             rpc.send(ham='eggs')
             put = rpc.stomp_client.put

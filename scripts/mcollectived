@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -eu
+SCRIPTS=`dirname $0`
+BASEDIR=$SCRIPTS/..
+ruby -I $BASEDIR/tests/integration/vendor/lib \
+    -I $BASEDIR/tests/fixtures/plugins/ \
+    $BASEDIR/tests/integration/vendor/bin/mcollectived $@ --config $BASEDIR/tools/server.cfg
