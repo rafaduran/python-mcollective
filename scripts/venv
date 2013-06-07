@@ -5,4 +5,4 @@ if [ $INSTALLVENV ]; then
     . ~/.bashrc
 fi;
 . /etc/bash_completion.d/virtualenvwrapper
-mkvirtualenv --system-site-packages pymco
+mkvirtualenv pymco

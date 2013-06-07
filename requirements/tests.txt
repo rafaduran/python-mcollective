@@ -1,5 +1,6 @@
 -r base.txt
-M2Crypto
+# M2Crypto is installed via shell command due to SSL issues
+# M2Crypto
 mock
 GitPython
 jinja2
