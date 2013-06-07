@@ -24,7 +24,6 @@ PATCH="
 dpkg -l virtualenvwrapper | grep ii || INSTALLSWIG=true
 if [ $INSTALLSWIG ]; then
     sudo apt-get install -y swig
-    . ~/.bashrc
 fi;
 pip install --download="." m2crypto
 tar -xf M2Crypto-*.tar.gz
