@@ -7,6 +7,11 @@ import mcollective
 
 class TestWithRabbitMQ(base.TestCase):
     '''RabbitMQ integration test case.'''
+    def setup(self):
+        self.setup_mcollective()
+
+    def teardown(self):
+        self.teardown_mcollective()
 
 
 class MCollectiveTests(object):
@@ -25,9 +30,11 @@ class TestWithRabbitMco22x(TestWithRabbitMQ, MCollectiveTests):
     '''Mcollective 2.2.x branch integration tests with RabbitMQ'''
     def setup(self):
         self.get_vendor_rev('2.2.x')
+        super(TestWithRabbitMco22x, self).setup()
 
 
 class TestWithRabbitMco20x(TestWithRabbitMQ, MCollectiveTests):
     '''Mcollective 2.0.x branch integration tests with RabbitMQ'''
     def setup(self):
         self.get_vendor_rev('2.0.x')
+        super(TestWithRabbitMco20x, self).setup()

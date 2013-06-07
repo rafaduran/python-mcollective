@@ -1,5 +1,7 @@
+'''Common helpers for integration tests.'''
 import threading
 import os
+import signal
 import subprocess
 
 import git
@@ -11,6 +13,7 @@ VENDOR_PATH = os.path.join(ROOT, 'integration/vendor')
 VENDOR = 'https://github.com/puppetlabs/marionette-collective.git'
 
 CTXT = {
+    'daemonize': 1,
     'collectives': ['mcollective'],
     'securityprovider': {
         'name': 'none',
@@ -26,6 +29,7 @@ CTXT = {
         },
     },
 }
+PIDFILE = '{root}/mco.pid'.format(root=base.ROOT)
 
 
 class IntegrationTestCaseMixin(object):
@@ -51,13 +55,18 @@ class IntegrationTestCaseMixin(object):
             '-I',
             '{root}/fixtures/plugins/'.format(root=base.ROOT),
             '{root}/integration/vendor/bin/mcollectived'.format(root=base.ROOT),
+            '--pidfile',
+            PIDFILE,
             '--config',
             '{root}/server.cfg'.format(root=base.ROOT),
         ]
-        self.proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        stdout, stderr = proc.communicate()
+        assert proc.returncode == 0
 
     def teardown_mcollective(self):
-        self.proc.terminate()
+        pid = int(open(PIDFILE, 'rt').read())
+        os.kill(pid, signal.SIGTERM)
 
 
 class TestCase(IntegrationTestCaseMixin):
