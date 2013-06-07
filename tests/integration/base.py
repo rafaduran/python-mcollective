@@ -3,6 +3,7 @@ import threading
 import os
 import signal
 import subprocess
+import time
 
 import git
 
@@ -63,6 +64,7 @@ class IntegrationTestCaseMixin(object):
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         stdout, stderr = proc.communicate()
         assert proc.returncode == 0
+        time.sleep(2)
 
     def teardown_mcollective(self):
         pid = int(open(PIDFILE, 'rt').read())
