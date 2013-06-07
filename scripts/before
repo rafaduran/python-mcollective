@@ -2,3 +2,7 @@
 BASEDIR=`dirname $0`
 $BASEDIR/deps
 $BASEDIR/rabbitmq.sh
+# Set the hostname accesible so
+# self.my_name = socket.gethostbyname(socket.gethostname())
+# doesn't get a  gaierror: [Errno -2] Name or service not known
+echo "127.0.0.1 `hostname`" | sudo tee -a /etc/hosts
