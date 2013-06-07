@@ -3,4 +3,7 @@ source 'https://rubygems.org'
 gem 'json'
 gem 'stomp'
 gem 'systemu'
-gem 'vagrant', '~> 1.0.7'
+
+group :dev do
+  gem 'vagrant', '~> 1.0.7'
+end

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+dpkg -l virtualenvwrapper | grep ii || INSTALLVENV=true
+if [ $INSTALLVENV ]; then
+    sudo apt-get install -y virtualenvwrapper
+    . ~/.bashrc
+fi;
+. /etc/bash_completion.d/virtualenvwrapper
+mkvirtualenv --system-site-packages pymco

@@ -84,6 +84,7 @@ Vagrant::Config.run do |config|
     # chef.add_recipe     "pypy::ppa"
   end
   # Script to be run by trabvis too
+  config.vm.provision :shell, :inline => 'cp /vagrant/scripts/rabbitmqadmin /tmp'
   config.vm.provision :shell, :path => 'scripts/rabbitmq.sh'
   # This would be managed by travis
   config.vm.provision :shell, :inline => 'service rabbitmq-server start'
