@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -e
+REQSDIR="`dirname $0`/../requirements"
+REQSFILE="${REQSFILE:-tests}.txt"
+dpkg -l python-dev | grep ii || INSTALLDEV=true
+if [ $INSTALLDEV ]; then
+    sudo apt-get install -y python-dev
+fi
+pip install -r $REQSDIR/$REQSFILE

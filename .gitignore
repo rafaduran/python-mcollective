@@ -1,4 +1,12 @@
 build/
-mcollective.egg-info/
+*.egg-info/
 *.pyc
 dist/
+*.egg
+tests/fixtures/test_client.cfg
+tests/integration/vendor/
+Gemfile.lock
+tests/server.cfg
+distribute-*.tar.gz
+M2Crypto-*/
+.tox
