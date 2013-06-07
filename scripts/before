@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 BASEDIR=`dirname $0`
-$BASEDIR/deps
 $BASEDIR/rabbitmq.sh
 # Set the hostname accesible so
 # self.my_name = socket.gethostbyname(socket.gethostname())
