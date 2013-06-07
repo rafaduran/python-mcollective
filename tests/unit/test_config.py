@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 import io
 import os
-import unittest
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from mcollective import Config
 

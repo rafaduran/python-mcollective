@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
-import unittest
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 import mcollective
 from os.path import dirname, join
 from M2Crypto.RSA import RSA

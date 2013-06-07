@@ -9,3 +9,4 @@ Gemfile.lock
 tests/server.cfg
 distribute-*.tar.gz
 M2Crypto-*/
+.tox
