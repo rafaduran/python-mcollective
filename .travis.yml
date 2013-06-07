@@ -1,0 +1,17 @@
+language: python
+services:
+  - rabbitmq
+python:
+  - "2.6"
+  - "2.7"
+before:
+  - scripts/before
+# command to install dependencies
+install:
+  - gem install bundle
+  - bundle install --without dev
+  - scripts/deps
+  - scripts/m2crypto_ubuntu
+  - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2; fi"
+# command to run tests
+script: py.test
