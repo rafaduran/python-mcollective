@@ -6,4 +6,4 @@ dpkg -l python-dev | grep ii || INSTALLDEV=true
 if [ $INSTALLDEV ]; then
     sudo apt-get install -y python-dev
 fi
-pip install -r $REQSDIR/$REQSFILE
+pip install -r $REQSDIR/$REQSFILE --use-mirrors

@@ -6,3 +6,4 @@ GitPython
 jinja2
 pytest
 pytest-xdist
+pytest-cov

@@ -2,6 +2,7 @@ mcollective-python
 ==================
 
 [![Build Status](https://travis-ci.org/rafaduran/python-mcollective.png)](https://travis-ci.org/rafaduran/python-mcollective)
+[![Coverage Status](https://coveralls.io/repos/rafaduran/python-mcollective/badge.png?branch=master)](https://coveralls.io/r/rafaduran/python-mcollective?branch=master)
 
 This is an example Python binding for Marionette Collective RPC.
 
