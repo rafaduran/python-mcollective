@@ -11,3 +11,5 @@ distribute-*.tar.gz
 M2Crypto-*/
 .tox
 .coverage
+junit-py26.xml
+junit-py27.xml

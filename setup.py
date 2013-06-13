@@ -1,6 +1,9 @@
 import sys
-import distribute_setup
-distribute_setup.use_setuptools()
+try:
+    import distribute_setup
+    distribute_setup.use_setuptools()
+except ImportError:
+    pass
 
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
