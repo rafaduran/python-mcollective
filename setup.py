@@ -5,8 +5,15 @@ try:
 except ImportError:
     pass
 
+from pip import req
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
+
+REQ = [dep.name
+       for dep in req.parse_requirements('requirements/base.txt')]
+TREQ = (set([dep.name or dep.url
+            for dep in req.parse_requirements('requirements/tests.txt')]) -
+        set(REQ))
 
 
 class PyTest(TestCommand):
@@ -30,7 +37,8 @@ setup(name='mcollective',
       #long_description=mcollective.__doc__,
       py_modules=['mcollective'],
       provides=['mcollective'],
-      install_requires=['pyyaml', 'stompy'],
+      #install_requires=['pyyaml', 'stompy'],
+      install_requires=REQ,
       extras_require={'SSL': ['M2Crypto']},
       keywords='mcollective',
       classifiers=[
@@ -40,12 +48,6 @@ setup(name='mcollective',
           'Operating System :: OS Independent',
           'Programming Language :: Python :: 2',
       ],
-      cmdclass = {'test': PyTest},
-      tests_require=[
-          'mock',
-          'GitPython',
-          'CoilMQ',
-          'jinja2',
-          'pytest'
-      ],
+      cmdclass={'test': PyTest},
+      tests_require=TREQ,
       )
