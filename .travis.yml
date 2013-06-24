@@ -11,10 +11,11 @@ install:
   - gem install bundle
   - bundle install --without dev
   - scripts/deps
+  - pip freeze | grep d2to1 || pip install d2to1 --use-mirrors
   - pip install coveralls --use-mirrors
   - scripts/m2crypto_ubuntu
   - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2 --use-mirrors; fi"
 # command to run tests
-script: py.test --cov mcollective.py --cov-report term-missing
+script: py.test --cov pymco --cov-report term-missing
 after_success:
   - COVERALLS_REPO_TOKEN=rDeA0JfxHdlenNHvQbiL4W91tyf9ZESBy coveralls
