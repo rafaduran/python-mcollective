@@ -4,6 +4,8 @@ import six
 
 from pymco import config as _config
 
+from .. import base
+
 CONFIGSTR = '''
 topicprefix = /topic/
 collectives = mcollective,sub1,sub2
@@ -35,6 +37,10 @@ plugin.activemq.pool.1.ssl = false
 factsource = yaml
 plugin.yaml = /opt/workspace/mcollective-python/tests/tests/fixtures/facts.yaml
 '''
+
+
+def pytest_runtest_setup(item):
+    base.configfile()
 
 
 @pytest.fixture
