@@ -1,4 +1,3 @@
 pyyaml
-stompy
 stomp.py
 six
