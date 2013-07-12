@@ -5,3 +5,7 @@ class PyMcoException(Exception):
 
 class ImproperlyConfigured(PyMcoException):
     '''Exception raised on configuration errors.'''
+
+
+class ConfigLookupError(PyMcoException):
+    '''Exception raised on configuration lookups errors.'''
