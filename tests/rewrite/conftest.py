@@ -2,8 +2,6 @@
 import pytest
 import six
 
-from pymco import config as _config
-
 from .. import base
 
 CONFIGSTR = '''
@@ -50,4 +48,7 @@ def configstr():
 
 @pytest.fixture
 def config(configstr):
+    # Importing here since py-cov will ignored code imported on conftest files
+    # imports
+    from pymco import config as _config
     return _config.Config(configstr=configstr)
