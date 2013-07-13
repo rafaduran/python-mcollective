@@ -1,4 +1,9 @@
 '''Tets for the configuration class'''
+try:
+    from unittest import mock
+except ImportError:
+    import mock
+
 import pytest
 from six.moves import configparser
 
@@ -21,25 +26,12 @@ def test_init_configfile():
     conf = config.Config(configfile=base.TEST_CFG)
 
 
-def test_get(config):
-    assert config.get('identity') == 'mco1'
-
-
-def test_get_missing(config):
-    with pytest.raises(configparser.NoOptionError):
-        config.get('missing')
-
-
-def test_get_default(config):
-    assert config.get('missing', default='1') == '1'
-
-
 def test_getint(config):
     assert config.getint('plugin.activemq.pool.size') == 1
 
 
 def test_getint_missing(config):
-    with pytest.raises(configparser.NoOptionError):
+    with pytest.raises(KeyError):
         config.getint('missing')
 
 
@@ -48,14 +40,29 @@ def test_getint_default(config):
 
 
 def test_getboolean(config):
-    assert config.getboolean('plugin.activemq.pool.1.ssl') == False
-    # TODO(rafaduran): test 0/1/n/y/true
+    truly = ('y', 'true', '1')
+    falsy = ('n', 'false', '0')
+    for expected, values in ((True, truly), (False, falsy)):
+        with mock.patch.dict(config.config,
+                             dict([(val, val) for val in values])):
+            for val in values:
+                assert config.getboolean(val) == expected
 
 
 def test_getboolean_missing(config):
-    with pytest.raises(configparser.NoOptionError):
+    with pytest.raises(KeyError):
         config.getboolean('missing')
 
 
 def test_getboolean_default(config):
     assert config.getboolean('missing', default=True) == True
+
+
+def test_length(config):
+    '''Test configuration length'''
+    assert len(config) == len(config.config)
+
+
+def test_iter(config):
+    '''Test configuration iteration.'''
+    assert list(config) == list(config.config)
