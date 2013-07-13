@@ -59,7 +59,7 @@ class Config(collections.Mapping):
             return bool(value)
 
     @staticmethod
-    def from_configfile(configfile, section='default'):
+    def from_configfile(configfile):
         '''Reads configfile and returns a new :py:class:`Config` instance'''
         configstr = open(configfile, 'rt').read()
         return Config.from_configstr(configstr)

@@ -7,14 +7,13 @@ except ImportError:
 import pytest
 from six.moves import configparser
 
-from pymco import config
-from pymco import exc
-
+from pymco import config as _config
 from .. import base
 
 
 def test_init_configfile():
-    conf = config.Config.from_configfile(configfile=base.TEST_CFG)
+    '''Tests :py:method:`Config.from_configfile` static method.'''
+    conf = _config.Config.from_configfile(configfile=base.TEST_CFG)
     assert conf['connector'] == 'activemq'
 
 
@@ -35,19 +34,23 @@ def test_get_default(config):
 
 
 def test_getint(config):
+    '''Tests :py:method:`Config.getint` happy path.'''
     assert config.getint('plugin.activemq.pool.size') == 1
 
 
 def test_getint_missing(config):
+    '''Tests :py:method:`Config.getint` bad path.'''
     with pytest.raises(KeyError):
         config.getint('missing')
 
 
 def test_getint_default(config):
+    '''Tests :py:method:`Config.getint` bad path with default.'''
     assert config.getint('missing', default=1) == 1
 
 
 def test_getboolean(config):
+    '''Tests :py:method:`Config.getboolean` happy path.'''
     truly = ('y', 'true', '1')
     falsy = ('n', 'false', '0')
     for expected, values in ((True, truly), (False, falsy)):
@@ -58,11 +61,13 @@ def test_getboolean(config):
 
 
 def test_getboolean_missing(config):
+    '''Tests :py:method:`Config.getboolean` bad path.'''
     with pytest.raises(KeyError):
         config.getboolean('missing')
 
 
 def test_getboolean_default(config):
+    '''Tests :py:method:`Config.getboolean` bad path with default.'''
     assert config.getboolean('missing', default=True) == True
 
 
