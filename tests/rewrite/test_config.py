@@ -13,17 +13,25 @@ from pymco import exc
 from .. import base
 
 
-def test_init_error():
-    with pytest.raises(exc.ImproperlyConfigured):
-        config.Config()
-
-
-def test_init_configstr(configstr):
-    conf = config.Config(configstr=configstr)
-
-
 def test_init_configfile():
-    conf = config.Config(configfile=base.TEST_CFG)
+    conf = config.Config.from_configfile(configfile=base.TEST_CFG)
+    assert conf['connector'] == 'activemq'
+
+
+def test_get(config):
+    '''Tests :py:method:`Config.get` happy path.'''
+    assert config.get('connector') == 'activemq'
+
+
+def test_get_missing(config):
+    '''Tests :py:method:`Config.get` bad path.'''
+    with pytest.raises(KeyError):
+        config.get('missing')
+
+
+def test_get_default(config):
+    '''Tests :py:method:`Config.get` bad path with default.'''
+    assert config.get('missing', default='activemq') == 'activemq'
 
 
 def test_getint(config):

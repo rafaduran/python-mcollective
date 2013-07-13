@@ -50,5 +50,5 @@ def configstr():
 def config(configstr):
     # Importing here since py-cov will ignored code imported on conftest files
     # imports
-    from pymco import config as _config
-    return _config.Config(configstr=configstr)
+    from pymco import config
+    return config.Config.from_configstr(configstr=configstr)

@@ -25,25 +25,8 @@ def lookup_with_default(fnc):
 
 class Config(collections.Mapping):
     '''python-mcollective confiugration class.'''
-    def __init__(self, configfile=None, configstr=None, section='default'):
-        config = six.StringIO()
-        config.write('[{0}]'.format(section))
-
-        if not configstr:
-            if not configfile:
-                raise exc.ImproperlyConfigured
-            else:
-                config.write(open(configfile, 'r').read())
-        else:
-            config.write(configstr)
-
-        config.seek(0, os.SEEK_SET)
-
-        self.parser = configparser.ConfigParser()
-        self.parser.readfp(config)
-
-        self.section = section
-        self.config = dict(self.parser.items(section))
+    def __init__(self, configdict):
+        self.config = configdict
 
     def __len__(self):
         return len(self.config)
@@ -53,6 +36,11 @@ class Config(collections.Mapping):
 
     def __getitem__(self, key):
         return self.config[key]
+
+    @lookup_with_default
+    def get(self, key):
+        '''Get option by key.'''
+        return self.__getitem__(key)
 
     @lookup_with_default
     def getint(self, key):
@@ -69,3 +57,20 @@ class Config(collections.Mapping):
             else:
                 value = False
             return bool(value)
+
+    @staticmethod
+    def from_configfile(configfile, section='default'):
+        '''Reads configfile and returns a new :py:class:`Config` instance'''
+        configstr = open(configfile, 'rt').read()
+        return Config.from_configstr(configstr)
+
+    @staticmethod
+    def from_configstr(configstr, section='default'):
+        '''Parses given string an returns a new :py:class:`Config` instance'''
+        config = six.StringIO()
+        config.write('[{0}]'.format(section))
+        config.write(configstr)
+        config.seek(0, os.SEEK_SET)
+        parser = configparser.ConfigParser()
+        parser.readfp(config)
+        return Config(dict(parser.items(section)))
