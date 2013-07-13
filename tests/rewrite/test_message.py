@@ -3,6 +3,8 @@ import pytest
 
 from pymco import exc
 
+from .. import base
+
 def test_filter_add_cfclass(filter_):
     '''Tests :py:method:`pymco.message.Filter.add_class`.'''
     assert filter_.as_dict()['cf_class'] == []
@@ -65,3 +67,16 @@ def test_filter_method_chaining(filter_):
                                  'fact': [],
                                  'identity': ['foo.bar.com'],
                                  }
+
+
+def test_message(message):
+    '''Tests :py:class:`pymco.message.Message` attribues.'''
+    for name, value in (('senderid', 'mco1'),
+                        ('msgtime', int(base.MSG['msgtime'])),
+                        ('ttl', 60),
+                        ('requestid', base.MSG['requestid']),
+                        ('body', base.MSG['body']),
+                        ('agent', base.MSG['agent']),
+                        ('collective', 'mcollective'),
+                        ):
+        assert message[name] == value

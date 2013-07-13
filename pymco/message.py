@@ -1,4 +1,10 @@
 '''pymco messaging objects'''
+import collections
+import hashlib
+import time
+
+import six
+
 from . import exc
 
 class Filter(object):
@@ -42,3 +48,31 @@ class Filter(object):
     def as_dict(self):
         '''Return dict representation for current filter'''
         return self._filter
+
+
+class Message(collections.Mapping):
+    '''Provides MCollective messages for pymco.'''
+    def __init__(self, body, agent, config, **kwargs):
+        self._message = {}
+        try:
+            self._message['senderid'] = config['identity']
+            self._message['collective'] = kwargs.get('collective', None) or \
+                    config['main_collective']
+        except KeyError as error:
+            raise exc.ImproperlyConfigured(error)
+        self._message['msgtime'] = int(time.time())
+        self._message['ttl'] = kwargs.get('ttl', None) or \
+                config.getint('ttl', default=60)
+        self._message['requestid'] = hashlib.sha1(
+            str(self._message['msgtime'])).hexdigest()
+        self._message['body'] = body
+        self._message['agent'] = agent
+
+    def __len__(self):
+        return len(self._message)
+
+    def __iter__(self):
+        return six.iterkeys(self._message)
+
+    def __getitem__(self, key):
+        return self._message[key]

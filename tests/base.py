@@ -29,6 +29,12 @@ DEFAULT_CTXT = {
     'plugin.activemq.pool.1.ssl': 'false',
 }
 TEST_CFG = os.path.join(ROOT, 'server.cfg')
+MSG = {
+    'msgtime': 123.45,
+    'requestid': '6ef11a5053008b54c03ca934972fdfa45448439d',
+    'body': 'ping',
+    'agent': 'discovery',
+}
 
 
 def get_template(name, package=__package__):
