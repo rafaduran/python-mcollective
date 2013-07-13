@@ -9,3 +9,8 @@ class ImproperlyConfigured(PyMcoException):
 
 class ConfigLookupError(PyMcoException):
     '''Exception raised on configuration lookups errors.'''
+
+
+class BadFilterFactOperator(PyMcoException):
+    '''Exception raised when trying to add a unsopported fact operator to
+    filters.'''

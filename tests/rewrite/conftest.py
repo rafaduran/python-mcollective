@@ -52,3 +52,10 @@ def config(configstr):
     # imports
     from pymco import config
     return config.Config.from_configstr(configstr=configstr)
+
+
+@pytest.fixture
+def filter_():
+    '''Creates a new :py:class:`pymco.Filter` instance.'''
+    from pymco import message
+    return message.Filter()
