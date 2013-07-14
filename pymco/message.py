@@ -7,8 +7,15 @@ import six
 
 from . import exc
 
-class Filter(object):
-    '''Provides MCollective filters for pymco.'''
+class Filter(collections.Mapping):
+    '''Provides MCollective filters for pymco. This class implements
+    :py:class:`collections.Mapping` interface, so it can be used as non mutable
+    mapping (read only dict), but mutable using provided add methods. So that,
+    for adding the agent you can just use :py:meth:`add_agent`::
+
+        filter.add_agent('package')
+        >>> <pymco.message.Filter at 0x2935e90>
+    '''
     def __init__(self):
         self._filter = {
             'cf_class': [],
@@ -45,9 +52,14 @@ class Filter(object):
         self._filter['identity'].append(identity)
         return self
 
-    def as_dict(self):
-        '''Return dict representation for current filter'''
-        return self._filter
+    def __getitem__(self, key):
+        return self._filter[key]
+
+    def __len__(self):
+        return len(self._filter)
+
+    def __iter__(self):
+        return six.iterkeys(self._filter)
 
 
 class Message(collections.MutableMapping):
@@ -69,7 +81,7 @@ class Message(collections.MutableMapping):
             str(self._message['msgtime'])).hexdigest()
         self._message['body'] = body
         self._message['agent'] = agent
-        self._message['filter'] = filter_
+        self._message['filter'] = dict(filter_)
 
     def __len__(self):
         return len(self._message)

@@ -8,29 +8,29 @@ from .. import base
 
 def test_filter_add_cfclass(filter_):
     '''Tests :py:method:`pymco.message.Filter.add_class`.'''
-    assert filter_.as_dict()['cf_class'] == []
+    assert filter_['cf_class'] == []
     filter_.add_cfclass('common::linux')
-    assert filter_.as_dict()['cf_class'] == ['common::linux']
+    assert filter_['cf_class'] == ['common::linux']
     filter_.add_cfclass('apache')
-    assert filter_.as_dict()['cf_class'] == ['common::linux', 'apache']
+    assert filter_['cf_class'] == ['common::linux', 'apache']
 
 
 def test_filter_add_agent(filter_):
     '''Tests :py:method:`pymco.message.Filter.add_agent`.'''
-    assert filter_.as_dict()['agent'] == []
+    assert filter_['agent'] == []
     filter_.add_agent('package')
-    assert filter_.as_dict()['agent'] == ['package']
+    assert filter_['agent'] == ['package']
     filter_.add_agent('registration')
-    assert filter_.as_dict()['agent'] == ['package', 'registration']
+    assert filter_['agent'] == ['package', 'registration']
 
 
 def test_filter_add_fact(filter_):
     '''Tests :py:method:`pymco.message.Filter.add_fact` happy path.'''
-    assert filter_.as_dict()['fact'] == []
+    assert filter_['fact'] == []
     filter_.add_fact(fact='country', value='/uk/')
-    assert filter_.as_dict()['fact'] == [{':fact': "country", ':value': "/uk/"}]
+    assert filter_['fact'] == [{':fact': "country", ':value': "/uk/"}]
     filter_.add_fact(fact='country', value='/uk/', operator='==')
-    assert filter_.as_dict()['fact'] == [
+    assert filter_['fact'] == [
         {':fact': "country", ':value': "/uk/"},
         {':fact': "country", ':value': "/uk/", ':operator': '=='},
     ]
@@ -48,26 +48,33 @@ def test_filter_add_fact_operators(filter_):
 
 def test_filter_add_identity(filter_):
     '''Tests :py:method:`pymco.message.Filter.add_identity`.'''
-    assert filter_.as_dict()['identity'] == []
+    assert filter_['identity'] == []
     filter_.add_identity('foo.bar.com')
-    assert filter_.as_dict()['identity'] == ['foo.bar.com']
+    assert filter_['identity'] == ['foo.bar.com']
     filter_.add_identity('spam.bar.com')
-    assert filter_.as_dict()['identity'] == ['foo.bar.com', 'spam.bar.com']
+    assert filter_['identity'] == ['foo.bar.com', 'spam.bar.com']
 
 
 def test_filter_method_chaining(filter_):
     '''Tests :py:class:`pymco.message.Filter` method chaining.'''
-    assert filter_.as_dict() == { 'cf_class': [],
-                                 'agent': [],
-                                 'fact': [],
-                                 'identity': [],
-                                 }
+    assert dict(filter_) == { 'cf_class': [],
+                             'agent': [],
+                             'fact': [],
+                             'identity': [],
+                             }
     filter_.add_agent('package').add_identity('foo.bar.com')
-    assert filter_.as_dict() == { 'cf_class': [],
-                                 'agent': ['package'],
-                                 'fact': [],
-                                 'identity': ['foo.bar.com'],
-                                 }
+    assert dict(filter_) == { 'cf_class': [],
+                             'agent': ['package'],
+                             'fact': [],
+                             'identity': ['foo.bar.com'],
+                             }
+
+
+def test_filter_length(filter_):
+    '''Tests :py:meth:`pymco.message.Filter.__len__`.'''
+    assert len(filter_) == 4  # cf_class, agent, fact, identity
+    filter_.add_agent('package')
+    assert len(filter_) == 4
 
 
 def test_message(msg, filter_):
@@ -79,7 +86,7 @@ def test_message(msg, filter_):
                         ('body', base.MSG['body']),
                         ('agent', base.MSG['agent']),
                         ('collective', 'mcollective'),
-                        ('filter', filter_),
+                        ('filter', dict(filter_)),
                         ):
         assert msg[name] == value
 
@@ -102,7 +109,7 @@ def test_message_raises_improperly_configured(config, filter_):
         message.Message(body='ping',
                         agent='discovery',
                         config={},
-                        filter_=filter_)
+                        filter_=dict(filter_))
 
 
 def test_message_set_item(msg):
