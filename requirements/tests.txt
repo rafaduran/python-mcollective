@@ -4,3 +4,5 @@ jinja2
 pytest
 pytest-xdist
 pytest-cov
+# required for serialization testing
+pyyaml

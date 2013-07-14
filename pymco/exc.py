@@ -12,5 +12,9 @@ class ConfigLookupError(PyMcoException):
 
 
 class BadFilterFactOperator(PyMcoException):
-    '''Exception raised when trying to add a unsopported fact operator to
+    '''Exception raised when trying to add an unsopported fact operator to
     filters.'''
+
+
+class SerializerDoesNotExist(PyMcoException):
+    '''Exception raised when trying to load a missing serializer.'''
