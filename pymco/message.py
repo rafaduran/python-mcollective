@@ -93,6 +93,8 @@ class Message(collections.MutableMapping):
         return self._message[key]
 
     def __setitem__(self, key, value):
+        if key == 'filter':
+            value = dict(value)
         self._message[key] = value
 
     def __delitem__(self, key):

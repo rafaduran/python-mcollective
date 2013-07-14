@@ -125,3 +125,12 @@ def test_message_del_item(msg):
     del msg['test']
     with pytest.raises(KeyError):
         msg['test']
+
+
+def test_message_filter_update(msg):
+    '''Tests :py:meth:`pymco.message.Message.__setitem__` maintains filter as
+    a dict-like object.'''
+    filter_ = message.Filter()
+    msg['filter'] = filter_
+    assert msg['filter'] == dict(filter_)
+    assert isinstance(msg['filter'], dict)
