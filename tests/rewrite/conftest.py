@@ -68,7 +68,7 @@ def filter_():
     return message.Filter()
 
 @pytest.fixture
-def message(config, filter_):
+def msg(config, filter_):
     '''Creates a new :py:class:`pymco.message.Message` instance.'''
     # Importing here since py-cov will ignore code imported on conftest files
     # imports
@@ -77,10 +77,10 @@ def message(config, filter_):
         with mock.patch('hashlib.sha1') as sha1:
             time.return_value = base.MSG['msgtime']
             sha1.return_value.hexdigest.return_value = base.MSG['requestid']
-            msg = message.Message(body=base.MSG['body'],
+            msg_ = message.Message(body=base.MSG['body'],
                                   agent=base.MSG['agent'],
                                   filter_=filter_,
                                   config=config)
             time.assert_called_once_with()
             sha1.return_value.hexdigest.assert_called_once_with()
-    return msg
+    return msg_

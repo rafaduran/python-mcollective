@@ -70,7 +70,7 @@ def test_filter_method_chaining(filter_):
                                  }
 
 
-def test_message(message, filter_):
+def test_message(msg, filter_):
     '''Tests :py:class:`pymco.message.Message` attribues.'''
     for name, value in (('senderid', 'mco1'),
                         ('msgtime', int(base.MSG['msgtime'])),
@@ -81,17 +81,17 @@ def test_message(message, filter_):
                         ('collective', 'mcollective'),
                         ('filter', filter_),
                         ):
-        assert message[name] == value
+        assert msg[name] == value
 
 
-def test_message_length(message):
+def test_message_length(msg):
     '''Tests :py:method:`pymco.message.Message.length`.'''
-    assert len(message) == len(message._message)
+    assert len(msg) == len(msg._message)
 
 
-def test_message_iteration(message):
+def test_message_iteration(msg):
     '''Tests :py:method:`pymco.message.Message.__iter__`.'''
-    assert sorted(list(message)) == sorted(list(message._message.keys()))
+    assert sorted(list(msg)) == sorted(list(msg._message.keys()))
 
 
 def test_message_raises_improperly_configured(config, filter_):
@@ -105,16 +105,16 @@ def test_message_raises_improperly_configured(config, filter_):
                         filter_=filter_)
 
 
-def test_message_set_item(message):
+def test_message_set_item(msg):
     '''Tests :py:meth:`pymco.message.Message.__setitem__`.'''
-    message['test'] = 123
-    assert message['test'] == 123
+    msg['test'] = 123
+    assert msg['test'] == 123
 
 
-def test_message_del_item(message):
+def test_message_del_item(msg):
     '''Tests :py:meth:`pymco.message.Message.__delitem__`.'''
-    message['test'] = 123
-    assert message['test'] == 123
-    del message['test']
+    msg['test'] = 123
+    assert msg['test'] == 123
+    del msg['test']
     with pytest.raises(KeyError):
-        message['test']
+        msg['test']
