@@ -2,6 +2,7 @@
 import pytest
 
 from pymco import exc
+from pymco import message
 
 from .. import base
 
@@ -69,7 +70,7 @@ def test_filter_method_chaining(filter_):
                                  }
 
 
-def test_message(message):
+def test_message(message, filter_):
     '''Tests :py:class:`pymco.message.Message` attribues.'''
     for name, value in (('senderid', 'mco1'),
                         ('msgtime', int(base.MSG['msgtime'])),
@@ -78,5 +79,42 @@ def test_message(message):
                         ('body', base.MSG['body']),
                         ('agent', base.MSG['agent']),
                         ('collective', 'mcollective'),
+                        ('filter', filter_),
                         ):
         assert message[name] == value
+
+
+def test_message_length(message):
+    '''Tests :py:method:`pymco.message.Message.length`.'''
+    assert len(message) == len(message._message)
+
+
+def test_message_iteration(message):
+    '''Tests :py:method:`pymco.message.Message.__iter__`.'''
+    assert sorted(list(message)) == sorted(list(message._message.keys()))
+
+
+def test_message_raises_improperly_configured(config, filter_):
+    '''Tests :py:class:`pymco.message.Message` raises
+    :py:exc:`pymco.exc.ImproperlyConfigured` if configuration doesn't contain
+    all required information.'''
+    with pytest.raises(exc.ImproperlyConfigured):
+        message.Message(body='ping',
+                        agent='discovery',
+                        config={},
+                        filter_=filter_)
+
+
+def test_message_set_item(message):
+    '''Tests :py:meth:`pymco.message.Message.__setitem__`.'''
+    message['test'] = 123
+    assert message['test'] == 123
+
+
+def test_message_del_item(message):
+    '''Tests :py:meth:`pymco.message.Message.__delitem__`.'''
+    message['test'] = 123
+    assert message['test'] == 123
+    del message['test']
+    with pytest.raises(KeyError):
+        message['test']
