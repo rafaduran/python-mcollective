@@ -81,7 +81,7 @@ class Message(collections.MutableMapping):
         self._message['ttl'] = (kwargs.get('ttl', None) or
                                 config.getint('ttl', default=60))
         self._message['requestid'] = hashlib.sha1(
-            str(self._message['msgtime'])).hexdigest()
+            str(self._message['msgtime']).encode('utf-8')).hexdigest()
         self._message['body'] = body
         self._message['agent'] = agent
         self._message['filter'] = dict(filter_)
