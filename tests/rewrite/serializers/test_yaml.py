@@ -3,18 +3,18 @@
 
 def test_serialize(yaml, msg):
     """Test msg serialization"""
-    assert yaml.serialize(msg) == """agent: discovery
-body: ping
-collective: mcollective
-filter:
+    assert yaml.serialize(msg) == """:agent: discovery
+:body: ping
+:collective: mcollective
+:filter:
   agent: []
   cf_class: []
   fact: []
   identity: []
-msgtime: 123
-requestid: 6ef11a5053008b54c03ca934972fdfa45448439d
-senderid: mco1
-ttl: 60
+:msgtime: 123
+:requestid: 6ef11a5053008b54c03ca934972fdfa45448439d
+:senderid: mco1
+:ttl: 60
 """
 
 

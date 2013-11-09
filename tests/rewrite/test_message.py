@@ -79,14 +79,14 @@ def test_filter_length(filter_):
 
 def test_message(msg, filter_):
     '''Tests :py:class:`pymco.message.Message` attribues.'''
-    for name, value in (('senderid', 'mco1'),
-                        ('msgtime', int(base.MSG['msgtime'])),
-                        ('ttl', 60),
-                        ('requestid', base.MSG['requestid']),
-                        ('body', base.MSG['body']),
-                        ('agent', base.MSG['agent']),
-                        ('collective', 'mcollective'),
-                        ('filter', dict(filter_)),
+    for name, value in ((':senderid', 'mco1'),
+                        (':msgtime', int(base.MSG['msgtime'])),
+                        (':ttl', 60),
+                        (':requestid', base.MSG['requestid']),
+                        (':body', base.MSG['body']),
+                        (':agent', base.MSG['agent']),
+                        (':collective', 'mcollective'),
+                        (':filter', dict(filter_)),
                         ):
         assert msg[name] == value
 
@@ -131,11 +131,11 @@ def test_message_filter_update(msg):
     '''Tests :py:meth:`pymco.message.Message.__setitem__` maintains filter as
     a dict-like object.'''
     filter_ = message.Filter()
-    msg['filter'] = filter_
-    assert msg['filter'] == dict(filter_)
-    assert isinstance(msg['filter'], dict)
+    msg[':filter'] = filter_
+    assert msg[':filter'] == dict(filter_)
+    assert isinstance(msg[':filter'], message.Filter)
 
 
 def test_message_no_filter(msg2):
     '''Tests :py:class:`pymco.message.Message` with no filter.'''
-    assert dict(msg2['filter']) == dict(message.Filter())
+    assert dict(msg2[':filter']) == dict(message.Filter())

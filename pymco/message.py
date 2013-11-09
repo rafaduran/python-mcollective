@@ -72,19 +72,19 @@ class Message(collections.MutableMapping):
 
         self._message = {}
         try:
-            self._message['senderid'] = config['identity']
-            self._message['collective'] = (kwargs.get('collective', None) or
-                                           config['main_collective'])
+            self._message[':senderid'] = config['identity']
+            self._message[':collective'] = (kwargs.get('collective', None) or
+                                            config['main_collective'])
         except KeyError as error:
             raise exc.ImproperlyConfigured(error)
-        self._message['msgtime'] = int(time.time())
-        self._message['ttl'] = (kwargs.get('ttl', None) or
-                                config.getint('ttl', default=60))
-        self._message['requestid'] = hashlib.sha1(
-            str(self._message['msgtime']).encode('utf-8')).hexdigest()
-        self._message['body'] = body
-        self._message['agent'] = agent
-        self._message['filter'] = dict(filter_)
+        self._message[':msgtime'] = int(time.time())
+        self._message[':ttl'] = (kwargs.get('ttl', None) or
+                                 config.getint('ttl', default=60))
+        self._message[':requestid'] = hashlib.sha1(
+            str(self._message[':msgtime']).encode('utf-8')).hexdigest()
+        self._message[':body'] = body
+        self._message[':agent'] = agent
+        self._message[':filter'] = dict(filter_)
 
     def __len__(self):
         return len(self._message)
