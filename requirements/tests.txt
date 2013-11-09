@@ -2,7 +2,7 @@
 mock
 jinja2
 pytest
-pytest-xdist
+pytest-xdist<1.9
 pytest-cov
 # required for serialization testing
 pyyaml
