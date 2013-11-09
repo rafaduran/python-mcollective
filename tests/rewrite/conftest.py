@@ -67,6 +67,7 @@ def filter_():
     from pymco import message
     return message.Filter()
 
+
 @pytest.fixture
 def msg(config, filter_):
     '''Creates a new :py:class:`pymco.message.Message` instance.'''
@@ -78,9 +79,20 @@ def msg(config, filter_):
             time.return_value = base.MSG['msgtime']
             sha1.return_value.hexdigest.return_value = base.MSG['requestid']
             msg_ = message.Message(body=base.MSG['body'],
-                                  agent=base.MSG['agent'],
-                                  filter_=filter_,
-                                  config=config)
+                                   agent=base.MSG['agent'],
+                                   filter_=filter_,
+                                   config=config)
             time.assert_called_once_with()
             sha1.return_value.hexdigest.assert_called_once_with()
     return msg_
+
+
+@pytest.fixture
+def msg2(config):
+    '''Creates a new :py:class:`pymco.message.Message` instance.'''
+    # Importing here since py-cov will ignore code imported on conftest files
+    # imports
+    from pymco import message
+    return message.Message(body=base.MSG['body'],
+                           agent=base.MSG['agent'],
+                           config=config)

@@ -66,7 +66,10 @@ class Message(collections.MutableMapping):
     '''Provides MCollective messages for pymco. This class implements
     :py:class:`collections.MutableMapping` interface, so it can be used as
     read/write mapping (dictionary).'''
-    def __init__(self, body, agent, config, filter_, **kwargs):
+    def __init__(self, body, agent, config, filter_=None, **kwargs):
+        if not filter_:
+            filter_ = Filter()
+
         self._message = {}
         try:
             self._message['senderid'] = config['identity']

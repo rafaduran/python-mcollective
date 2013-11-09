@@ -134,3 +134,8 @@ def test_message_filter_update(msg):
     msg['filter'] = filter_
     assert msg['filter'] == dict(filter_)
     assert isinstance(msg['filter'], dict)
+
+
+def test_message_no_filter(msg2):
+    '''Tests :py:class:`pymco.message.Message` with no filter.'''
+    assert dict(msg2['filter']) == dict(message.Filter())
