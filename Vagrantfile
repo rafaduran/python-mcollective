@@ -1,38 +1,35 @@
-Vagrant::Config.run do |config|
-  # config.vm.box     = "oneiric32_base"
-  # config.vm.box_url = "http://files.travis-ci.org/boxes/bases/oneiric32_base_v2.box"
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
 
-  # Ubuntu 12.04, 32 bit
-  config.vm.box     = "precise32_base"
-  config.vm.box_url = "http://files.travis-ci.org/boxes/bases/precise32_base_v2.box"
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
 
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Ubuntu 12.04, 64 bit
-  # config.vm.box     = "precise64_base"
-  # config.vm.box_url = "http://files.travis-ci.org/boxes/bases/precise64_base_v2.box"
-
-
-  config.ssh.username = "travis"
-  config.vm.forward_port 22, 2220
-
-  #
-  # For Vagrant 0.9.x and 1.0.x
-  #
-
-  config.vm.forward_port 22, 2220
+  config.vm.box     = "precise64"
+  config.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/precise/current/precise-server-cloudimg-amd64-vagrant-disk1.box"
 
   # For RabbitMQ stomp local use
-  config.vm.forward_port 61613, 61613
+  config.vm.network 'forwarded_port', guest:  61613, host: 61613
 
-  # changing nictype partially helps with Vagrant issue #516, VirtualBox NAT interface chokes when
-  # # of slow outgoing connections is large (in dozens or more).
-  config.vm.customize ["modifyvm", :id, "--nictype1", "Am79C973", "--memory", "1536", "--cpus", "2", "--ioapic", "on"]
+  config.vm.provider :virtualbox do |vb|
+    # changing nictype partially helps with Vagrant issue #516, VirtualBox NAT interface chokes when
+    # of slow outgoing connections is large (in dozens or more).
+    vb.customize ["modifyvm", :id, "--nictype1", "Am79C973", "--cpus", "2", "--ioapic", "on"]
 
-  # see https://github.com/mitchellh/vagrant/issues/912
-  config.vm.customize ["modifyvm", :id, "--rtcuseutc", "on"]
+    # see https://github.com/mitchellh/vagrant/issues/912
+    vb.customize ["modifyvm", :id, "--rtcuseutc", "on"]
+
+    # Don't boot with headless mode
+    # vb.gui = true
+
+    # Use VBoxManage to customize the VM. For example to change memory:
+    vb.customize ["modifyvm", :id, "--memory", "1024"]
+  end
 
   config.vm.provision :shell do |sh|
     sh.inline = <<-EOF
-      /opt/ruby/bin/gem install chef --no-ri --no-rdoc --no-user-install
+      gem install chef --no-ri --no-rdoc --no-user-install
     EOF
   end
 
