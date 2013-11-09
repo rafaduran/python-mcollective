@@ -17,7 +17,10 @@ install:
   - scripts/m2crypto_ubuntu
   - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2 --use-mirrors; fi"
   - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install importlib --use-mirrors; fi"
+  - pip install -r requirements/flake8.txt --use-mirrors
 # command to run tests
-script: py.test --cov pymco --cov-report term-missing
+script:
+  - py.test --cov pymco --cov-report term-missing
+  - flake8 pymco
 after_success:
   - COVERALLS_REPO_TOKEN=rDeA0JfxHdlenNHvQbiL4W91tyf9ZESBy coveralls
