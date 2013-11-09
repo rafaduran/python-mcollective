@@ -6,6 +6,7 @@ from pymco import message
 
 from .. import base
 
+
 def test_filter_add_cfclass(filter_):
     '''Tests :py:method:`pymco.message.Filter.add_class`.'''
     assert filter_['cf_class'] == []
@@ -114,17 +115,17 @@ def test_message_raises_improperly_configured(config, filter_):
 
 def test_message_set_item(msg):
     '''Tests :py:meth:`pymco.message.Message.__setitem__`.'''
-    msg['test'] = 123
-    assert msg['test'] == 123
+    msg[':test'] = 123
+    assert msg[':test'] == 123
 
 
 def test_message_del_item(msg):
     '''Tests :py:meth:`pymco.message.Message.__delitem__`.'''
-    msg['test'] = 123
-    assert msg['test'] == 123
-    del msg['test']
+    msg[':test'] = 123
+    assert msg[':test'] == 123
+    del msg[':test']
     with pytest.raises(KeyError):
-        msg['test']
+        msg[':test']
 
 
 def test_message_filter_update(msg):
@@ -133,9 +134,15 @@ def test_message_filter_update(msg):
     filter_ = message.Filter()
     msg[':filter'] = filter_
     assert msg[':filter'] == dict(filter_)
-    assert isinstance(msg[':filter'], message.Filter)
+    assert isinstance(msg[':filter'], dict)
 
 
 def test_message_no_filter(msg2):
     '''Tests :py:class:`pymco.message.Message` with no filter.'''
     assert dict(msg2[':filter']) == dict(message.Filter())
+
+
+def test_msg_update_no_symbol(msg):
+    """Test update msg with a non symbol raises ValueError"""
+    with pytest.raises(ValueError):
+        msg['foo'] = 'foo'

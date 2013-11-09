@@ -96,7 +96,10 @@ class Message(collections.MutableMapping):
         return self._message[key]
 
     def __setitem__(self, key, value):
-        if key == 'filter':
+        if not key.startswith(':'):
+            raise ValueError('Keys must start with `:`, as Ruby symbols.')
+
+        if key == ':filter':
             value = dict(value)
         self._message[key] = value
 
