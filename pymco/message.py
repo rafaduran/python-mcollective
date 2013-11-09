@@ -7,6 +7,7 @@ import six
 
 from . import exc
 
+
 class Filter(collections.Mapping):
     '''Provides MCollective filters for pymco. This class implements
     :py:class:`collections.Mapping` interface, so it can be used as non mutable
@@ -14,7 +15,6 @@ class Filter(collections.Mapping):
     for adding the agent you can just use :py:meth:`add_agent`::
 
         filter.add_agent('package')
-        >>> <pymco.message.Filter at 0x2935e90>
     '''
     def __init__(self):
         self._filter = {
@@ -70,13 +70,13 @@ class Message(collections.MutableMapping):
         self._message = {}
         try:
             self._message['senderid'] = config['identity']
-            self._message['collective'] = kwargs.get('collective', None) or \
-                    config['main_collective']
+            self._message['collective'] = (kwargs.get('collective', None) or
+                                           config['main_collective'])
         except KeyError as error:
             raise exc.ImproperlyConfigured(error)
         self._message['msgtime'] = int(time.time())
-        self._message['ttl'] = kwargs.get('ttl', None) or \
-                config.getint('ttl', default=60)
+        self._message['ttl'] = (kwargs.get('ttl', None) or
+                                config.getint('ttl', default=60))
         self._message['requestid'] = hashlib.sha1(
             str(self._message['msgtime'])).hexdigest()
         self._message['body'] = body

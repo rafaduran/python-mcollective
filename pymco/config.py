@@ -6,7 +6,6 @@ import os
 import six
 from six.moves import configparser
 
-from . import exc
 
 def lookup_with_default(fnc):
     '''

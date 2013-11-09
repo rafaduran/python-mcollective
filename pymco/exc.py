@@ -1,4 +1,6 @@
 '''python-mcollective exceptions'''
+
+
 class PyMcoException(Exception):
     '''Base class for all python-mcollective exceptions'''
 

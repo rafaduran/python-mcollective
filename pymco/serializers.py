@@ -9,7 +9,7 @@ BUILTIN_SERIALIZERS = {}
 _SERIALIZERS = {}
 # Check for PyYaml and register the serializer if it's available.
 try:
-    import yaml
+    import yaml  # noqa
     BUILTIN_SERIALIZERS["yaml"] = "pymco.serializers.yaml"
 except ImportError:
     pass
@@ -47,6 +47,7 @@ def register_serializer(format_, serializer_module, serializers=None):
         _SERIALIZERS[format_] = module
     else:
         serializers[format_] = module
+
 
 def unregister_serializer(format_):
     "Unregister a given serializer. This is not a thread-safe operation."
