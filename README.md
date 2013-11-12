@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/rafaduran/python-mcollective.png?label=ready)](https://waffle.io/rafaduran/python-mcollective)  
 mcollective-python
 ==================
 
