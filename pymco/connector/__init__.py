@@ -26,6 +26,14 @@ class BaseConnector(object):
         raise NotImplementedError
 
 
+def connect(self):
+    """Connect to MCollective middleware."""
+
+
+def disconnect(self):
+    """Disconnet from MCollective middleware."""
+
+
 def send(self, msg, *args, **kwargs):
     """Send an MCollective message.
 
@@ -62,6 +70,8 @@ def unsubscribe(self, destination, *args, **kwargs):
 
 # Building Metaclass here for Python 2/3 compatibility
 Connector = abc.ABCMeta('Connector', (BaseConnector,), {
+    'connect': abc.abstractmethod(connect),
+    'disconnect': abc.abstractmethod(disconnect),
     'send': abc.abstractmethod(send),
     'subscribe': abc.abstractmethod(subscribe),
     'unsubscribe': abc.abstractmethod(unsubscribe),

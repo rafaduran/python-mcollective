@@ -14,23 +14,24 @@ class StompConnector(Connector):
         self.config = config
 
         if connection is None:
-            self._connection = StompConnector.default_connection()
+            self.connection = StompConnector.default_connection()
         else:
-            self._connection = connection
+            self.connection = connection
 
-    @property
-    def connection(self):
-        """Property wrapper over stomp.py connection
+    def connect(self):
+        if not self.connection.connected:
+            self.connection.start()
+            self.connection.connect(username=self.config['plugin.stomp.user'],
+                                    passcode=self.config['plugin.stomp.password'])
 
-        It starts the connection and connect using credentials from ``config``
-        object on first use.
-        """
-        if not self._connection.connected():
-            self._connection.start()
-            self._connection.connect(username=self.config['plugin.stomp.user'],
-                                     passcode=self.config['plugin.stomp.password'])
+        return self
 
-        return self._connection
+    def disconnect(self):
+        if self.connection.connected:
+            self.connection.disconnect()
+            self.connection.stop()
+
+        return self
 
     def send(self, msg, destination, *args, **kwargs):
         self.connection.send(msg, destination)
