@@ -41,6 +41,32 @@ factsource = yaml
 plugin.yaml = /opt/workspace/mcollective-python/tests/tests/fixtures/facts.yaml
 '''
 
+CONFIGSTR_STOMP = '''
+topicprefix = /topic/
+collectives = mcollective
+main_collective = mcollective
+libdir = /Users/rafaduran/workspace/python-mcollective/tests/integration/vendor/plugins
+logfile = /Users/rafaduran/workspace/python-mcollective/mcollective.log
+loglevel = debug
+daemonize = 0
+identity = mco1
+
+# Plugins
+securityprovider = none
+
+direct_addressing = yes
+direct_addressing_threshold = 5
+
+connector = stomp
+plugin.stomp.host = localhost
+plugin.stomp.password = guest
+plugin.stomp.port = 61613
+plugin.stomp.user = guest
+
+factsource = yaml
+plugin.yaml = /Users/rafaduran/workspace/python-mcollective/tests/fixtures/facts.yaml
+'''
+
 
 def pytest_runtest_setup(item):
     base.configfile()
@@ -57,6 +83,14 @@ def config(configstr):
     # imports
     from pymco import config
     return config.Config.from_configstr(configstr=configstr)
+
+
+@pytest.fixture
+def config_stomp():
+    # Importing here since py-cov will ignore code imported on conftest files
+    # imports
+    from pymco import config
+    return config.Config.from_configstr(configstr=CONFIGSTR_STOMP)
 
 
 @pytest.fixture
