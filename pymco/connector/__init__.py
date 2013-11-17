@@ -11,6 +11,20 @@ class BaseConnector(object):
     def __init__(self, config):
         self.config = config
 
+    def receive(self, topic, timeout, *args, **kwargs):
+        """Subscribe to MCollective topic queue and wait for just one message.
+
+        Args:
+            ``topic``: message topic to wait for.
+            ``timeout``: how long we should wait for the message.
+            ``args``: extra positional arguments.
+            ``kwargs``: extra keyword arguments.
+        Returns:
+            ``message``: received message.
+            Raises: :py:exc:`pymco.exc.TimeoutError`
+        """
+        raise NotImplementedError
+
 
 def send(self, msg, *args, **kwargs):
     """Send an MCollective message.
@@ -19,20 +33,6 @@ def send(self, msg, *args, **kwargs):
         ``msg``: message to be sent.
     Returns:
         ``self``: so you can chain calls.
-    """
-
-
-def receive(self, topic, timeout, *args, **kwargs):
-    """Subscribe to MCollective topic queue and wait for just one message.
-
-    Args:
-        ``topic``: message topic to wait for.
-        ``timeout``: how long we should wait for the message.
-        ``args``: extra positional arguments.
-        ``kwargs``: extra keyword arguments.
-    Returns:
-        ``message``: received message.
-    Raises: :py:exc:`pymco.exc.TimeoutError`
     """
 
 
@@ -63,7 +63,6 @@ def unsubscribe(self, destination, *args, **kwargs):
 # Building Metaclass here for Python 2/3 compatibility
 Connector = abc.ABCMeta('Connector', (BaseConnector,), {
     'send': abc.abstractmethod(send),
-    'receive': abc.abstractmethod(receive),
     'subscribe': abc.abstractmethod(subscribe),
     'unsubscribe': abc.abstractmethod(unsubscribe),
 })

@@ -36,9 +36,6 @@ class StompConnector(Connector):
         self.connection.send(msg, destination)
         return self
 
-    def receive(self, topic, timeout, *args, **kwargs):
-        pass
-
     def subscribe(self, destination, *args, **kwargs):
         pass
 
