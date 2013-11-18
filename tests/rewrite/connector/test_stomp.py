@@ -51,3 +51,16 @@ def test_send(stomp_connector, conn_mock):
 def test_receive(stomp_connector):
     with pytest.raises(NotImplementedError):
         stomp_connector.receive('foo', 'foo')
+
+
+def test_subcscribe(stomp_connector, conn_mock):
+    assert stomp_connector.subscribe('destination', id='some-id') is stomp_connector
+    conn_mock.subscribe.assert_called_once_with('destination', id='some-id')
+
+
+@mock.patch('pymco.connector.stomp.StompConnector.id_generator')
+def test_subscribe_no_id(id_generator, stomp_connector, conn_mock):
+    id_generator.next.return_value = 1
+    assert stomp_connector.subscribe('destination') is stomp_connector
+    conn_mock.subscribe.assert_called_once_with('destination', id=1)
+    id_generator.next.assert_called_once_with()

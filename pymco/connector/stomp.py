@@ -2,16 +2,21 @@
 :py:mod:`pymco.connector.stomp`
 """
 from __future__ import absolute_import
+import itertools
+
 import stomp
 
 from . import Connector
 
 
 class StompConnector(Connector):
+    id_generator = itertools.count()
+
     def __init__(self, config, connection=None):
         super(StompConnector, self).__init__(config)
         self._started = False
         self.config = config
+        self._id = None
 
         if connection is None:
             self.connection = StompConnector.default_connection()
@@ -37,11 +42,22 @@ class StompConnector(Connector):
         self.connection.send(msg, destination)
         return self
 
-    def subscribe(self, destination, *args, **kwargs):
-        pass
+    def subscribe(self, destination, id=None, *args, **kwargs):
+        if not id:
+            id = self.id
+
+        self.connection.subscribe(destination, id=id)
+        return self
 
     def unsubscribe(self, destination, *args, **kwargs):
         pass
+
+    @property
+    def id(self):
+        if not self._id:
+            self._id = self.id_generator.next()
+
+        return self._id
 
     @staticmethod
     def default_connection():
