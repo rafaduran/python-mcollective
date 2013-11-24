@@ -130,3 +130,20 @@ def msg2(config):
     return message.Message(body=base.MSG['body'],
                            agent=base.MSG['agent'],
                            config=config)
+
+
+@pytest.fixture
+def none_security(config):
+    from pymco.security import none
+    return none.NoneProvider(config)
+
+
+@pytest.fixture
+def condition():
+    return mock.Mock()
+
+
+@pytest.fixture
+def result_listener(config, none_security, condition):
+    from pymco import listener
+    return listener.ResponseListener(config, none_security, condition=condition, count=2)
