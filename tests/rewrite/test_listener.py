@@ -30,7 +30,13 @@ def test_on_message_decode_message(result_listener):
         decode.return_value = {'foo': 'spam'}
         result_listener.on_message('---\nfoo: spam', {})
         decode.assert_called_once_with('---\nfoo: spam')
-    assert result_listener.response == {'foo': 'spam'}
+
+
+def test_on_message_appends_messages(result_listener):
+    with mock.patch.object(result_listener.security, 'decode') as decode:
+        result_listener.on_message('---\nfoo: spam', {})
+        decode.assert_called_once_with('---\nfoo: spam')
+    assert result_listener.responses == [decode.return_value]
 
 
 def test_wait_on_message__acquire_release_condition(result_listener, condition):
