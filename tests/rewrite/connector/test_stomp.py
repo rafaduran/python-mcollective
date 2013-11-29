@@ -64,42 +64,47 @@ def test_subscribe_no_id(id_generator, next, stomp_connector, conn_mock):
     next.assert_called_once_with(id_generator)
 
 
-@mock.patch('pymco.listener.SingleResponseListener')
-def test_receive__sets_single_response_listener(listener, stomp_connector, conn_mock):
-    listener.return_value.responses.__len__.return_value = 1
-    stomp_connector.receive('foo', 5)
-    conn_mock.set_listener.assert_called_once_with('response_listener',
-                                                   listener.return_value)
+@mock.patch('pymco.listener.SingleResponseListener',
+            **{'return_value.responses.__len__.return_value': 1})
+class TestReceive:
+    def patch_connection(self, stomp_connector):
+        return mock.patch.multiple(stomp_connector,
+                                   connect=mock.DEFAULT,
+                                   subscribe=mock.DEFAULT,
+                                   disconnect=mock.DEFAULT)
 
-
-@mock.patch('pymco.listener.SingleResponseListener')
-def test_receive__sets_the_right_timeout(listener, stomp_connector, conn_mock):
-    listener.return_value.responses.__len__.return_value = 1
-    stomp_connector.receive('foo', 5)
-    listener.assert_called_once_with(timeout=5,
-                                     security=stomp_connector.security,
-                                     config=stomp_connector.config)
-
-
-@mock.patch('pymco.listener.SingleResponseListener')
-def test_receive__connect_subscribe_and_disconnect(listener, stomp_connector, conn_mock):
-    listener.return_value.responses.__len__.return_value = 1
-    with mock.patch.multiple(stomp_connector,
-                             connect=mock.DEFAULT,
-                             subscribe=mock.DEFAULT,
-                             disconnect=mock.DEFAULT) as values:
+    def test_receive__sets_single_response_listener(self,
+                                                    listener,
+                                                    stomp_connector,
+                                                    conn_mock):
         stomp_connector.receive('foo', 5)
-        values['connect'].assert_called_once_with()
-        values['subscribe'].assert_called_once_with('foo')
-        values['disconnect'].assert_called_once_with()
+        conn_mock.set_listener.assert_called_once_with('response_listener',
+                                                       listener.return_value)
 
+    def test_receive__sets_the_right_timeout(self,
+                                             listener,
+                                             stomp_connector,
+                                             conn_mock):
+        stomp_connector.receive('foo', 5)
+        listener.assert_called_once_with(timeout=5,
+                                         security=stomp_connector.security,
+                                         config=stomp_connector.config)
 
-@mock.patch('pymco.listener.SingleResponseListener')
-def test_receive__raises_timeout_error_if_no_message(listener, stomp_connector, conn_mock):
-    listener.return_value.responses.__len__.return_value = 0
-    with mock.patch.multiple(stomp_connector,
-                             connect=mock.DEFAULT,
-                             subscribe=mock.DEFAULT,
-                             disconnect=mock.DEFAULT):
-        with pytest.raises(exc.TimeoutError):
+    def test_receive__connect_subscribe_and_disconnect(self,
+                                                       listener,
+                                                       stomp_connector,
+                                                       conn_mock):
+        with self.patch_connection(stomp_connector) as values:
             stomp_connector.receive('foo', 5)
+            values['connect'].assert_called_once_with()
+            values['subscribe'].assert_called_once_with('foo')
+            values['disconnect'].assert_called_once_with()
+
+    def test_receive__raises_timeout_error_if_no_message(self,
+                                                         listener,
+                                                         stomp_connector,
+                                                         conn_mock):
+        listener.return_value.responses.__len__.return_value = 0
+        with self.patch_connection(stomp_connector):
+            with pytest.raises(exc.TimeoutError):
+                stomp_connector.receive('foo', 5)
