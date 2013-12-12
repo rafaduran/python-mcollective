@@ -22,6 +22,7 @@ class Filter(collections.Mapping):
             'agent': [],
             'fact': [],
             'identity': [],
+            'compound': [],
         }
 
     def add_cfclass(self, klass):

@@ -9,6 +9,7 @@ def test_serialize(yaml, msg):
 :filter:
   agent: []
   cf_class: []
+  compound: []
   fact: []
   identity: []
 :msgtime: 123

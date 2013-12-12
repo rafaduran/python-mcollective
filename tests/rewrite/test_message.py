@@ -58,24 +58,26 @@ def test_filter_add_identity(filter_):
 
 def test_filter_method_chaining(filter_):
     '''Tests :py:class:`pymco.message.Filter` method chaining.'''
-    assert dict(filter_) == { 'cf_class': [],
+    assert dict(filter_) == {'cf_class': [],
                              'agent': [],
                              'fact': [],
                              'identity': [],
+                             'compound': [],
                              }
     filter_.add_agent('package').add_identity('foo.bar.com')
-    assert dict(filter_) == { 'cf_class': [],
+    assert dict(filter_) == {'cf_class': [],
                              'agent': ['package'],
                              'fact': [],
                              'identity': ['foo.bar.com'],
+                             'compound': [],
                              }
 
 
 def test_filter_length(filter_):
     '''Tests :py:meth:`pymco.message.Filter.__len__`.'''
-    assert len(filter_) == 4  # cf_class, agent, fact, identity
+    assert len(filter_) == 5  # cf_class, agent, fact, identity, compound
     filter_.add_agent('package')
-    assert len(filter_) == 4
+    assert len(filter_) == 5
 
 
 def test_message(msg, filter_):
