@@ -19,7 +19,7 @@ def test_given_condition_is_used(result_listener, condition):
 
 
 def test_on_message_acquire_notify_release_condtion(result_listener, condition):
-    result_listener.on_message('---\nfoo: spam', {})
+    result_listener.on_message(body='---\nfoo: spam', headers={})
     condition.acquire.assert_called_once_with()
     condition.notify.assert_called_once_with()
     condition.release.assert_called_once_with()
@@ -28,13 +28,13 @@ def test_on_message_acquire_notify_release_condtion(result_listener, condition):
 def test_on_message_decode_message(result_listener):
     with mock.patch.object(result_listener.security, 'decode') as decode:
         decode.return_value = {'foo': 'spam'}
-        result_listener.on_message('---\nfoo: spam', {})
+        result_listener.on_message(body='---\nfoo: spam', headers={})
         decode.assert_called_once_with('---\nfoo: spam')
 
 
 def test_on_message_appends_messages(result_listener):
     with mock.patch.object(result_listener.security, 'decode') as decode:
-        result_listener.on_message('---\nfoo: spam', {})
+        result_listener.on_message(body='---\nfoo: spam', headers={})
         decode.assert_called_once_with('---\nfoo: spam')
     assert result_listener.responses == [decode.return_value]
 

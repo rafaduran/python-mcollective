@@ -24,7 +24,7 @@ class ResponseListener(listener.ConnectionListener):
         self.responses = []
         self.count = count
 
-    def on_message(self, body, headers):
+    def on_message(self, headers, body):
         self.condition.acquire()
         self.responses.append(self.security.decode(body))
         self.received += 1

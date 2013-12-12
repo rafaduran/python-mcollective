@@ -45,9 +45,10 @@ def test_default_connection(conn, config_stomp):
     assert connector.connection is conn.return_value
 
 
-def test_send(stomp_connector, conn_mock):
+def test_send(stomp_connector, conn_mock, security):
     assert stomp_connector.send('foo', 'destination') is stomp_connector
-    conn_mock.send.assert_called_with('foo', 'destination')
+    conn_mock.send.assert_called_with(body=security.encode('foo'),
+                                      destination='destination')
 
 
 def test_subcscribe(stomp_connector, conn_mock):

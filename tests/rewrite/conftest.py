@@ -142,6 +142,8 @@ def none_security(config):
 def condition():
     return mock.Mock()
 
+security = condition
+
 
 @pytest.fixture
 def result_listener(config, none_security, condition):
