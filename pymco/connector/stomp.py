@@ -69,15 +69,12 @@ class StompConnector(Connector):
         """Creates a :py:class:`stomp.Connection` object with defaults"""
         return stomp.Connection()
 
-    def receive(self, topic, timeout, *args, **kwargs):
+    def receive(self, timeout, *args, **kwargs):
         response_listener = listener.SingleResponseListener(timeout=timeout,
                                                             security=self.security,
                                                             config=self.config)
         self.connection.set_listener('response_listener', response_listener)
-        self.connect()
-        self.subscribe(topic)
-        response_listener.wait_for_message()
-        self.disconnect()
+        response_listener.wait_on_message()
 
         if len(response_listener.responses) != 1:
             raise exc.TimeoutError

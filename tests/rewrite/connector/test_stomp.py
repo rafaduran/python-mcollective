@@ -79,7 +79,7 @@ class TestReceive:
                                                     listener,
                                                     stomp_connector,
                                                     conn_mock):
-        stomp_connector.receive('foo', 5)
+        stomp_connector.receive(5)
         conn_mock.set_listener.assert_called_once_with('response_listener',
                                                        listener.return_value)
 
@@ -87,20 +87,10 @@ class TestReceive:
                                              listener,
                                              stomp_connector,
                                              conn_mock):
-        stomp_connector.receive('foo', 5)
+        stomp_connector.receive(5)
         listener.assert_called_once_with(timeout=5,
                                          security=stomp_connector.security,
                                          config=stomp_connector.config)
-
-    def test_receive__connect_subscribe_and_disconnect(self,
-                                                       listener,
-                                                       stomp_connector,
-                                                       conn_mock):
-        with self.patch_connection(stomp_connector) as values:
-            stomp_connector.receive('foo', 5)
-            values['connect'].assert_called_once_with()
-            values['subscribe'].assert_called_once_with('foo')
-            values['disconnect'].assert_called_once_with()
 
     def test_receive__raises_timeout_error_if_no_message(self,
                                                          listener,
@@ -109,4 +99,4 @@ class TestReceive:
         listener.return_value.responses.__len__.return_value = 0
         with self.patch_connection(stomp_connector):
             with pytest.raises(exc.TimeoutError):
-                stomp_connector.receive('foo', 5)
+                stomp_connector.receive(5)
