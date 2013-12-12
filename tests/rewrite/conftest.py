@@ -5,7 +5,6 @@ except ImportError:
     import mock
 
 import pytest
-import six
 
 from .. import base
 
@@ -149,3 +148,17 @@ security = condition
 def result_listener(config, none_security, condition):
     from pymco import listener
     return listener.ResponseListener(config, none_security, condition=condition, count=2)
+
+
+@pytest.fixture
+def connector():
+    return mock.Mock()
+
+
+@pytest.fixture
+def simple_action(config, msg, connector):
+    from pymco import rpc
+    return rpc.SimpleAction(agent=base.MSG['agent'],
+                            config=config,
+                            msg=msg,
+                            connector=connector)
