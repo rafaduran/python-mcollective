@@ -14,7 +14,8 @@ def test_connect(stomp_connector, conn_mock, config_stomp):
     conn_mock.connected = False
     assert stomp_connector.connect() is stomp_connector
     conn_mock.connect.assert_called_once_with(username=config_stomp['plugin.stomp.user'],
-                                              passcode=config_stomp['plugin.stomp.password'])
+                                              passcode=config_stomp['plugin.stomp.password'],
+                                              wait=None)
     conn_mock.start.assert_called_once_with()
 
 
