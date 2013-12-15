@@ -1,6 +1,8 @@
 """Tests for pymco.rpc"""
 from .. import base
 
+from pymco import rpc
+
 
 def test_simple_action_get_target(simple_action):
     assert simple_action.get_target() == (
@@ -8,9 +10,31 @@ def test_simple_action_get_target(simple_action):
     )
 
 
+def test_simple_action_get_target__custom_collective(config, msg, connector):
+    simple_action = rpc.SimpleAction(agent=base.MSG['agent'],
+                                     config=config,
+                                     msg=msg,
+                                     connector=connector,
+                                     collective='foocollective')
+    assert simple_action.get_target() == (
+        '/topic/foocollective.{0}.command'.format(base.MSG['agent'])
+    )
+
+
 def test_simple_action_get_reply_target(simple_action):
     assert simple_action.get_reply_target() == (
         '/topic/mcollective.{0}.reply'.format(base.MSG['agent'])
+    )
+
+
+def test_simple_action_get_reply_target__custom_collective(config, msg, connector):
+    simple_action = rpc.SimpleAction(agent=base.MSG['agent'],
+                                     config=config,
+                                     msg=msg,
+                                     connector=connector,
+                                     collective='foocollective')
+    assert simple_action.get_reply_target() == (
+        '/topic/foocollective.{0}.reply'.format(base.MSG['agent'])
     )
 
 
