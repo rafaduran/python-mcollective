@@ -8,6 +8,10 @@ import abc
 
 class BaseConnector(object):
     """Base abstract class for MCollective connectors."""
+    plugins = {
+        'stomp': 'pymco.connector.stomp.StompConnector',
+    }
+
     def __init__(self, config):
         self.config = config
 

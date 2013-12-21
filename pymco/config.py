@@ -6,6 +6,9 @@ import os
 import six
 from six.moves import configparser
 
+from .connector import Connector
+from . import utils
+
 
 def lookup_with_default(fnc):
     '''
@@ -56,6 +59,11 @@ class Config(collections.Mapping):
             else:
                 value = False
             return bool(value)
+
+    def get_connector(self):
+        """Get connector based on MCollective settings."""
+        import_path = Connector.plugins[self.config['connector']]
+        return utils.import_object(import_path, config=self)
 
     @staticmethod
     def from_configfile(configfile):

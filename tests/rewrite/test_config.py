@@ -68,7 +68,7 @@ def test_getboolean_missing(config):
 
 def test_getboolean_default(config):
     '''Tests :py:method:`Config.getboolean` bad path with default.'''
-    assert config.getboolean('missing', default=True) == True
+    assert config.getboolean('missing', default=True)
 
 
 def test_length(config):
@@ -79,3 +79,12 @@ def test_length(config):
 def test_iter(config):
     '''Test configuration iteration.'''
     assert list(config) == list(config.config)
+
+
+@mock.patch('pymco.utils.import_object')
+def test_get_connector(import_object, config):
+    with mock.patch.dict('pymco.connector.Connector.plugins',
+                         {'activemq': 'connector.foo.FooConector'}):
+        assert config.get_connector() == import_object.return_value
+        import_object.assert_called_once_with('connector.foo.FooConector',
+                                              config=config)
