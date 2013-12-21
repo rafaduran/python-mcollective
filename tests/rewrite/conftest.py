@@ -151,14 +151,8 @@ def result_listener(config, none_security, condition):
 
 
 @pytest.fixture
-def connector():
-    return mock.Mock()
-
-
-@pytest.fixture
-def simple_action(config, msg, connector):
+def simple_action(config, msg):
     from pymco import rpc
     return rpc.SimpleAction(agent=base.MSG['agent'],
                             config=config,
-                            msg=msg,
-                            connector=connector)
+                            msg=msg)

@@ -7,13 +7,19 @@ MCollective RPC calls support.
 
 class SimpleAction(object):
     """Single RPC call to MCollective"""
-    def __init__(self, config, msg, agent, connector, **kwargs):
+    def __init__(self, config, msg, agent, **kwargs):
         self.config = config
         self.msg = msg
         self.agent = agent
-        self.connector = connector
+        self._connector = None
         self.collective = (kwargs.get('collective', None) or
                            self.config['main_collective'])
+
+    @property
+    def connector(self):
+        if not self._connector:
+            self._connector = self.config.get_connector()
+        return self._connector
 
     def get_target(self):
         """MCollective RPC call target."""
