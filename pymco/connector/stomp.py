@@ -14,12 +14,11 @@ from .. import listener
 class StompConnector(Connector):
     id_generator = itertools.count()
 
-    def __init__(self, config, security=None, connection=None):
+    def __init__(self, config, connection=None):
         super(StompConnector, self).__init__(config)
         self._started = False
         self.config = config
         self._id = None
-        self.security = security
 
         if connection is None:
             self.connection = StompConnector.default_connection()
@@ -71,7 +70,6 @@ class StompConnector(Connector):
 
     def receive(self, timeout, *args, **kwargs):
         response_listener = listener.SingleResponseListener(timeout=timeout,
-                                                            security=self.security,
                                                             config=self.config)
         self.connection.set_listener('response_listener', response_listener)
         response_listener.wait_on_message()

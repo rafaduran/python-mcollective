@@ -14,6 +14,15 @@ class BaseConnector(object):
 
     def __init__(self, config):
         self.config = config
+        self._security = None
+
+    @property
+    def security(self):
+        """Security provider property."""
+        if not self._security:
+            self._security = self.config.get_security()
+
+        return self._security
 
     def receive(self, topic, timeout, *args, **kwargs):
         """Subscribe to MCollective topic queue and wait for just one message.

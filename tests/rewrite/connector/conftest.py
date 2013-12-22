@@ -10,4 +10,4 @@ def conn_mock():
 @pytest.fixture
 def stomp_connector(config_stomp, conn_mock, security):
     from pymco.connector import stomp
-    return stomp.StompConnector(config_stomp, connection=conn_mock, security=security)
+    return stomp.StompConnector(config_stomp, connection=conn_mock)

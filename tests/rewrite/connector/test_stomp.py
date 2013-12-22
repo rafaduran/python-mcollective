@@ -46,7 +46,8 @@ def test_default_connection(conn, config_stomp):
     assert connector.connection is conn.return_value
 
 
-def test_send(stomp_connector, conn_mock, security):
+@mock.patch('pymco.connector.Connector.security')
+def test_send(security, stomp_connector, conn_mock):
     assert stomp_connector.send('foo', 'destination') is stomp_connector
     conn_mock.send.assert_called_with(body=security.encode('foo'),
                                       destination='destination')
@@ -89,7 +90,6 @@ class TestReceive:
                                              conn_mock):
         stomp_connector.receive(5)
         listener.assert_called_once_with(timeout=5,
-                                         security=stomp_connector.security,
                                          config=stomp_connector.config)
 
     def test_receive__raises_timeout_error_if_no_message(self,

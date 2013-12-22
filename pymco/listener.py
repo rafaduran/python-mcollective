@@ -12,9 +12,9 @@ from stomp import listener
 
 class ResponseListener(listener.ConnectionListener):
     """Listener that waits for a message response."""
-    def __init__(self, config, security, count, timeout=30, condition=None):
+    def __init__(self, config, count, timeout=30, condition=None):
         self.config = config
-        self.security = security
+        self._security = None
         self.timeout = timeout
         if not condition:
             condition = threading.Condition()
@@ -23,6 +23,14 @@ class ResponseListener(listener.ConnectionListener):
         self.received = 0
         self.responses = []
         self.count = count
+
+    @property
+    def security(self):
+        """Security provider property"""
+        if not self._security:
+            self._security = self.config.get_security()
+
+        return self._security
 
     def on_message(self, headers, body):
         self.condition.acquire()

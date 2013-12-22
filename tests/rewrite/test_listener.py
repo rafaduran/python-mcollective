@@ -18,25 +18,25 @@ def test_given_condition_is_used(result_listener, condition):
     assert result_listener.condition == condition
 
 
-def test_on_message_acquire_notify_release_condtion(result_listener, condition):
-    result_listener.on_message(body='---\nfoo: spam', headers={})
-    condition.acquire.assert_called_once_with()
-    condition.notify.assert_called_once_with()
-    condition.release.assert_called_once_with()
+@mock.patch('pymco.config.Config.get_security')
+class TestOnMessage():
+    def test_acquire_notify_release_condtion(self, get_security, result_listener, condition):
+        result_listener.on_message(body='---\nfoo: spam', headers={})
+        condition.acquire.assert_called_once_with()
+        condition.notify.assert_called_once_with()
+        condition.release.assert_called_once_with()
 
-
-def test_on_message_decode_message(result_listener):
-    with mock.patch.object(result_listener.security, 'decode') as decode:
+    def test_decode_message(self, get_security, result_listener):
+        decode = get_security.return_value.decode
         decode.return_value = {'foo': 'spam'}
         result_listener.on_message(body='---\nfoo: spam', headers={})
         decode.assert_called_once_with('---\nfoo: spam')
 
-
-def test_on_message_appends_messages(result_listener):
-    with mock.patch.object(result_listener.security, 'decode') as decode:
+    def test_appends_messages(self, get_security, result_listener):
         result_listener.on_message(body='---\nfoo: spam', headers={})
+        decode = get_security.return_value.decode
         decode.assert_called_once_with('---\nfoo: spam')
-    assert result_listener.responses == [decode.return_value]
+        assert result_listener.responses == [decode.return_value]
 
 
 def test_wait_on_message__acquire_release_condition(result_listener, condition):
@@ -70,3 +70,17 @@ def test_wait_loop__exits_on_timeout(time, result_listener, condition):
     time.side_effect = (0, 2, 3, 6)
     result_listener._wait_loop(5)
     assert condition.wait.call_args_list == [mock.call(5), mock.call(3)]
+
+
+@mock.patch('pymco.config.Config.get_security')
+def test_security(get_security, result_listener):
+    assert result_listener.security == get_security.return_value
+    get_security.assert_called_once_with()
+
+
+@mock.patch('pymco.config.Config.get_security')
+def test_security__caches_security(get_security, result_listener):
+    security = mock.Mock()
+    result_listener._security = security
+    assert result_listener.security == security
+    assert get_security.called is False

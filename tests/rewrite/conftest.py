@@ -147,7 +147,7 @@ security = condition
 @pytest.fixture
 def result_listener(config, none_security, condition):
     from pymco import listener
-    return listener.ResponseListener(config, none_security, condition=condition, count=2)
+    return listener.ResponseListener(config, condition=condition, count=2)
 
 
 @pytest.fixture

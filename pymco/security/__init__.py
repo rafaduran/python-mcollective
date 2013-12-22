@@ -4,6 +4,9 @@ import abc
 
 class SecurityProviderBase(object):
     """Abstract base class for security providers."""
+    plugins = {
+        'none': 'pymco.security.none.NoneProvider',
+    }
 
     def __init__(self, config):
         """Abstract method to be overriden for subclasses.

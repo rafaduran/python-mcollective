@@ -7,6 +7,7 @@ import six
 from six.moves import configparser
 
 from .connector import Connector
+from .security import SecurityProvider
 from . import utils
 
 
@@ -63,6 +64,11 @@ class Config(collections.Mapping):
     def get_connector(self):
         """Get connector based on MCollective settings."""
         import_path = Connector.plugins[self.config['connector']]
+        return utils.import_object(import_path, config=self)
+
+    def get_security(self):
+        """Get security plugin based on MCollective settings."""
+        import_path = SecurityProvider.plugins[self.config['securityprovider']]
         return utils.import_object(import_path, config=self)
 
     @staticmethod

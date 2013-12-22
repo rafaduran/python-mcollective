@@ -5,7 +5,6 @@ except ImportError:
     import mock
 
 import pytest
-from six.moves import configparser
 
 from pymco import config as _config
 from .. import base
@@ -84,7 +83,16 @@ def test_iter(config):
 @mock.patch('pymco.utils.import_object')
 def test_get_connector(import_object, config):
     with mock.patch.dict('pymco.connector.Connector.plugins',
-                         {'activemq': 'connector.foo.FooConector'}):
+                         {'activemq': 'connector.foo.FooConnector'}):
         assert config.get_connector() == import_object.return_value
-        import_object.assert_called_once_with('connector.foo.FooConector',
+        import_object.assert_called_once_with('connector.foo.FooConnector',
+                                              config=config)
+
+
+@mock.patch('pymco.utils.import_object')
+def test_get_security(import_object, config):
+    with mock.patch.dict('pymco.security.SecurityProvider.plugins',
+                         {'ssl': 'security.foo.FooProvider'}):
+        assert config.get_security() == import_object.return_value
+        import_object.assert_called_once_with('security.foo.FooProvider',
                                               config=config)
