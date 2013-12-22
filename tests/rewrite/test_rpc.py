@@ -6,36 +6,12 @@ import mock
 from pymco import rpc
 
 
-def test_simple_action_get_target(simple_action):
-    assert simple_action.get_target() == (
-        '/topic/mcollective.{0}.command'.format(base.MSG['agent'])
-    )
-
-
-def test_simple_action_get_target__custom_collective(config, msg):
+def test_custom_collective(config, msg):
     simple_action = rpc.SimpleAction(agent=base.MSG['agent'],
                                      config=config,
                                      msg=msg,
                                      collective='foocollective')
-    assert simple_action.get_target() == (
-        '/topic/foocollective.{0}.command'.format(base.MSG['agent'])
-    )
-
-
-def test_simple_action_get_reply_target(simple_action):
-    assert simple_action.get_reply_target() == (
-        '/topic/mcollective.{0}.reply'.format(base.MSG['agent'])
-    )
-
-
-def test_simple_action_get_reply_target__custom_collective(config, msg):
-    simple_action = rpc.SimpleAction(agent=base.MSG['agent'],
-                                     config=config,
-                                     msg=msg,
-                                     collective='foocollective')
-    assert simple_action.get_reply_target() == (
-        '/topic/foocollective.{0}.reply'.format(base.MSG['agent'])
-    )
+    assert simple_action.collective == 'foocollective'
 
 
 @mock.patch('pymco.config.Config.get_connector')
@@ -79,3 +55,18 @@ class TestSimpleActionCall():
     def test_receives__custom_timeout(self, connector, simple_action):
         simple_action.call(timeout=10)
         connector.receive.assert_called_once_with(timeout=10)
+
+    def test_get_target_delegates_connector(self, connector, simple_action):
+        assert simple_action.get_target() == connector.get_target.return_value
+        connector.get_target.assert_called_once_with(
+            collective=simple_action.collective,
+            agent=simple_action.agent,
+        )
+
+    def test_get_reply_target_delegates_connector(self, connector, simple_action):
+        assert (simple_action.get_reply_target() ==
+                connector.get_reply_target.return_value)
+        connector.get_reply_target.assert_called_once_with(
+            collective=simple_action.collective,
+            agent=simple_action.agent,
+        )

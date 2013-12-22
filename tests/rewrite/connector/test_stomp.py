@@ -100,3 +100,15 @@ class TestReceive:
         with self.patch_connection(stomp_connector):
             with pytest.raises(exc.TimeoutError):
                 stomp_connector.receive(5)
+
+
+def test_get_target(stomp_connector, config_stomp):
+    assert stomp_connector.get_target(collective='collective', agent='agent') == (
+        '{0}collective.agent.command'.format(config_stomp['topicprefix'])
+    )
+
+
+def test_get_reply_target(stomp_connector, config_stomp):
+    assert stomp_connector.get_reply_target(collective='collective', agent='agent') == (
+        '{0}collective.agent.reply'.format(config_stomp['topicprefix'])
+    )

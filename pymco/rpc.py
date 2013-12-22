@@ -23,11 +23,8 @@ class SimpleAction(object):
 
     def get_target(self):
         """MCollective RPC call target."""
-        return '{topic_prefix}{collective}.{agent}.command'.format(
-            agent=self.agent,
-            collective=self.collective,
-            topic_prefix=self.config['topicprefix'],
-        )
+        return self.connector.get_target(collective=self.collective,
+                                         agent=self.agent)
 
     def get_reply_target(self):
         """MCollective RPC call reply target.
@@ -35,11 +32,8 @@ class SimpleAction(object):
         This should build the subscription target required for listening replies
         to this RPC call.
         """
-        return '{topic_prefix}{collective}.{agent}.reply'.format(
-            agent=self.agent,
-            collective=self.collective,
-            topic_prefix=self.config['topicprefix'],
-        )
+        return self.connector.get_reply_target(collective=self.collective,
+                                               agent=self.agent)
 
     def call(self, timeout=5):
         """Make the RPC call.

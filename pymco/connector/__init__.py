@@ -72,6 +72,31 @@ def unsubscribe(self, destination, *args, **kwargs):
     """
 
 
+def get_target(self, agent, collective, topciprefix=None):
+    """Get the message target for the given agent and collective.
+
+    Params:
+        ``agent``: MCollective target agent name.
+        ``collective``: MCollective target collective.
+        ``topicprefix``: Required for older versions of MCollective
+    Returns:
+        ``target``: Message target string representation for given agent and
+        collective.
+    """
+
+
+def get_reply_target(self, agent, collective):
+    """Get the message target for the given agent and collective.
+
+    Params:
+        ``agent``: MCollective target agent name.
+        ``collective``: MCollective target collective.
+    Returns:
+        ``reply_target``: Message reply target string representation for given
+        agent and collective.
+    """
+
+
 # Building Metaclass here for Python 2/3 compatibility
 Connector = abc.ABCMeta('Connector', (BaseConnector,), {
     'connect': abc.abstractmethod(connect),
