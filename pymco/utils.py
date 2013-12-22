@@ -3,6 +3,7 @@
 ---------------------
 python-mcollective utils.
 """
+import importlib
 
 
 def import_class(import_path):
@@ -22,7 +23,7 @@ def import_class(import_path):
     parts = import_path.split('.')
     mod_str, klass_str = '.'.join(parts[:-1]), parts[-1]
     try:
-        mod = __import__(mod_str)
+        mod = importlib.import_module(mod_str)
         return getattr(mod, klass_str)
     except (AttributeError, ValueError):
         raise ImportError('Unable to import {klass} from module {mod}'.format(
