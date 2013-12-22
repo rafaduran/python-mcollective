@@ -81,7 +81,7 @@ class Config(collections.Mapping):
     def from_configstr(configstr, section='default'):
         '''Parses given string an returns a new :py:class:`Config` instance'''
         config = six.StringIO()
-        config.write('[{0}]'.format(section))
+        config.write('[{0}]\n'.format(section))
         config.write(configstr)
         config.seek(0, os.SEEK_SET)
         parser = configparser.ConfigParser()
