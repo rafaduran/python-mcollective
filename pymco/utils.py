@@ -1,7 +1,7 @@
 """
 :py:mod:`pymco.utils`
 ---------------------
-python-mcollective utils.
+python-mcollective utils that don't fit elsewhere.
 """
 import importlib
 
@@ -47,3 +47,18 @@ def import_object(import_path, *args, **kwargs):
         ``kwargs``: Keyword arguments for object instantiation.
     """
     return import_class(import_path)(*args, **kwargs)
+
+
+def load_rsa_key(filename):
+    """Read filename and try to load its contents as an RSA key.
+
+    Wrapper over :py:meth:`Crypto.PublicKey.RSA.importKey`, just getting the
+    file content first and then just loading the key from it.
+    """
+    # Importing here since Crypto module is only require for the SSL security
+    # provider plugin.
+    from Crypto.PublicKey import RSA
+    with open(filename, 'rt') as key:
+        content = key.read()
+
+    return RSA.importKey(content)

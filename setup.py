@@ -31,5 +31,6 @@ class PyTest(test.test):
 setuptools.setup(setup_requires=('d2to1',),
                  install_requires=REQ,
                  tests_require=TREQ,
+                 extras_require={'ssl': ('pycrypto',)},
                  cmdclass={'test': PyTest},
                  d2to1=True)

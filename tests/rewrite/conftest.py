@@ -1,4 +1,6 @@
 '''Test configuration for the re-write unit tests'''
+import os
+
 try:
     from unittest import mock
 except ImportError:
@@ -156,3 +158,15 @@ def simple_action(config, msg):
     return rpc.SimpleAction(agent=base.MSG['agent'],
                             config=config,
                             msg=msg)
+
+
+@pytest.fixture
+def client_public():
+    path = os.path.join(os.path.dirname(__file__),
+                        os.path.pardir,
+                        'fixtures',
+                        'client-public.pem')
+    with open(path, 'rt') as cpf:
+        content = cpf.read()
+
+    return content
