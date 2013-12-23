@@ -8,6 +8,7 @@ from six.moves import configparser
 
 from .connector import Connector
 from .security import SecurityProvider
+from .serializers import SerializerBase
 from . import utils
 
 
@@ -70,6 +71,11 @@ class Config(collections.Mapping):
         """Get security plugin based on MCollective settings."""
         import_path = SecurityProvider.plugins[self.config['securityprovider']]
         return utils.import_object(import_path, config=self)
+
+    def get_serializer(self, key):
+        """Get serializer based on MCollective settings."""
+        import_path = SerializerBase.plugins[self.config[key]]
+        return utils.import_object(import_path)
 
     @staticmethod
     def from_configfile(configfile):

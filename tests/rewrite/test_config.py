@@ -96,3 +96,12 @@ def test_get_security(import_object, config):
         assert config.get_security() == import_object.return_value
         import_object.assert_called_once_with('security.foo.FooProvider',
                                               config=config)
+
+
+@mock.patch('pymco.utils.import_object')
+def test_get_serializer(import_object, config):
+    with mock.patch.dict('pymco.serializers.SerializerBase.plugins',
+                         {'yaml': 'serializer.foo.FooSerializer'}):
+        assert config.get_serializer('plugin.ssl_serializer'
+                                     ) == import_object.return_value
+        import_object.assert_called_once_with('serializer.foo.FooSerializer')

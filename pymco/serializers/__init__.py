@@ -29,4 +29,7 @@ def deserialize(self, msg):
 SerializerBase = abc.ABCMeta('SerializerBase', (object,), {
     'serialize': abc.abstractmethod(serialize),
     'deserialize': abc.abstractmethod(deserialize),
+    'plugins': {
+        'yaml': 'pymco.serializers.yaml.YAMLSerializer',
+    }
 })
