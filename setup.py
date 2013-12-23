@@ -14,9 +14,10 @@ REQ = set([dep.name
 TREQ = set([dep.name or dep.url
             for dep in req.parse_requirements('requirements/tests.txt')]) - REQ
 
+
 class PyTest(test.test):
     def finalize_options(self):
-        TestCommand.finalize_options(self)
+        test.test.finalize_options(self)
         self.test_args = []
         self.test_suite = True
 
