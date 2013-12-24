@@ -15,3 +15,4 @@ junit-*.xml
 htmlcov/
 mcollective.log
 server.cfg
+client.cfg
