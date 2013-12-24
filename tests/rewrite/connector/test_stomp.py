@@ -44,6 +44,7 @@ def test_disconnect_not_connected(stomp_connector, conn_mock):
 def test_default_connection(conn, config_stomp):
     connector = stomp.StompConnector(config=config_stomp)
     assert connector.connection is conn.return_value
+    conn.assert_called_once_with(host_and_ports=[('localhost', 61613)])
 
 
 @mock.patch('pymco.connector.Connector.security')

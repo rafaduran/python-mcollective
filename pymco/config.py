@@ -77,6 +77,31 @@ class Config(collections.Mapping):
         import_path = SerializerBase.plugins[self.config[key]]
         return utils.import_object(import_path)
 
+    def get_host_and_ports(self):
+        """Get all hosts and port pairs for the current configuration.
+
+        The result must follow the :py:class:`stomp.Connection`
+        ``host_and_ports`` parameter.
+
+        Returns:
+            ``host_and_ports``: Iterable of two-tuple where the first element
+            is the host and the second is the port.
+        """
+        if self.config['connector'] == 'stomp':
+            return [(self.config['plugin.stomp.host'], self.getint('plugin.stomp.port'))]
+
+        prefix = 'plugin.{connector}.pool.'.format(
+            connector=self.config['connector'])
+        host_key = prefix + '{index}.host'
+        port_key = prefix + '{index}.port'
+        host_and_ports = []
+
+        for index in range(1, self.getint(prefix + 'size') + 1):
+            host_and_ports.append((self.config[host_key.format(index=index)],
+                                   self.getint(port_key.format(index=index))))
+
+        return host_and_ports
+
     @staticmethod
     def from_configfile(configfile):
         '''Reads configfile and returns a new :py:class:`Config` instance'''

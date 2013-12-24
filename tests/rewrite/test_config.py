@@ -105,3 +105,14 @@ def test_get_serializer(import_object, config):
         assert config.get_serializer('plugin.ssl_serializer'
                                      ) == import_object.return_value
         import_object.assert_called_once_with('serializer.foo.FooSerializer')
+
+
+def test_get_host_and_ports(config):
+    assert config.get_host_and_ports() == [('localhost', 6163)]
+
+
+def test_get_host_and_ports_stomp(config):
+    with mock.patch.dict(config.config, {'connector': 'stomp',
+                                         'plugin.stomp.host': 'host',
+                                         'plugin.stomp.port': '6163'}):
+        assert config.get_host_and_ports() == [('host', 6163)]
