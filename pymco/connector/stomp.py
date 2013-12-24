@@ -28,8 +28,10 @@ class StompConnector(Connector):
     def connect(self, wait=None):
         if not self.connection.connected:
             self.connection.start()
-            self.connection.connect(username=self.config['plugin.stomp.user'],
-                                    passcode=self.config['plugin.stomp.password'],
+            user, password = self.config.get_user_and_password(
+                self.connection.current_host_and_port)
+            self.connection.connect(username=user,
+                                    passcode=password,
                                     wait=wait)
 
         return self

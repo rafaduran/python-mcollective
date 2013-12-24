@@ -7,6 +7,7 @@ except ImportError:
 import pytest
 
 from pymco import config as _config
+from pymco.exc import ConfigLookupError
 from .. import base
 
 
@@ -116,3 +117,18 @@ def test_get_host_and_ports_stomp(config):
                                          'plugin.stomp.host': 'host',
                                          'plugin.stomp.port': '6163'}):
         assert config.get_host_and_ports() == [('host', 6163)]
+
+
+def test_get_user_and_password(config):
+    assert ('mcollective', 'secret') == config.get_user_and_password(
+        ('localhost', 6163))
+
+
+def test_get_user_and_password__raises_value_error(config):
+    with pytest.raises(ValueError):
+        config.get_user_and_password()
+
+
+def test_get_user_and_password__raises_config_lookup_error(config):
+    with pytest.raises(ConfigLookupError):
+        config.get_user_and_password(('host', 345))

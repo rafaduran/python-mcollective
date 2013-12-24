@@ -12,6 +12,7 @@ from pymco import exc
 
 def test_connect(stomp_connector, conn_mock, config_stomp):
     conn_mock.connected = False
+    conn_mock.current_host_and_port = ('localhost', 6163)
     assert stomp_connector.connect() is stomp_connector
     conn_mock.connect.assert_called_once_with(username=config_stomp['plugin.stomp.user'],
                                               passcode=config_stomp['plugin.stomp.password'],

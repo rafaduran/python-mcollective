@@ -7,6 +7,7 @@ import six
 from six.moves import configparser
 
 from .connector import Connector
+from .exc import ConfigLookupError
 from .security import SecurityProvider
 from .serializers import SerializerBase
 from . import utils
@@ -101,6 +102,43 @@ class Config(collections.Mapping):
                                    self.getint(port_key.format(index=index))))
 
         return host_and_ports
+
+    def get_user_and_password(self, current_host_and_port=None):
+        """Get the user and password for the current host and port.
+
+        Params:
+            ``current_host_and_port``: two-tuple where the first element is the
+            host and second is the port. This parameter is not required for
+            ``stomp`` connector.
+
+        Returns:
+            ``user_and_password``: two-tuple where the first element is the
+            user and the second is the password for the given host and port.
+        Raises:
+            :py:exc:`ValueError`: if connector isn't ``stomp`` and
+            ``host_and_port`` is not provided.
+            :py:exc:`pymco.exc.ConfigLookupError`: if host and port are not
+            found into the connector list of host and ports.
+        """
+        connector = self.config['connector']
+        if connector == 'stomp':
+            return self.config['plugin.stomp.user'], self.config['plugin.stomp.password']
+        elif current_host_and_port is None:
+            raise ValueError('"host_and_port" parameter is required for {0} '
+                             'connector'.format(connector))
+
+        for index,  host_and_port in enumerate(self.get_host_and_ports(), 1):
+            if host_and_port == current_host_and_port:
+                prefix = 'plugin.{connector}.pool.'.format(
+                    connector=self.config['connector'])
+                user_key = prefix + '{index}.user'
+                pass_key = prefix + '{index}.password'
+                return (self.config[user_key.format(index=index)],
+                        self.config[pass_key.format(index=index)])
+        else:
+            raise ConfigLookupError('{0} is not in the configuration for {1} '
+                                    'connector'.format(current_host_and_port,
+                                                       connector))
 
     @staticmethod
     def from_configfile(configfile):
