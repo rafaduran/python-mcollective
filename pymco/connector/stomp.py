@@ -21,7 +21,7 @@ class StompConnector(Connector):
         self._id = None
 
         if connection is None:
-            self.connection = StompConnector.default_connection(config)
+            self.connection = self.default_connection(config)
         else:
             self.connection = connection
 
@@ -65,8 +65,8 @@ class StompConnector(Connector):
 
         return self._id
 
-    @staticmethod
-    def default_connection(config):
+    @classmethod
+    def default_connection(cls, config):
         """Creates a :py:class:`stomp.Connection` object with defaults"""
         return stomp.Connection(host_and_ports=config.get_host_and_ports())
 
