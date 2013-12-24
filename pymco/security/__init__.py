@@ -6,6 +6,7 @@ class SecurityProviderBase(object):
     """Abstract base class for security providers."""
     plugins = {
         'none': 'pymco.security.none.NoneProvider',
+        'ssl': 'pymco.security.ssl.SSLProvider',
     }
 
     def __init__(self, config):
