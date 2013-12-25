@@ -1,10 +1,4 @@
-import mock
 import pytest
-
-
-@pytest.fixture
-def conn_mock():
-    return mock.Mock()
 
 
 @pytest.fixture

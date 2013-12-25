@@ -143,7 +143,7 @@ def none_security(config):
 def condition():
     return mock.Mock()
 
-security = condition
+conn_mock = security = condition
 
 
 @pytest.fixture

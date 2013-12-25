@@ -5,10 +5,10 @@ from __future__ import absolute_import
 
 import stomp
 
-from .stomp import StompConnector
+from . import Connector
 
 
-class RabbitMQConnector(StompConnector):
+class RabbitMQConnector(Connector):
     """RabbitMQ middleware specific connector."""
 
     def get_target(self, agent, collective):

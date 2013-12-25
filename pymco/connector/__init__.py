@@ -4,6 +4,10 @@
 python-mcollective connectors for MCollective.
 """
 import abc
+import itertools
+
+from .. import exc
+from .. import listener
 
 
 class BaseConnector(object):
@@ -13,9 +17,117 @@ class BaseConnector(object):
         'rabbitmq': 'pymco.connector.rabbitmq.RabbitMQConnector',
     }
 
-    def __init__(self, config):
+    id_generator = itertools.count()
+
+    def __init__(self, config, connection=None):
         self.config = config
         self._security = None
+        self._started = False
+        self._id = None
+
+        if connection is None:
+            self.connection = self.default_connection(config)
+        else:
+            self.connection = connection
+
+    def connect(self, wait=None):
+        """Connect to MCollective middleware."""
+        if not self.connection.connected:
+            self.connection.start()
+            user, password = self.config.get_user_and_password(
+                self.connection.current_host_and_port)
+            self.connection.connect(username=user,
+                                    passcode=password,
+                                    wait=wait)
+
+        return self
+
+    def disconnect(self):
+        """Disconnet from MCollective middleware."""
+        if self.connection.connected:
+            self.connection.disconnect()
+            self.connection.stop()
+
+        return self
+
+    def send(self, msg, destination, *args, **kwargs):
+        """Send an MCollective message.
+
+        Args:
+            ``msg``: message to be sent.
+
+        Returns:
+            ``self``: so you can chain calls.
+        """
+        self.connection.send(body=self.security.encode(self.security.sign(msg)),
+                             destination=destination,
+                             **kwargs)
+        return self
+
+    def subscribe(self, destination, id=None, *args, **kwargs):
+        """Subscribe to MCollective queue.
+
+        Args:
+            ``destination``: Target to subscribe.
+
+            ``args``: extra positional arguments.
+
+            ``kwargs``: extra keyword arguments.
+
+        Returns:
+            ``self``: so you can chain calls.
+        """
+        if not id:
+            id = self.id
+
+        self.connection.subscribe(destination, id=id)
+        return self
+
+    def unsubscribe(self, destination, *args, **kwargs):
+        """Unsubscribe to MCollective queue.
+
+        Args:
+            ``destination``: Target to unsubscribe.
+
+            ``args``: extra positional arguments.
+
+            ``kwargs``: extra keyword arguments.
+
+        Returns:
+            ``self``: so you can chain calls.
+        """
+
+    def receive(self, timeout, *args, **kwargs):
+        """Subscribe to MCollective topic queue and wait for just one message.
+
+        Args:
+            ``timeout``: how long we should wait for the message.
+
+            ``args``: extra positional arguments.
+
+            ``kwargs``: extra keyword arguments.
+
+        Returns:
+            ``message``: received message.
+
+        Raises: :py:exc:`pymco.exc.TimeoutError`
+        """
+        response_listener = listener.SingleResponseListener(timeout=timeout,
+                                                            config=self.config)
+        self.connection.set_listener('response_listener', response_listener)
+        response_listener.wait_on_message()
+
+        if len(response_listener.responses) != 1:
+            raise exc.TimeoutError
+
+        return response_listener.responses[0]
+
+    @property
+    def id(self):
+        if not self._id:
+            self._id = next(self.id_generator)
+
+        return self._id
 
     @property
     def security(self):
@@ -24,62 +136,6 @@ class BaseConnector(object):
             self._security = self.config.get_security()
 
         return self._security
-
-    def receive(self, topic, timeout, *args, **kwargs):
-        """Subscribe to MCollective topic queue and wait for just one message.
-
-        Args:
-            ``topic``: message topic to wait for.
-            ``timeout``: how long we should wait for the message.
-            ``args``: extra positional arguments.
-            ``kwargs``: extra keyword arguments.
-        Returns:
-            ``message``: received message.
-            Raises: :py:exc:`pymco.exc.TimeoutError`
-        """
-        raise NotImplementedError
-
-
-def connect(self):
-    """Connect to MCollective middleware."""
-
-
-def disconnect(self):
-    """Disconnet from MCollective middleware."""
-
-
-def send(self, msg, *args, **kwargs):
-    """Send an MCollective message.
-
-    Args:
-        ``msg``: message to be sent.
-    Returns:
-        ``self``: so you can chain calls.
-    """
-
-
-def subscribe(self, destination, *args, **kwargs):
-    """Subscribe to MCollective queue.
-
-    Args:
-        ``destination``: Target to subscribe.
-        ``args``: extra positional arguments.
-        ``kwargs``: extra keyword arguments.
-    Returns:
-        ``self``: so you can chain calls.
-    """
-
-
-def unsubscribe(self, destination, *args, **kwargs):
-    """Unsubscribe to MCollective queue.
-
-    Args:
-        ``destination``: Target to unsubscribe.
-        ``args``: extra positional arguments.
-        ``kwargs``: extra keyword arguments.
-    Returns:
-        ``self``: so you can chain calls.
-    """
 
 
 def get_target(self, agent, collective, topciprefix=None):
@@ -107,11 +163,16 @@ def get_reply_target(self, agent, collective):
     """
 
 
+def default_connection(cls, config):
+    """Creates a :py:class:`stomp.Connection` object with defaults.
+
+    This method should be defined as a classmethod.
+    """
+
+
 # Building Metaclass here for Python 2/3 compatibility
 Connector = abc.ABCMeta('Connector', (BaseConnector,), {
-    'connect': abc.abstractmethod(connect),
-    'disconnect': abc.abstractmethod(disconnect),
-    'send': abc.abstractmethod(send),
-    'subscribe': abc.abstractmethod(subscribe),
-    'unsubscribe': abc.abstractmethod(unsubscribe),
+    'get_target': abc.abstractmethod(get_target),
+    'get_reply_target': abc.abstractmethod(get_reply_target),
+    'default_connection': abc.abstractmethod(default_connection),
 })
