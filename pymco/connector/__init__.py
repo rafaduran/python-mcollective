@@ -13,8 +13,9 @@ from .. import listener
 class BaseConnector(object):
     """Base abstract class for MCollective connectors."""
     plugins = {
-        'stomp': 'pymco.connector.stomp.StompConnector',
+        'activemq': 'pymco.connector.activemq.ActiveMQConnector',
         'rabbitmq': 'pymco.connector.rabbitmq.RabbitMQConnector',
+        'stomp': 'pymco.connector.stomp.StompConnector',
     }
 
     id_generator = itertools.count()
