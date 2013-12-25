@@ -45,7 +45,8 @@ class StompConnector(Connector):
 
     def send(self, msg, destination, *args, **kwargs):
         self.connection.send(body=self.security.encode(self.security.sign(msg)),
-                             destination=destination)
+                             destination=destination,
+                             **kwargs)
         return self
 
     def subscribe(self, destination, id=None, *args, **kwargs):

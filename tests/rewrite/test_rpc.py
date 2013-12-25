@@ -42,7 +42,10 @@ class TestSimpleActionCall():
     def test_sends_msg(self, connector, simple_action, msg):
         simple_action.call()
         target = simple_action.get_target()
-        connector.send.assert_called_with(msg, target)
+        reply_target = simple_action.get_reply_target()
+        connector.send.assert_called_with(msg,
+                                          target,
+                                          **{'reply-to': reply_target})
 
     def test_disconnects(self, connector, simple_action):
         simple_action.call()

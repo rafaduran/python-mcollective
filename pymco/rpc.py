@@ -42,8 +42,11 @@ class SimpleAction(object):
         for the result.
         """
         self.connector.connect(wait=True)
-        self.connector.subscribe(destination=self.get_reply_target())
-        self.connector.send(self.msg, self.get_target())
+        reply_target = self.get_reply_target()
+        self.connector.subscribe(destination=reply_target)
+        self.connector.send(self.msg,
+                            self.get_target(),
+                            **{'reply-to': reply_target})
         result = self.connector.receive(timeout=timeout)
         self.connector.disconnect()
         return result
