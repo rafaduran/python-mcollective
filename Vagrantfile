@@ -11,6 +11,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # For RabbitMQ stomp local use
   config.vm.network 'forwarded_port', guest:  61613, host: 61613
+  config.vm.network 'forwarded_port', guest:  61614, host: 61614
 
   config.vm.provider :virtualbox do |vb|
     # changing nictype partially helps with Vagrant issue #516, VirtualBox NAT interface chokes when
@@ -30,12 +31,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision :shell do |sh|
     sh.inline = <<-EOF
       gem install chef --no-ri --no-rdoc --no-user-install
+      apt-get install unzip -y
     EOF
   end
 
   config.vm.provision :chef_solo do |chef|
     # this assumes you have travis-ci/travis-cookbooks cloned at ./cookbooks
-    chef.cookbooks_path = ["cookbooks/ci_environment"]
+    chef.cookbooks_path = ['cookbooks/ci_environment', 'extra_cookbooks']
     chef.log_level      = :debug
 
     # Highly recommended to keep apt packages metadata in sync and
@@ -79,6 +81,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # chef.add_recipe     "cassandra::datastax"
     # chef.add_recipe     "hbase::ppa"
     # chef.add_recipe     "pypy::ppa"
+    # chef.add_recipe     "pypy::ppa"
+    chef.add_recipe       'activemq'
+    chef.add_recipe       'activemq_mco'
   end
   # This would be managed by travis
   config.vm.provision :shell, :inline => 'service rabbitmq-server start'

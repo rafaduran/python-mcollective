@@ -1,3 +1,6 @@
 [submodule "cookbooks"]
 	path = cookbooks
 	url = https://github.com/travis-ci/travis-cookbooks.git
+[submodule "extra_cookbooks/activemq"]
+	path = extra_cookbooks/activemq
+	url = https://github.com/opscode-cookbooks/activemq.git
