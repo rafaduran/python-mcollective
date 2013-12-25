@@ -10,6 +10,7 @@ class BaseConnector(object):
     """Base abstract class for MCollective connectors."""
     plugins = {
         'stomp': 'pymco.connector.stomp.StompConnector',
+        'rabbitmq': 'pymco.connector.rabbitmq.RabbitMQConnector',
     }
 
     def __init__(self, config):
