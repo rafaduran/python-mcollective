@@ -49,7 +49,7 @@ def test_get_target(connector):
 
 def test_get_reply_target(connector):
     assert connector.get_reply_target(agent='agent', collective='collective') == (
-        '/temp-queue/collective_reply_agent')
+        '/queue/collective_reply_agent')
 
 
 @mock.patch('stomp.Connection')

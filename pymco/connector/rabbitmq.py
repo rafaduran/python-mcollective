@@ -20,7 +20,7 @@ class RabbitMQConnector(Connector):
 
     def get_reply_target(self, agent, collective):
         """Implement :py:meth:`pymco.connector.Connector.get_reply_target`"""
-        return '/temp-queue/{collective}_reply_{agent}'.format(
+        return '/queue/{collective}_reply_{agent}'.format(
             agent=agent,
             collective=collective,
         )
