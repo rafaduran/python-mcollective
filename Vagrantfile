@@ -12,6 +12,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # For RabbitMQ stomp local use
   config.vm.network 'forwarded_port', guest:  61613, host: 61613
   config.vm.network 'forwarded_port', guest:  61614, host: 61614
+  config.vm.network :private_network, ip: '192.168.33.10'
 
   config.vm.provider :virtualbox do |vb|
     # changing nictype partially helps with Vagrant issue #516, VirtualBox NAT interface chokes when
