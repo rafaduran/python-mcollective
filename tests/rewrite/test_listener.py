@@ -1,15 +1,26 @@
 """
 Tests for pymco.listener
 """
+import pytest
 import mock
 
 from pymco import listener
 
 
+@pytest.fixture
+def condition():
+    return mock.Mock()
+
+
+@pytest.fixture
+def result_listener(config, condition):
+    return listener.ResponseListener(config, condition=condition, count=2)
+
+
 @mock.patch('threading.Condition')
-def test_default_condition(cond, config, none_security):
+def test_default_condition(cond, config):
     """Tests condition is a new threading.Condition by default."""
-    res_lis = listener.ResponseListener(config, none_security, 1)
+    res_lis = listener.ResponseListener(config, 1)
     assert res_lis.condition == cond.return_value
 
 

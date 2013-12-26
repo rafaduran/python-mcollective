@@ -2,8 +2,16 @@
 from .. import base
 
 import mock
+import pytest
 
 from pymco import rpc
+
+
+@pytest.fixture
+def simple_action(config, msg):
+    return rpc.SimpleAction(agent=base.MSG['agent'],
+                            config=config,
+                            msg=msg)
 
 
 def test_custom_collective(config, msg):

@@ -1,11 +1,24 @@
 """Tests for pymco.utils"""
 import collections
+import os
 
 import mock
 import pytest
 import six
 
 from pymco import utils
+
+
+@pytest.fixture
+def client_public():
+    path = os.path.join(os.path.dirname(__file__),
+                        os.path.pardir,
+                        'fixtures',
+                        'client-public.pem')
+    with open(path, 'rt') as cpf:
+        content = cpf.read()
+
+    return content
 
 
 def test_import_class():

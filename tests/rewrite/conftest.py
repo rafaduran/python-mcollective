@@ -1,6 +1,4 @@
 '''Test configuration for the re-write unit tests'''
-import os
-
 try:
     from unittest import mock
 except ImportError:
@@ -14,18 +12,18 @@ CONFIGSTR = '''
 topicprefix = /topic/
 collectives = mcollective,sub1,sub2
 main_collective = mcollective
-libdir = /opt/workspace/mcollective-python/tests/integration/vendor/plugins
-logfile = /opt/workspace/mcollective-python/tests/mcollective.log
+libdir = /path/to/plugins
+logfile = /path/to/mcollective.log
 loglevel = debug
 daemonize = 0
 identity = mco1
 
 # Plugins
 securityprovider = ssl
-plugin.ssl_server_public = mcserver-public.pem
-plugin.ssl_client_private = /opt/workspace/mcollective-python/tests/fixtures/testkey-private.pem
+plugin.ssl_server_public = /path/to/server-public.pem
+plugin.ssl_client_private = /path/to/client-private.pem
 plugin.ssl_serializer = yaml
-plugin.ssl_client_public = /opt/workspace/mcollective-python/tests/fixtures/testkey-public.pem
+plugin.ssl_client_public = /path/to/client-public.pem
 
 direct_addressing = yes
 direct_addressing_threshold = 5
@@ -39,33 +37,7 @@ plugin.activemq.pool.1.user = mcollective
 plugin.activemq.pool.1.ssl = false
 
 factsource = yaml
-plugin.yaml = /opt/workspace/mcollective-python/tests/tests/fixtures/facts.yaml
-'''
-
-CONFIGSTR_STOMP = '''
-topicprefix = /topic/
-collectives = mcollective
-main_collective = mcollective
-libdir = /Users/rafaduran/workspace/python-mcollective/tests/integration/vendor/plugins
-logfile = /Users/rafaduran/workspace/python-mcollective/mcollective.log
-loglevel = debug
-daemonize = 0
-identity = mco1
-
-# Plugins
-securityprovider = none
-
-direct_addressing = yes
-direct_addressing_threshold = 5
-
-connector = stomp
-plugin.stomp.host = localhost
-plugin.stomp.password = guest
-plugin.stomp.port = 61613
-plugin.stomp.user = guest
-
-factsource = yaml
-plugin.yaml = /Users/rafaduran/workspace/python-mcollective/tests/fixtures/facts.yaml
+plugin.yaml = /path/to/facts.yaml
 '''
 
 
@@ -84,14 +56,6 @@ def config(configstr):
     # imports
     from pymco import config
     return config.Config.from_configstr(configstr=configstr)
-
-
-@pytest.fixture
-def config_stomp():
-    # Importing here since py-cov will ignore code imported on conftest files
-    # imports
-    from pymco import config
-    return config.Config.from_configstr(configstr=CONFIGSTR_STOMP)
 
 
 @pytest.fixture
@@ -123,50 +87,7 @@ def msg(config, filter_):
 
 
 @pytest.fixture
-def msg2(config):
-    '''Creates a new :py:class:`pymco.message.Message` instance.'''
-    # Importing here since py-cov will ignore code imported on conftest files
-    # imports
-    from pymco import message
-    return message.Message(body=base.MSG['body'],
-                           agent=base.MSG['agent'],
-                           config=config)
-
-
-@pytest.fixture
-def none_security(config):
-    from pymco.security import none
-    return none.NoneProvider(config)
-
-
-@pytest.fixture
-def condition():
+def security():
     return mock.Mock()
 
-conn_mock = security = condition
-
-
-@pytest.fixture
-def result_listener(config, none_security, condition):
-    from pymco import listener
-    return listener.ResponseListener(config, condition=condition, count=2)
-
-
-@pytest.fixture
-def simple_action(config, msg):
-    from pymco import rpc
-    return rpc.SimpleAction(agent=base.MSG['agent'],
-                            config=config,
-                            msg=msg)
-
-
-@pytest.fixture
-def client_public():
-    path = os.path.join(os.path.dirname(__file__),
-                        os.path.pardir,
-                        'fixtures',
-                        'client-public.pem')
-    with open(path, 'rt') as cpf:
-        content = cpf.read()
-
-    return content
+conn_mock = security

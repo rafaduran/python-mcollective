@@ -7,6 +7,14 @@ from pymco import message
 from .. import base
 
 
+@pytest.fixture
+def msg_no_filter(config):
+    '''Creates a new :py:class:`pymco.message.Message` instance.'''
+    return message.Message(body=base.MSG['body'],
+                           agent=base.MSG['agent'],
+                           config=config)
+
+
 def test_filter_add_cfclass(filter_):
     '''Tests :py:method:`pymco.message.Filter.add_class`.'''
     assert filter_['cf_class'] == []
@@ -139,9 +147,9 @@ def test_message_filter_update(msg):
     assert isinstance(msg[':filter'], dict)
 
 
-def test_message_no_filter(msg2):
+def test_message_no_filter(msg_no_filter):
     '''Tests :py:class:`pymco.message.Message` with no filter.'''
-    assert dict(msg2[':filter']) == dict(message.Filter())
+    assert dict(msg_no_filter[':filter']) == dict(message.Filter())
 
 
 def test_msg_update_no_symbol(msg):
