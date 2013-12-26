@@ -118,10 +118,10 @@ class BaseConnector(object):
         self.connection.set_listener('response_listener', response_listener)
         response_listener.wait_on_message()
 
-        if len(response_listener.responses) != 1:
+        if len(response_listener.responses) == 0:
             raise exc.TimeoutError
 
-        return response_listener.responses[0]
+        return response_listener.responses
 
     @property
     def id(self):
