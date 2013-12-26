@@ -1,5 +1,6 @@
 {% for key, value in config.items() | sort -%}
-{% if key == 'topicprefix' -%}
+{% if value is none -%}
+{% elif key == 'topicprefix' -%}
 topicprefix = /{{ value }}/
 {% elif key in ('collectives',) -%}
 {{ key }} = {{ ','.join(value) }}
