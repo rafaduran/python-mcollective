@@ -1,12 +1,10 @@
 '''Test configuration for the re-write unit tests'''
-try:
-    from unittest import mock
-except ImportError:
-    import mock
 
 import pytest
 
-from .. import base
+from pymco.test import ctxt
+from pymco.test import utils
+from pymco.test.utils import mock
 
 CONFIGSTR = '''
 topicprefix = /topic/
@@ -42,7 +40,7 @@ plugin.yaml = /path/to/facts.yaml
 
 
 def pytest_runtest_setup(item):
-    base.configfile()
+    utils.configfile()
 
 
 @pytest.fixture
@@ -75,10 +73,10 @@ def msg(config, filter_):
     from pymco import message
     with mock.patch('time.time') as time:
         with mock.patch('hashlib.sha1') as sha1:
-            time.return_value = base.MSG['msgtime']
-            sha1.return_value.hexdigest.return_value = base.MSG['requestid']
-            msg_ = message.Message(body=base.MSG['body'],
-                                   agent=base.MSG['agent'],
+            time.return_value = ctxt.MSG['msgtime']
+            sha1.return_value.hexdigest.return_value = ctxt.MSG['requestid']
+            msg_ = message.Message(body=ctxt.MSG['body'],
+                                   agent=ctxt.MSG['agent'],
                                    filter_=filter_,
                                    config=config)
             time.assert_called_once_with()

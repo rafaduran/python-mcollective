@@ -1,9 +1,9 @@
 """Tests for pymco.rabbitmq"""
-import mock
 import pytest
 
 import pymco.config
 from pymco.connector import rabbitmq
+from pymco.test.utils import mock
 
 CONFIGSTR = """collectives = mcollective
 main_collective = mcollective

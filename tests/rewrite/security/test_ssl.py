@@ -1,8 +1,8 @@
 """Tests for pymco.security.ssl"""
-import mock
 import pytest
 
 from pymco.security import ssl
+from pymco.test.utils import mock
 
 
 @pytest.fixture

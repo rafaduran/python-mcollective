@@ -2,12 +2,12 @@
 Tests for StompConnector
 """
 from __future__ import absolute_import
-import mock
 import pytest
 import six
 
 from pymco.connector import stomp
 from pymco import exc
+from pymco.test.utils import mock
 
 CONFIGSTR = '''
 topicprefix = /topic/

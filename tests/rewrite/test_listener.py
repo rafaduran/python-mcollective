@@ -2,9 +2,9 @@
 Tests for pymco.listener
 """
 import pytest
-import mock
 
 from pymco import listener
+from pymco.test.utils import mock
 
 
 @pytest.fixture

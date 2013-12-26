@@ -1,6 +1,7 @@
 """Test NoneProvider security provider"""
 import pytest
-import mock
+
+from pymco.test.utils import mock
 
 
 @pytest.fixture

@@ -3,15 +3,14 @@ import pytest
 
 from pymco import exc
 from pymco import message
-
-from .. import base
+from pymco.test import ctxt
 
 
 @pytest.fixture
 def msg_no_filter(config):
     '''Creates a new :py:class:`pymco.message.Message` instance.'''
-    return message.Message(body=base.MSG['body'],
-                           agent=base.MSG['agent'],
+    return message.Message(body=ctxt.MSG['body'],
+                           agent=ctxt.MSG['agent'],
                            config=config)
 
 
@@ -91,11 +90,11 @@ def test_filter_length(filter_):
 def test_message(msg, filter_):
     '''Tests :py:class:`pymco.message.Message` attribues.'''
     for name, value in ((':senderid', 'mco1'),
-                        (':msgtime', int(base.MSG['msgtime'])),
+                        (':msgtime', int(ctxt.MSG['msgtime'])),
                         (':ttl', 60),
-                        (':requestid', base.MSG['requestid']),
-                        (':body', base.MSG['body']),
-                        (':agent', base.MSG['agent']),
+                        (':requestid', ctxt.MSG['requestid']),
+                        (':body', ctxt.MSG['body']),
+                        (':agent', ctxt.MSG['agent']),
                         (':collective', 'mcollective'),
                         (':filter', dict(filter_)),
                         ):

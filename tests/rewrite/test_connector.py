@@ -1,8 +1,8 @@
-"""Tests for python-mcollective base."""
-import mock
+"""Tests for python-mcollective base connector."""
 import pytest
 
 from pymco import connector
+from pymco.test.utils import mock
 
 
 def test_connector_is_abstract():

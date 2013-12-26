@@ -1,9 +1,9 @@
 """Tests for pymco.connector.activemq"""
-import mock
 import pytest
 
 
 from pymco.connector import activemq
+from pymco.test.utils import mock
 
 
 @pytest.fixture

@@ -2,11 +2,11 @@
 import collections
 import os
 
-import mock
 import pytest
 import six
 
 from pymco import utils
+from pymco.test.utils import mock
 
 
 @pytest.fixture

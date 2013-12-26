@@ -1,19 +1,15 @@
 '''Tets for the configuration class'''
-try:
-    from unittest import mock
-except ImportError:
-    import mock
-
 import pytest
 
 from pymco import config as _config
 from pymco.exc import ConfigLookupError
-from .. import base
+from pymco.test import ctxt
+from pymco.test.utils import mock
 
 
 def test_init_configfile():
     '''Tests :py:method:`Config.from_configfile` static method.'''
-    conf = _config.Config.from_configfile(configfile=base.TEST_CFG)
+    conf = _config.Config.from_configfile(configfile=ctxt.TEST_CFG)
     assert conf['connector'] == 'activemq'
 
 

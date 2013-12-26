@@ -1,9 +1,16 @@
-# coding: utf-8
+"""
+:py:mod:`pymco.test.ctxt`
+-------------------------
+Context information for sourcing test templates.
+"""
 import os
 
-import jinja2
+ROOT = os.path.abspath(os.path.join(__file__,
+                                    os.path.pardir,
+                                    os.path.pardir,
+                                    os.path.pardir,
+                                    'tests'))
 
-ROOT = os.path.abspath(os.path.join(__file__, '..'))
 DEFAULT_CTXT = {
     'topicprefix': 'topic',
     'collectives': ['mcollective', 'sub1', 'sub2'],
@@ -28,23 +35,12 @@ DEFAULT_CTXT = {
     'plugin.activemq.pool.1.password': 'secret',
     'plugin.activemq.pool.1.ssl': 'false',
 }
+
 TEST_CFG = os.path.join(ROOT, 'server.cfg')
+
 MSG = {
     'msgtime': 123.45,
     'requestid': '6ef11a5053008b54c03ca934972fdfa45448439d',
     'body': 'ping',
     'agent': 'discovery',
 }
-
-
-def get_template(name, package=__package__):
-    env = jinja2.Environment(loader=jinja2.PackageLoader(package, 'templates'))
-    return env.get_template(name)
-
-
-def configfile(ctxt=None):
-    if not ctxt:
-        ctxt = DEFAULT_CTXT
-    with open(TEST_CFG, 'wt') as cfg:
-        cfg.write(get_template('server.cfg.jinja').render({'config': ctxt}))
-    return TEST_CFG
