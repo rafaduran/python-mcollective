@@ -6,5 +6,7 @@ ROOT=`readlink -m $ROOT`
 
 sudo apt-get install activemq -y
 
-cp ${ROOT}/extra_cookbooks/activemq_mco/templates/default/activemq.xml.erb /etc/activemq/activemq.xml
+sudo cp ${ROOT}/extra_cookbooks/activemq_mco/templates/default/activemq.xml.erb \
+    /etc/activemq/instances-available/main/activemq.xml
+sudo ln -s /etc/activemq/instances-available/main/ /etc/activemq/instances-enabled/main
 sudo service activemq restart
