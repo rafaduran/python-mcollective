@@ -11,8 +11,8 @@ cat << EOF > /tmp/dna.json
 EOF
 
 cat << EOF > /tmp/solo.rb
-file_cache_path    "/var/chef/cache"
-file_backup_path   "/var/chef/backup"
+file_cache_path    "/tmp/chef/cache"
+file_backup_path   "/tmp/chef/backup"
 cookbook_path ["${ROOT}/cookbooks/ci_environment", "${ROOT}/extra_cookbooks"]
 log_level :debug
 verbose_logging    false
