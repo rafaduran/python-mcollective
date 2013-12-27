@@ -9,4 +9,5 @@ sudo apt-get install activemq -y
 sudo cp ${ROOT}/extra_cookbooks/activemq_mco/templates/default/activemq.xml.erb \
     /etc/activemq/instances-available/main/activemq.xml
 sudo ln -s /etc/activemq/instances-available/main/ /etc/activemq/instances-enabled/main
-sudo service activemq restart
+sudo /etc/init.d/activemq stop
+sudo /etc/init.d/activemq start
