@@ -15,11 +15,17 @@ VENDOR_PATH = os.path.join(ROOT, 'integration/vendor')
 VENDOR = 'https://github.com/puppetlabs/marionette-collective.git'
 PIDFILE = '{root}/mco.pid'.format(root=test_ctxt.ROOT)
 
+CTXT = {
+    'daemonize': 1,
+    'securityprovider': 'none',
+    'collectives': ['mcollective'],
+    'topicprefix': None,
+}
+
 
 class IntegrationTestCase(object):
     def setup_cfg(self):
-        ctxt = test_ctxt.DEFAULT_CTXT.copy()
-        ctxt.update(self.CTXT)
+        ctxt = self.get_ctxt()
         utils.configfile(ctxt=ctxt)
         self.config = config.Config.from_configfile(test_ctxt.TEST_CFG)
 
@@ -75,6 +81,16 @@ class IntegrationTestCase(object):
 
     def teardown(self):
         self.teardown_mcollective()
+
+    def get_ctxt(self):
+        ctxt = test_ctxt.DEFAULT_CTXT.copy()
+        ctxt.update(CTXT)
+        ctxt.update(self.CTXT)
+        ctxt.update({'libdir':
+                     '{root}/integration/vendor_{rev}/plugins'.format(
+                         root=test_ctxt.ROOT,
+                         rev=self.rev)})
+        return ctxt
 
 
 class MCollective22x(object):
