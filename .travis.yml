@@ -19,7 +19,7 @@ install:
   - pip install -r requirements/flake8.txt --use-mirrors
 # command to run tests
 script:
-  - py.test --cov pymco --cov-report term-missing
+  - py.test -rxs --cov pymco --cov-report term-missing
   - flake8 pymco
 after_success:
   - COVERALLS_REPO_TOKEN=rDeA0JfxHdlenNHvQbiL4W91tyf9ZESBy coveralls

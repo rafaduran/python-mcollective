@@ -1,6 +1,15 @@
+import os
+
+import pytest
+
 from . import base
 
 
+TRAVIS = os.environ.get('TRAVIS', False)
+
+
+@pytest.mark.skipif(TRAVIS is not False,
+                    reason='Unable to install ActiveMQ')
 class ActiveMQTestCase(base.IntegrationTestCase):
     '''RabbitMQ integration test case.'''
     CTXT = {
