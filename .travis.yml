@@ -14,7 +14,6 @@ install:
   - scripts/deps
   - pip freeze | grep d2to1 || pip install d2to1 --use-mirrors
   - pip install coveralls --use-mirrors
-  - scripts/m2crypto_ubuntu
   - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2 --use-mirrors; fi"
   - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install importlib --use-mirrors; fi"
   - pip install -r requirements/flake8.txt --use-mirrors
