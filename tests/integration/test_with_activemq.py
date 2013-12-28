@@ -1,7 +1,3 @@
-import os
-
-import pytest
-
 from . import base
 
 
@@ -11,6 +7,10 @@ class ActiveMQTestCase(base.IntegrationTestCase):
         'plugin.activemq.pool.1.port': 61614,
         'plugin.activemq.pool.1.password': 'marionette',
     }
+
+
+class TestWithActiveMQMCo20x(base.MCollective20x, ActiveMQTestCase):
+    '''MCollective integration test case.'''
 
 
 class TestWithActiveMQMCo22x(base.MCollective22x, ActiveMQTestCase):

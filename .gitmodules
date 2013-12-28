@@ -10,3 +10,6 @@
 [submodule "tests/integration/vendor_2.3.x"]
 	path = tests/integration/vendor_2.3.x
 	url = https://github.com/puppetlabs/marionette-collective.git
+[submodule "tests/integration/vendor_2.0.x"]
+	path = tests/integration/vendor_2.0.x
+	url = https://github.com/puppetlabs/marionette-collective.git
