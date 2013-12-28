@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-BASEDIR=`dirname $0`
-$BASEDIR/rabbitmq.sh
-$BASEDIR/activemq.sh
 # Set the hostname accesible so
 # self.my_name = socket.gethostbyname(socket.gethostname())
 # doesn't get a  gaierror: [Errno -2] Name or service not known
