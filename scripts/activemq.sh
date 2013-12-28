@@ -4,10 +4,17 @@ set -eu
 ROOT="`dirname $0`/.."
 ROOT=`readlink -m $ROOT`
 
-sudo apt-get install activemq -y
-
+wget http://apache.rediris.es/activemq/apache-activemq/5.8.0/apache-activemq-5.8.0-bin.tar.gz
+tar -xvzf apache-activemq-5.8.0-bin.tar.gz
+sudo mv apache-activemq-5.8.0 /opt
+sudo ln -sf /opt/apache-activemq-5.8.0/ /opt/activemq
+sudo adduser -system activemq --shell /bin/bash
+sudo ln -sf /opt/activemq/bin/activemq /etc/init.d/
+sudo update-rc.d activemq defaults
+sudo /etc/init.d/activemq setup /etc/default/activemq
+sudo chown root:nogroup /etc/default/activemq
+sudo chmod 600 /opt/apache-activemq-5.8.0/conf/jmx.access
+sudo chmod 600 /opt/apache-activemq-5.8.0/conf/jmx.password
 sudo cp ${ROOT}/extra_cookbooks/activemq_mco/templates/default/activemq.xml.erb \
-    /etc/activemq/instances-available/main/activemq.xml
-sudo ln -s /etc/activemq/instances-available/main/ /etc/activemq/instances-enabled/main
-sudo /etc/init.d/activemq stop
+    /opt/activemq/conf/activemq.xml
 sudo /etc/init.d/activemq start
