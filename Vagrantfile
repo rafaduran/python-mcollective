@@ -88,7 +88,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
   # This would be managed by travis
   config.vm.provision :shell, :inline => 'service rabbitmq-server start'
-  config.vm.provision :shell, :inline => 'cp /vagrant/scripts/rabbitmqadmin /tmp'
+  config.vm.provision :shell, :inline => 'cp /vagrant/scripts/rabbitmq.py /tmp'
   # Script to be run by travis too
   config.vm.provision :shell, :path => 'scripts/rabbitmq.sh'
 end

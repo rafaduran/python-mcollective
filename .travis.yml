@@ -6,10 +6,7 @@ python:
   - "2.7"
   - "3.3"
 before_script:
-  - pip install requests --use-mirrors
-  - sudo rabbitmq-plugins enable rabbitmq_stomp
-  - scripts/rabbitmq.py
-  - sudo service rabbitmq-server restart
+  - scripts/rabbitmq.sh
   - scripts/activemq.sh
   - scripts/before
 # command to install dependencies
