@@ -4,17 +4,24 @@ services:
 python:
   - "2.6"
   - "2.7"
+  - "3.3"
 before_script:
+  - scripts/rabbitmq.sh
+  - scripts/activemq.sh
   - scripts/before
 # command to install dependencies
 install:
   - gem install bundle
   - bundle install --without dev
   - scripts/deps
+  - pip freeze | grep d2to1 || pip install d2to1 --use-mirrors
   - pip install coveralls --use-mirrors
-  - scripts/m2crypto_ubuntu
   - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2 --use-mirrors; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install importlib --use-mirrors; fi"
+  - pip install -r requirements/flake8.txt --use-mirrors
 # command to run tests
-script: py.test --cov mcollective.py --cov-report term-missing
+script:
+  - py.test -rxs --cov pymco --cov-report term-missing
+  - flake8 pymco
 after_success:
   - COVERALLS_REPO_TOKEN=rDeA0JfxHdlenNHvQbiL4W91tyf9ZESBy coveralls

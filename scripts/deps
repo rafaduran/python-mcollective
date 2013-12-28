@@ -6,4 +6,8 @@ dpkg -l python-dev | grep ii || INSTALLDEV=true
 if [ $INSTALLDEV ]; then
     sudo apt-get install -y python-dev
 fi
+pip freeze | grep d2to1 || INSTALLD2TO1=true
+if [ $INSTALLD2TO1 ]; then
+    apt-cache search python-d2to1 | grep python-d2to1 && sudo apt-get install -y python-d2to1
+fi
 pip install -r $REQSDIR/$REQSFILE --use-mirrors

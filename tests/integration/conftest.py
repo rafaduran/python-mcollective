@@ -1,26 +1,23 @@
-import copy
-
 import pytest
 
-import mcollective
+from pymco.config import Config
+from pymco import message
+from pymco.test import ctxt as test_ctxt
 
-from . import base as ibase
-from .. import base
 
-
-@pytest.fixture(scope='module')
+@pytest.fixture
 def config():
-    return mcollective.Config(base.TEST_CFG)
+    return Config.from_configfile(test_ctxt.TEST_CFG)
 
 
-@pytest.fixture(scope="module",
-                params=[(('agent', 'discovery'), ('action','ping'))])
-def simple_rpc_action(request, config):
-    params = dict(request.param)
-    params.update({'config': config})
+@pytest.fixture
+def ping_call_params(config, msg):
+    params = dict(agent='discovery', action='ping', msg=msg, config=config)
     return params
 
-def pytest_runtest_setup(item):
-    ctxt = copy.deepcopy(base.DEFAULT_CTXT)
-    ctxt.update(ibase.CTXT)
-    base.configfile(ctxt=ctxt)
+
+@pytest.fixture
+def msg(config):
+    return message.Message(body=test_ctxt.MSG['body'],
+                           agent=test_ctxt.MSG['agent'],
+                           config=config)

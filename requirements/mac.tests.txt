@@ -1,0 +1,3 @@
+-r tests.txt
+pytest-osxnotify
+pysqlite

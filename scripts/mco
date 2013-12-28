@@ -4,4 +4,4 @@ SCRIPTS=`dirname $0`
 BASEDIR=$SCRIPTS/..
 ruby -I $BASEDIR/tests/integration/vendor/lib \
     -I $BASEDIR/tests/fixtures/plugins/ \
-    $BASEDIR/tests/integration/vendor/bin/mco $@ --config $BASEDIR/tools/server.cfg
+    $BASEDIR/tests/integration/vendor/bin/mco $@ --config $BASEDIR/client.cfg

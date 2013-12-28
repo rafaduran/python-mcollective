@@ -1,74 +1,130 @@
-#!/usr/bin/env python
-import io
-import os
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+'''Tets for the configuration class'''
+import pytest
 
-from mcollective import Config
-
-from .. import base
-
-TEST_CFG = base.TEST_CFG
+from pymco import config as _config
+from pymco.exc import ConfigLookupError
+from pymco.test import ctxt
+from pymco.test.utils import mock
 
 
-class TestConfig(unittest.TestCase):
-    def setUp(self):
-        super(TestConfig, self).setUp()
-        self.conf = Config(TEST_CFG)
-
-    def test_init(self):
-        c = Config(parse=False)
-        self.assertEqual('/etc/mcollective/client.cfg', c.configfile)
-        self.assertEqual({}, c.pluginconf)
-        self.assertEqual('/topic/', c.topicprefix)
-
-    def test_different_config_file(self):
-        self.assertEqual(TEST_CFG, self.conf.configfile)
-
-    def test_ssl_paths(self):
-        fixtures_path = os.path.join(base.ROOT, 'fixtures')
-        self.assertEqual(
-            '{path}/testkey-private.pem'.format(path=fixtures_path),
-            self.conf.pluginconf['ssl_client_private']
-        )
-        self.assertEqual(
-            '{path}/testkey-public.pem'.format(path=fixtures_path),
-            self.conf.pluginconf['ssl_client_public']
-        )
-        self.assertEqual(
-            'yaml',
-            self.conf.pluginconf['ssl_serializer']
-        )
-        self.assertEqual(
-            'mcserver-public.pem',
-            self.conf.pluginconf['ssl_server_public']
-        )
-
-    def test_topicprefix(self):
-        self.assertEqual('/topic/', self.conf.topicprefix)
-
-    def test_maincollective(self):
-        self.assertEqual(
-            base.DEFAULT_CTXT['maincollective'],
-            self.conf.main_collective,
-        )
-
-    def test_collectives(self):
-        self.assertListEqual(base.DEFAULT_CTXT['collectives'],
-                             self.conf.collectives)
-
-    def test_stomp_config(self):
-        connector = base.DEFAULT_CTXT['connector']
-        self.assertEqual(self.conf.connector, connector['name'])
-        for key, expected in connector['options'].items():
-            value = self.conf.pluginconf['{name}.{key}'.format(
-                name=connector['name'],
-                key=key)]
-
-            assert expected == value
+def test_init_configfile():
+    '''Tests :py:method:`Config.from_configfile` static method.'''
+    conf = _config.Config.from_configfile(configfile=ctxt.TEST_CFG)
+    assert conf['connector'] == 'activemq'
 
 
-if __name__ == '__main__':
-    unittest.main()
+def test_get(config):
+    '''Tests :py:method:`Config.get` happy path.'''
+    assert config.get('connector') == 'activemq'
+
+
+def test_get_missing(config):
+    '''Tests :py:method:`Config.get` bad path.'''
+    with pytest.raises(KeyError):
+        config.get('missing')
+
+
+def test_get_default(config):
+    '''Tests :py:method:`Config.get` bad path with default.'''
+    assert config.get('missing', default='activemq') == 'activemq'
+
+
+def test_getint(config):
+    '''Tests :py:method:`Config.getint` happy path.'''
+    assert config.getint('plugin.activemq.pool.size') == 1
+
+
+def test_getint_missing(config):
+    '''Tests :py:method:`Config.getint` bad path.'''
+    with pytest.raises(KeyError):
+        config.getint('missing')
+
+
+def test_getint_default(config):
+    '''Tests :py:method:`Config.getint` bad path with default.'''
+    assert config.getint('missing', default=1) == 1
+
+
+def test_getboolean(config):
+    '''Tests :py:method:`Config.getboolean` happy path.'''
+    truly = ('y', 'true', '1')
+    falsy = ('n', 'false', '0')
+    for expected, values in ((True, truly), (False, falsy)):
+        with mock.patch.dict(config.config,
+                             dict([(val, val) for val in values])):
+            for val in values:
+                assert config.getboolean(val) == expected
+
+
+def test_getboolean_missing(config):
+    '''Tests :py:method:`Config.getboolean` bad path.'''
+    with pytest.raises(KeyError):
+        config.getboolean('missing')
+
+
+def test_getboolean_default(config):
+    '''Tests :py:method:`Config.getboolean` bad path with default.'''
+    assert config.getboolean('missing', default=True)
+
+
+def test_length(config):
+    '''Test configuration length'''
+    assert len(config) == len(config.config)
+
+
+def test_iter(config):
+    '''Test configuration iteration.'''
+    assert list(config) == list(config.config)
+
+
+@mock.patch('pymco.utils.import_object')
+def test_get_connector(import_object, config):
+    with mock.patch.dict('pymco.connector.Connector.plugins',
+                         {'activemq': 'connector.foo.FooConnector'}):
+        assert config.get_connector() == import_object.return_value
+        import_object.assert_called_once_with('connector.foo.FooConnector',
+                                              config=config)
+
+
+@mock.patch('pymco.utils.import_object')
+def test_get_security(import_object, config):
+    with mock.patch.dict('pymco.security.SecurityProvider.plugins',
+                         {'ssl': 'security.foo.FooProvider'}):
+        assert config.get_security() == import_object.return_value
+        import_object.assert_called_once_with('security.foo.FooProvider',
+                                              config=config)
+
+
+@mock.patch('pymco.utils.import_object')
+def test_get_serializer(import_object, config):
+    with mock.patch.dict('pymco.serializers.SerializerBase.plugins',
+                         {'yaml': 'serializer.foo.FooSerializer'}):
+        assert config.get_serializer('plugin.ssl_serializer'
+                                     ) == import_object.return_value
+        import_object.assert_called_once_with('serializer.foo.FooSerializer')
+
+
+def test_get_host_and_ports(config):
+    assert config.get_host_and_ports() == [('localhost', 6163)]
+
+
+def test_get_host_and_ports_stomp(config):
+    with mock.patch.dict(config.config, {'connector': 'stomp',
+                                         'plugin.stomp.host': 'host',
+                                         'plugin.stomp.port': '6163'}):
+        assert config.get_host_and_ports() == [('host', 6163)]
+
+
+def test_get_user_and_password(config):
+    assert ('mcollective', 'secret') == config.get_user_and_password(
+        ('localhost', 6163))
+
+
+def test_get_user_and_password__raises_value_error(config):
+    with pytest.raises(ValueError):
+        config.get_user_and_password()
+
+
+def test_get_user_and_password__raises_config_lookup_error(config):
+    with pytest.raises(ConfigLookupError):
+        config.get_user_and_password(('host', 345))
