@@ -16,8 +16,5 @@ class NoneProvider(SecurityProvider):
         message[':callerid'] = 'user={0}'.format(getpass.getuser())
         return message
 
-    def encode(self, message):
-        return self.serializer.serialize(message)
-
-    def decode(self, message):
-        return self.serializer.deserialize(message)
+    def verify(self, message):
+        """Implement :py:meth:`pymco.security.SecurityProvider.verify`."""

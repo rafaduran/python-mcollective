@@ -17,6 +17,26 @@ class SecurityProviderBase(object):
         """
         self.config = config
 
+    def serialize(self, message):
+        """Serialize message using provided serialization.
+
+        Args:
+            ``message``: message to be encoded.
+        Returns:
+            ``message``: encoded message.
+        """
+        return self.serializer.serialize(message)
+
+    def deserialize(self, message):
+        """Deserealize message using provided serialization.
+
+        Args:
+            ``message``: message to be decoded.
+        Returns:
+            ``message``: decoded message.
+        """
+        return self.serializer.deserialize(message)
+
 
 def sign(self, message):
     """Signs the given message using provided security method.
@@ -28,29 +48,21 @@ def sign(self, message):
     """
 
 
-def encode(self, message):
-    """Encodes message using provided serialization.
+def verify(self, message):
+    """Verify the given message using provided security method.
 
     Args:
-        ``message``: message to be encoded.
+        ``message``: message to be verified.
     Returns:
-        ``message``: encoded message.
-    """
-
-
-def decode(self, message):
-    """Decodes message using provided serialization.
-
-    Args:
-        ``message``: message to be decoded.
-    Returns:
-        ``message``: decoded message.
+        ``message``: verified message.
+    Raises:
+        :py:exc:`pymco.exc.MessageVerificationError`: If the message
+        verification failed.
     """
 
 
 # Building Metaclass here for Python 2/3 compatibility
 SecurityProvider = abc.ABCMeta('SecurityProvider', (SecurityProviderBase,), {
     'sign': abc.abstractmethod(sign),
-    'encode': abc.abstractmethod(encode),
-    'decode': abc.abstractmethod(decode),
+    'verify': abc.abstractmethod(verify),
 })

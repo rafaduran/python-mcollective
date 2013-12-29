@@ -34,7 +34,7 @@ class ResponseListener(listener.ConnectionListener):
 
     def on_message(self, headers, body):
         self.condition.acquire()
-        self.responses.append(self.security.decode(body))
+        self.responses.append(self.security.deserialize(body))
         self.received += 1
         self.condition.notify()
         self.condition.release()

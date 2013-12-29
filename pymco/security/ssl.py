@@ -12,11 +12,11 @@ try:
 except ImportError:
     print('You need install pycrypto for using SSL security provider')
 
-from . import none
+from . import SecurityProvider
 from .. import utils
 
 
-class SSLProvider(none.NoneProvider):
+class SSLProvider(SecurityProvider):
     """Provide SSL security provider plugin.
 
     See
@@ -35,6 +35,9 @@ class SSLProvider(none.NoneProvider):
         message[':callerid'] = self.callerid
         message[':hash'] = self.get_hash(message)
         return message
+
+    def verify(self, message):
+        """Implement :py:meth:`pymco.security.SecurityProvider.verify`."""
 
     def get_hash(self, message):
         """Get the hash for the given message.
