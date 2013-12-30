@@ -8,13 +8,10 @@ python-mcollective
 .. image:: https://badge.waffle.io/rafaduran/python-mcollective.png?label=ready
    :target: https://waffle.io/rafaduran/python-mcollective
    :alt: Stories in Ready
-
-Work still on progress, inspired by `mcollective-python`_ example.
-
-.. _mcollective-python: https://github.com/iwebhosting/mcollective-python
-
-
 .. image:: https://d2weczhvl823v0.cloudfront.net/rafaduran/python-mcollective/trend.png
    :alt: Bitdeli badge
    :target: https://bitdeli.com/free
 
+Work still on progress, inspired by `mcollective-python`_ example.
+
+.. _mcollective-python: https://github.com/iwebhosting/mcollective-python
