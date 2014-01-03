@@ -37,6 +37,34 @@ class SecurityProviderBase(object):
         """
         return self.serializer.deserialize(message)
 
+    def encode(self, msg):
+        """Encode given message using provided security method.
+
+        Encode will consist just on singing the message and serialize it, so
+        we can sent it and verified for the receivers.
+
+        Args:
+            ``msg``: Message to be serialized.
+
+        Returns:
+            ``msg``: Encoded message.
+        """
+        return self.serialize(self.sign(msg))
+
+    def decode(self, msg):
+        """Decode given message using provided security method.
+
+        Decode will consist just on de-serialize the given message and verify
+        it, raising a verification error if the message can't be verified.
+
+        Args:
+            ``msg``: Message to be serialized.
+
+        Returns:
+            ``msg``: Decoded message, a :py:class:`dict` like object.
+        """
+        return self.verify(self.deserialize(msg))
+
 
 def sign(self, message):
     """Signs the given message using provided security method.
