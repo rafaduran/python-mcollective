@@ -16,3 +16,7 @@ def test_sign(getuser, security, msg):
     signed = security.sign(msg)
     assert signed[':callerid'] == 'user=foo'
     getuser.assert_called_once_with()
+
+
+def test_verify_does_nothing(security, msg):
+    assert security.verify(msg) == msg

@@ -17,4 +17,8 @@ class NoneProvider(SecurityProvider):
         return message
 
     def verify(self, message):
-        """Implement :py:meth:`pymco.security.SecurityProvider.verify`."""
+        """Implement :py:meth:`pymco.security.SecurityProvider.verify`.
+
+        It does nothing, returning always given message.
+        """
+        return message
