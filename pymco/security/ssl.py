@@ -4,6 +4,7 @@
 Contains SSL security provider plugin.
 """
 from __future__ import print_function
+import base64
 import os
 
 try:
@@ -12,6 +13,7 @@ try:
 except ImportError:
     print('You need install pycrypto for using SSL security provider')
 
+from .. import exc
 from . import SecurityProvider
 from .. import utils
 
@@ -38,6 +40,15 @@ class SSLProvider(SecurityProvider):
 
     def verify(self, message):
         """Implement :py:meth:`pymco.security.SecurityProvider.verify`."""
+        hash_ = SHA.new(message[':body'])
+        verifier = PKCS1_v1_5.new(self.server_public_key)
+        signature = base64.b64decode(message[':hash'])
+
+        if not verifier.verify(hash_, signature):
+            raise exc.VerificationError(
+                'Message {0} can\'t be verified'.format(message))
+
+        return message
 
     def get_hash(self, message):
         """Get the hash for the given message.
@@ -52,7 +63,7 @@ class SSLProvider(SecurityProvider):
         hashed_signature = SHA.new(message[':body'])
         signer = PKCS1_v1_5.new(self.private_key)
         hashed_signature = signer.sign(hashed_signature)
-        return hashed_signature.encode('base64').replace('\n', '').strip()
+        return base64.b64encode(hashed_signature)
 
     @property
     def callerid(self):
@@ -84,7 +95,7 @@ class SSLProvider(SecurityProvider):
     def private_key(self):
         """Property returning the private key after being loaded."""
         return self._load_rsa_key(key='plugin.ssl_client_private',
-                                  cache=self._server_public_key)
+                                  cache=self._private_key)
 
     @property
     def serializer(self):
