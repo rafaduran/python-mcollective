@@ -108,7 +108,7 @@ def test_get_hash(sha, private_key, signer, encode, ssl_provider, msg):
     assert ssl_provider.get_hash(msg) == encode.return_value
 
     private_key.assert_called_once_with()
-    sha.assert_called_once_with(msg[':body'])
+    sha.assert_called_once_with(msg[':body'].encode('utf8'))
     signer.assert_called_once_with(private_key.return_value)
     encode.assert_called_with(signer.return_value.sign.return_value)
 
@@ -119,7 +119,7 @@ def test_get_hash(sha, private_key, signer, encode, ssl_provider, msg):
 @mock.patch('Crypto.Hash.SHA.new')
 def test_verify__ok(sha, server_public, verifier, ssl_provider, reply):
     assert ssl_provider.verify(reply) == reply
-    sha.assert_called_once_with(reply[':body'])
+    sha.assert_called_once_with(reply[':body'].encode('utf8'))
     verifier.assert_called_once_with(server_public.return_value)
     signature = base64.b64decode(reply[':hash'])
     verifier.return_value.verify.assert_called_once_with(sha.return_value, signature)

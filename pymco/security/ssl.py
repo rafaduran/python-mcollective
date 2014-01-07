@@ -40,7 +40,7 @@ class SSLProvider(SecurityProvider):
 
     def verify(self, message):
         """Implement :py:meth:`pymco.security.SecurityProvider.verify`."""
-        hash_ = SHA.new(message[':body'])
+        hash_ = SHA.new(message[':body'].encode('utf8'))
         verifier = PKCS1_v1_5.new(self.server_public_key)
         signature = base64.b64decode(message[':hash'])
 
@@ -60,7 +60,7 @@ class SSLProvider(SecurityProvider):
         Returns:
             ``hash``: Message hash so the receiver can verify the message.
         """
-        hashed_signature = SHA.new(message[':body'])
+        hashed_signature = SHA.new(message[':body'].encode('utf8'))
         signer = PKCS1_v1_5.new(self.private_key)
         hashed_signature = signer.sign(hashed_signature)
         return base64.b64encode(hashed_signature)
