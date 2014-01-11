@@ -1,2 +1,2 @@
-stomp.py
+stomp.py==4.0.2
 six
