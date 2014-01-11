@@ -57,7 +57,7 @@ def test_default_connection(conn, config):
 @mock.patch('pymco.connector.Connector.security')
 def test_send(security, connector, conn_mock):
     assert connector.send('foo', 'destination') is connector
-    conn_mock.send.assert_called_with(body=security.encode('foo'),
+    conn_mock.send.assert_called_with(body=security.serialize('foo'),
                                       destination='destination')
 
 

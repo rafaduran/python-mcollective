@@ -20,3 +20,7 @@ class BadFilterFactOperator(PyMcoException):
 
 class TimeoutError(PyMcoException):
     """Exception to be raised on timeouts"""
+
+
+class VerificationError(PyMcoException):
+    """Exception to be raised on message verification errors."""
