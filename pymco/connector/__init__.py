@@ -12,6 +12,8 @@ from .. import listener
 
 class BaseConnector(object):
     """Base abstract class for MCollective connectors."""
+    listeners = {'tracker': listener.CurrentHostPortListener}
+
     plugins = {
         'activemq': 'pymco.connector.activemq.ActiveMQConnector',
         'rabbitmq': 'pymco.connector.rabbitmq.RabbitMQConnector',
@@ -30,6 +32,8 @@ class BaseConnector(object):
             self.connection = self.default_connection(config)
         else:
             self.connection = connection
+
+        self.set_listeners()
 
     def connect(self, wait=None):
         """Connect to MCollective middleware."""
@@ -137,6 +141,11 @@ class BaseConnector(object):
             self._security = self.config.get_security()
 
         return self._security
+
+    def set_listeners(self):
+        """Set default listeners."""
+        for key, value in self.listeners.items():
+            self.connection.set_listener(key, value)
 
 
 def get_target(self, agent, collective, topciprefix=None):

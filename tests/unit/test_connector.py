@@ -28,6 +28,12 @@ def fake_connector(config, conn_mock):
     return ConnectorFake(config=config, connection=conn_mock)
 
 
+@mock.patch('pymco.connector.Connector.set_listeners')
+def test_set_listeners(set_listeners, config, conn_mock):
+    ConnectorFake(config=config, connection=conn_mock)
+    set_listeners.assert_called_once_with()
+
+
 @mock.patch('pymco.config.Config.get_security')
 def test_connector_security(get_security, fake_connector):
     assert fake_connector.security == get_security.return_value
