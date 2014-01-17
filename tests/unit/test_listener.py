@@ -17,6 +17,11 @@ def result_listener(config, condition):
     return listener.ResponseListener(config, condition=condition, count=2)
 
 
+@pytest.fixture
+def track_listener():
+    return listener.CurrentHostPortListener()
+
+
 @mock.patch('threading.Condition')
 def test_default_condition(cond, config):
     """Tests condition is a new threading.Condition by default."""
@@ -95,3 +100,9 @@ def test_security__caches_security(get_security, result_listener):
     result_listener._security = security
     assert result_listener.security == security
     assert get_security.called is False
+
+
+def test_current_host_port_listener(track_listener):
+    track_listener.on_connecting(('localhost', 61613))
+    assert track_listener.get_host() == 'localhost'
+    assert track_listener.get_port() == 61613
