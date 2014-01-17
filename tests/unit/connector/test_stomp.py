@@ -89,8 +89,8 @@ class TestReceive:
                                                     connector,
                                                     conn_mock):
         connector.receive(5)
-        conn_mock.set_listener.assert_called_once_with('response_listener',
-                                                       listener.return_value)
+        assert mock.call('response_listener', listener.return_value
+                         ) in conn_mock.set_listener.call_args_list
 
     def test_receive__sets_the_right_timeout(self,
                                              listener,

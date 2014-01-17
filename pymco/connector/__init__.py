@@ -12,6 +12,8 @@ from .. import listener
 
 class BaseConnector(object):
     """Base abstract class for MCollective connectors."""
+    listeners = {'tracker': listener.CurrentHostPortListener}
+
     plugins = {
         'activemq': 'pymco.connector.activemq.ActiveMQConnector',
         'rabbitmq': 'pymco.connector.rabbitmq.RabbitMQConnector',
@@ -31,12 +33,14 @@ class BaseConnector(object):
         else:
             self.connection = connection
 
+        self.set_listeners()
+
     def connect(self, wait=None):
         """Connect to MCollective middleware."""
         if not self.connection.connected:
             self.connection.start()
             user, password = self.config.get_user_and_password(
-                self.connection.current_host_and_port)
+                self.get_current_host_and_port())
             self.connection.connect(username=user,
                                     passcode=password,
                                     wait=wait)
@@ -137,6 +141,21 @@ class BaseConnector(object):
             self._security = self.config.get_security()
 
         return self._security
+
+    def set_listeners(self):
+        """Set default listeners."""
+        for key, value in self.listeners.items():
+            self.connection.set_listener(key, value())
+
+    def get_current_host_and_port(self):
+        """Get the current host and port from the tracker listener.
+
+        Returns:
+            ``current_host_and_port``: A two-tuple, where the first element is
+            the current host and the second the current port.
+        """
+        tracker = self.connection.get_listener('tracker')
+        return tracker.get_host(), tracker.get_port()
 
 
 def get_target(self, agent, collective, topciprefix=None):

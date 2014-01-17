@@ -28,6 +28,12 @@ def fake_connector(config, conn_mock):
     return ConnectorFake(config=config, connection=conn_mock)
 
 
+@mock.patch('pymco.connector.Connector.set_listeners')
+def test_set_listeners(set_listeners, config, conn_mock):
+    ConnectorFake(config=config, connection=conn_mock)
+    set_listeners.assert_called_once_with()
+
+
 @mock.patch('pymco.config.Config.get_security')
 def test_connector_security(get_security, fake_connector):
     assert fake_connector.security == get_security.return_value
@@ -42,9 +48,10 @@ def test_connector_security__caches_security(get_security, fake_connector):
     assert get_security.called is False
 
 
-def test_connect(fake_connector, conn_mock, config):
+@mock.patch('pymco.connector.Connector.get_current_host_and_port')
+def test_connect(host_and_port, fake_connector, conn_mock, config):
     conn_mock.connected = False
-    conn_mock.current_host_and_port = ('localhost', 6163)
+    host_and_port.return_value = ('localhost', 6163)
     assert fake_connector.connect() is fake_connector
     conn_mock.connect.assert_called_once_with(
         username=config['plugin.activemq.pool.1.user'],
@@ -52,6 +59,7 @@ def test_connect(fake_connector, conn_mock, config):
         wait=None,
     )
     conn_mock.start.assert_called_once_with()
+    host_and_port.assert_called_once_with()
 
 
 def test_connect_already_connected(fake_connector, conn_mock):
@@ -73,3 +81,14 @@ def test_disconnect_not_connected(fake_connector, conn_mock):
     assert fake_connector.disconnect() is fake_connector
     assert 0 == conn_mock.disconnect.call_count
     assert 0 == conn_mock.stop.call_count
+
+
+def test_get_current_host_and_port(fake_connector, conn_mock):
+    conn_mock.get_listener.return_value.get_host.return_value = 'localhost'
+    conn_mock.get_listener.return_value.get_port.return_value = 61613
+
+    assert fake_connector.get_current_host_and_port() == ('localhost', 61613)
+
+    conn_mock.get_listener.assert_called_once_with('tracker')
+    conn_mock.get_listener.return_value.get_host.assert_called_once_with()
+    conn_mock.get_listener.return_value.get_port.assert_called_once_with()
