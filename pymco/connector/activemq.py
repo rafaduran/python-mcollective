@@ -10,6 +10,15 @@ from .stomp import StompConnector
 
 class ActiveMQConnector(StompConnector):
     """ActiveMQ middleware specific connector."""
+    def send(self, msg, destination, *args, **kwargs):
+        """Re-implement :py:meth:`pymco.connector.Connector.send`
+
+        This implementation adds extra features for ActiveMQ.
+        """
+        if 'plugin.activemq.priority' in self.config:
+            kwargs['priority'] = self.config['plugin.activemq.priority']
+
+        super(ActiveMQConnector, self).send(msg, destination, *args, **kwargs)
 
     def get_target(self, agent, collective):
         """Implement :py:meth:`pymco.connector.Connector.get_target`"""
