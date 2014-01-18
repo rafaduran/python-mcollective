@@ -63,7 +63,7 @@ class BaseConnector(object):
         Returns:
             ``self``: so you can chain calls.
         """
-        self.connection.send(body=self.security.serialize(self.security.sign(msg)),
+        self.connection.send(body=self.security.encode(msg),
                              destination=destination,
                              **kwargs)
         return self
