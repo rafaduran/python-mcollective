@@ -8,3 +8,19 @@ template "#{activemq_home}/conf/activemq.xml" do
   group    'root'
   notifies :restart, 'service[activemq]'
 end
+
+template "#{activemq_home}/conf/keystore.jks" do
+  source   'keystore.jks'
+  mode     '0600'
+  owner    'root'
+  group    'root'
+  notifies :restart, 'service[activemq]'
+end
+
+template "#{activemq_home}/conf/truststore.jks" do
+  source   'truststore.jks'
+  mode     '0600'
+  owner    'root'
+  group    'root'
+  notifies :restart, 'service[activemq]'
+end
