@@ -12,6 +12,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # For RabbitMQ stomp local use
   config.vm.network 'forwarded_port', guest:  61613, host: 61613
   config.vm.network 'forwarded_port', guest:  61614, host: 61614
+  config.vm.network 'forwarded_port', guest:  61615, host: 61615
   config.vm.network :private_network, ip: '192.168.33.10'
 
   config.vm.provider :virtualbox do |vb|
@@ -31,7 +32,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision :shell do |sh|
     sh.inline = <<-EOF
-      gem install chef --no-ri --no-rdoc --no-user-install
       apt-get install unzip -y
     EOF
   end

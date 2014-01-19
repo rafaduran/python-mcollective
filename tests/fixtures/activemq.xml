@@ -57,7 +57,7 @@
           <simpleAuthenticationPlugin>
             <users>
               <authenticationUser username="mcollective" password="marionette" groups="mcollective,everyone"/>
-              <authenticationUser username="admin" password="password" groups="mcollective,admins,everyone"/>
+              <authenticationUser username="admin" password="secret" groups="mcollective,admins,everyone"/>
             </users>
           </simpleAuthenticationPlugin>
 
