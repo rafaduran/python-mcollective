@@ -17,8 +17,8 @@ sudo chmod 600 /opt/apache-activemq-5.8.0/conf/jmx.access
 sudo chmod 600 /opt/apache-activemq-5.8.0/conf/jmx.password
 sudo cp ${ROOT}/extra_cookbooks/activemq_mco/templates/default/activemq.xml.erb \
     /opt/activemq/conf/activemq.xml
-sudo cp ${ROOT}/tests/fixtures/keystore.jks \
+sudo cp ${ROOT}/extra_cookbooks/activemq_mco/templates/default/keystore.jks \
         /opt/activemq/conf/keystore.jks
-sudo cp ${ROOT}/tests/fixtures/truststore.jks \
+sudo cp ${ROOT}/extra_cookbooks/activemq_mco/templates/default/truststore.jks \
         /opt/activemq/conf/truststore.jks
 sudo /etc/init.d/activemq start
