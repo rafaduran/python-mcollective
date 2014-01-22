@@ -13,6 +13,6 @@ M2Crypto-*/
 .coverage
 junit-*.xml
 htmlcov/
-mcollective.log
+mcollective.log*
 server.cfg
 client.cfg
