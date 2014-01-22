@@ -32,7 +32,10 @@ plugin.activemq.pool.1.host = localhost
 plugin.activemq.pool.size = 1
 plugin.activemq.pool.1.password = secret
 plugin.activemq.pool.1.user = mcollective
-plugin.activemq.pool.1.ssl = false
+plugin.activemq.pool.1.ssl = true
+plugin.activemq.pool.1.ssl.ca = tests/fixtures/ca.pem
+plugin.activemq.pool.1.ssl.key = tests/fixtures/activemq_private.pem
+plugin.activemq.pool.1.ssl.cert = tests/fixtures/activemq_cert.pem
 
 factsource = yaml
 plugin.yaml = /path/to/facts.yaml

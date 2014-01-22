@@ -128,3 +128,29 @@ def test_get_user_and_password__raises_value_error(config):
 def test_get_user_and_password__raises_config_lookup_error(config):
     with pytest.raises(ConfigLookupError):
         config.get_user_and_password(('host', 345))
+
+
+def test_get_ssl_parameters(config):
+    assert {'use_ssl': True,
+            'ssl_cert_file': 'tests/fixtures/activemq_cert.pem',
+            'ssl_key_file': 'tests/fixtures/activemq_private.pem',
+            'ssl_ca_certs': 'tests/fixtures/ca.pem'
+            } == config.get_ssl_parameters(('localhost', 6163))
+
+
+def test_get_ssl_parameters__no_ssl(config):
+    del config.config['plugin.activemq.pool.1.ssl.ca']
+    del config.config['plugin.activemq.pool.1.ssl.key']
+    del config.config['plugin.activemq.pool.1.ssl.cert']
+    del config.config['plugin.activemq.pool.1.ssl']
+    assert {'use_ssl': False,
+            'ssl_cert_file': None,
+            'ssl_key_file': None,
+            'ssl_ca_certs': None,
+            } == config.get_ssl_parameters(('localhost', 6163))
+
+
+def test_get_ssl_parameters__no_activemq(config):
+    config.config['connector'] = 'stomp'
+    with pytest.raises(ValueError):
+        config.get_ssl_parameters(('localhost', 6163))
