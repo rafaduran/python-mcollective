@@ -30,10 +30,14 @@ def fake_connector(config, conn_mock):
     return ConnectorFake(config=config, connection=conn_mock)
 
 
-@mock.patch('pymco.connector.Connector.set_listeners')
-def test_set_listeners(set_listeners, config, conn_mock):
-    ConnectorFake(config=config, connection=conn_mock)
-    set_listeners.assert_called_once_with()
+def test_set_listeners(config, conn_mock):
+    listener = mock.Mock()
+    with mock.patch.dict(ConnectorFake.listeners, {'tracker': listener}):
+        connector = ConnectorFake(config=config, connection=conn_mock)
+
+    conn_mock.set_listener.assert_called_once_with('tracker',
+                                                   listener.return_value)
+    listener.assert_called_once_with(connector=connector, config=config)
 
 
 @mock.patch('pymco.config.Config.get_security')
