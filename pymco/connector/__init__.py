@@ -144,7 +144,8 @@ class BaseConnector(object):
     def set_listeners(self):
         """Set default listeners."""
         for key, value in self.listeners.items():
-            self.connection.set_listener(key, value())
+            self.connection.set_listener(key, value(config=self.config,
+                                                    connector=self))
 
     def get_current_host_and_port(self):
         """Get the current host and port from the tracker listener.
