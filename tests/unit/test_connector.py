@@ -70,17 +70,15 @@ def test_connect_already_connected(fake_connector, conn_mock):
 
 
 def test_disconnect(fake_connector, conn_mock):
-    conn_mock.connected.return_value = True
+    conn_mock.is_connected.return_value = True
     assert fake_connector.disconnect() is fake_connector
     conn_mock.disconnect.assert_called_once_with()
-    conn_mock.stop.assert_called_once_with()
 
 
 def test_disconnect_not_connected(fake_connector, conn_mock):
-    conn_mock.connected = False
+    conn_mock.is_connected.return_value = False
     assert fake_connector.disconnect() is fake_connector
     assert 0 == conn_mock.disconnect.call_count
-    assert 0 == conn_mock.stop.call_count
 
 
 def test_get_current_host_and_port(fake_connector, conn_mock):

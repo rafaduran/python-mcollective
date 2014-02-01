@@ -49,9 +49,8 @@ class BaseConnector(object):
 
     def disconnect(self):
         """Disconnet from MCollective middleware."""
-        if self.connection.connected:
+        if self.connection.is_connected():
             self.connection.disconnect()
-            self.connection.stop()
 
         return self
 
