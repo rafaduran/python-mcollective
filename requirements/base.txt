@@ -1,3 +1,3 @@
 # Use master until they release a new version
--e git+https://github.com/jasonrbriggs/stomp.py.git#egg=stomp.py
+-e git+https://github.com/jasonrbriggs/stomp.py.git@b16444939b6ac381dc4f31907e6e55b830f3f3cb#egg=stomp.py
 six
