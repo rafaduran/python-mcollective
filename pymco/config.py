@@ -7,7 +7,7 @@ import six
 from six.moves import configparser
 
 from .connector import Connector
-from .exc import ConfigLookupError
+from .import exc
 from .security import SecurityProvider
 from .serializers import SerializerBase
 from . import utils
@@ -136,9 +136,39 @@ class Config(collections.Mapping):
                 return (self.config[user_key.format(index=index)],
                         self.config[pass_key.format(index=index)])
         else:
-            raise ConfigLookupError('{0} is not in the configuration for {1} '
-                                    'connector'.format(current_host_and_port,
-                                                       connector))
+            raise exc.ConfigLookupError(
+                '{0} is not in the configuration for {1} connector'.format(
+                    current_host_and_port, connector))
+
+    def get_ssl_params(self):
+        """Get SSL configuration for current connector
+
+        Returns:
+            ``ssl_params``: An iterable of SSL configuration parameters to be
+            used with :py:meth:`stomp.Transport.set_ssl`.
+        """
+        connector = self.config['connector']
+        if connector not in ('activemq', 'rabbitmq'):
+            return ()
+
+        params = []
+        prefix = 'plugin.{0}.pool'.format(connector)
+        for index in range(1, self.getint(prefix + '.size') + 1):
+            current_prefix = '{prefix}.{index}'.format(prefix=prefix,
+                                                       index=index)
+            for_hosts = ((self.config.get(current_prefix + '.host'),
+                          self.getint(current_prefix + '.port')),)
+            current_prefix += '.ssl'
+            if self.getboolean(current_prefix, default=False):
+                params.append({
+                    'for_hosts': for_hosts,
+                    'cert_file': self.config.get(current_prefix + '.cert',
+                                                 None),
+                    'key_file': self.config.get(current_prefix + '.key', None),
+                    'ca_certs': self.config.get(current_prefix + '.ca', None),
+                })
+
+        return params
 
     @staticmethod
     def from_configfile(configfile):
