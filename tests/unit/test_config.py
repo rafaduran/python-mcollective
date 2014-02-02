@@ -2,7 +2,7 @@
 import pytest
 
 from pymco import config as _config
-from pymco.exc import ConfigLookupError
+from pymco import exc
 from pymco.test import ctxt
 from pymco.test.utils import mock
 
@@ -31,7 +31,7 @@ def test_get_default(config):
 
 def test_getint(config):
     '''Tests :py:method:`Config.getint` happy path.'''
-    assert config.getint('plugin.activemq.pool.size') == 1
+    assert config.getint('plugin.activemq.pool.size') == 2
 
 
 def test_getint_missing(config):
@@ -105,7 +105,8 @@ def test_get_serializer(import_object, config):
 
 
 def test_get_host_and_ports(config):
-    assert config.get_host_and_ports() == [('localhost', 6163)]
+    assert config.get_host_and_ports() == [('localhost', 6163),
+                                           ('localhost', 6164)]
 
 
 def test_get_host_and_ports_stomp(config):
@@ -126,31 +127,27 @@ def test_get_user_and_password__raises_value_error(config):
 
 
 def test_get_user_and_password__raises_config_lookup_error(config):
-    with pytest.raises(ConfigLookupError):
+    with pytest.raises(exc.ConfigLookupError):
         config.get_user_and_password(('host', 345))
 
 
-def test_get_ssl_parameters(config):
-    assert {'use_ssl': True,
-            'ssl_cert_file': 'tests/fixtures/activemq_cert.pem',
-            'ssl_key_file': 'tests/fixtures/activemq_private.pem',
-            'ssl_ca_certs': 'tests/fixtures/ca.pem'
-            } == config.get_ssl_parameters(('localhost', 6163))
+def test_get_ssl_params(config):
+    assert config.get_ssl_params() == [
+        {
+            'for_hosts': (('localhost', 6163),),
+            'cert_file': 'tests/fixtures/activemq_cert.pem',
+            'key_file': 'tests/fixtures/activemq_private.pem',
+            'ca_certs': 'tests/fixtures/ca.pem',
+        },
+        {
+            'for_hosts': (('localhost', 6164),),
+            'cert_file': 'tests/fixtures/activemq_cert.pem',
+            'key_file': 'tests/fixtures/activemq_private.pem',
+            'ca_certs': 'tests/fixtures/ca.pem',
+        },
+    ]
 
 
-def test_get_ssl_parameters__no_ssl(config):
-    del config.config['plugin.activemq.pool.1.ssl.ca']
-    del config.config['plugin.activemq.pool.1.ssl.key']
-    del config.config['plugin.activemq.pool.1.ssl.cert']
-    del config.config['plugin.activemq.pool.1.ssl']
-    assert {'use_ssl': False,
-            'ssl_cert_file': None,
-            'ssl_key_file': None,
-            'ssl_ca_certs': None,
-            } == config.get_ssl_parameters(('localhost', 6163))
-
-
-def test_get_ssl_parameters__no_activemq(config):
+def test_get_ssl_parameters__stomp(config):
     config.config['connector'] = 'stomp'
-    with pytest.raises(ValueError):
-        config.get_ssl_parameters(('localhost', 6163))
+    assert len(config.get_ssl_params()) == 0
