@@ -34,6 +34,7 @@ class BaseConnector(object):
             self.connection = connection
 
         self.set_listeners()
+        self.set_ssl()
 
     def connect(self, wait=None):
         """Connect to MCollective middleware."""
@@ -156,6 +157,11 @@ class BaseConnector(object):
         """
         tracker = self.connection.get_listener('tracker')
         return tracker.get_host(), tracker.get_port()
+
+    def set_ssl(self):
+        """Set the SSL configuration for the current connection."""
+        for params in self.config.get_ssl_params():
+            self.connection.transport.set_ssl(**params)
 
 
 def get_target(self, agent, collective, topciprefix=None):
