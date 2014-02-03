@@ -119,6 +119,21 @@ def test_subscribe_no_id(id_generator, next, fake_connector, conn_mock):
     next.assert_called_once_with(id_generator)
 
 
+def test_set_ssl(config, conn_mock):
+    calls = [
+        mock.call(for_hosts=(('localhost', 6163),),
+                  cert_file='tests/fixtures/activemq_cert.pem',
+                  key_file='tests/fixtures/activemq_private.pem',
+                  ca_certs='tests/fixtures/ca.pem'),
+        mock.call(for_hosts=(('localhost', 6164),),
+                  cert_file='tests/fixtures/activemq_cert.pem',
+                  key_file='tests/fixtures/activemq_private.pem',
+                  ca_certs='tests/fixtures/ca.pem'),
+    ]
+    ConnectorFake(config, conn_mock)
+    assert conn_mock.transport.set_ssl.call_args_list == calls
+
+
 @mock.patch('pymco.listener.SingleResponseListener',
             **{'return_value.responses.__len__.return_value': 1})
 class TestReceive:
