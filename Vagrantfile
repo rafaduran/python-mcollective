@@ -10,6 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box_url = 'https://dl.dropboxusercontent.com/s/4pj5vdzaxhz1qi3/ubuntu12.04.box'
 
   # For RabbitMQ stomp local use
+  config.vm.network 'forwarded_port', guest:  61612, host: 61612
   config.vm.network 'forwarded_port', guest:  61613, host: 61613
   config.vm.network 'forwarded_port', guest:  61614, host: 61614
   config.vm.network 'forwarded_port', guest:  61615, host: 61615
@@ -85,6 +86,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # chef.add_recipe     "pypy::ppa"
     chef.add_recipe       'activemq'
     chef.add_recipe       'activemq_mco'
+    chef.add_recipe       'rabbitmq_mco'
   end
   # This would be managed by travis
   config.vm.provision :shell, :inline => 'service rabbitmq-server start'
