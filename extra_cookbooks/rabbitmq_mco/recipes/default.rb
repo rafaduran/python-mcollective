@@ -13,7 +13,7 @@ template "/etc/rabbitmq/cert.pem" do
 end
 
 template "/etc/rabbitmq/key.pem" do
-  source "cert.pem"
+  source "key.pem"
   owner "root"
   group "root"
   mode 0644
