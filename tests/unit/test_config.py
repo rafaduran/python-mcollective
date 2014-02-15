@@ -167,3 +167,38 @@ def test_get_ssl_params(config):
 def test_get_ssl_parameters__stomp(config):
     config.config['connector'] = 'stomp'
     assert len(config.get_ssl_params()) == 0
+
+
+def test_get_conn_params__defaults(config):
+    assert config.get_conn_params() == {
+        'host_and_ports': [('localhost', 6163), ('localhost', 6164)],
+        'reconnect_sleep_initial': 0.01,
+        #'reconnect_sleep_increase': ,
+        #'reconnect_sleep_jitter': ,
+        'reconnect_sleep_max': 30.0,
+        'reconnect_attempts_max': 9999999999999999999,
+        'timeout': None,
+    }
+
+
+def test_get_conn_params__custom(config):
+    config.config['plugin.activemq.initial_reconnect_delay'] = 0.5
+    config.config['plugin.activemq.max_recconnect_delay'] = 60
+    config.config['plugin.activemq.max_recconect_attempts'] = 5
+    config.config['plugin.activemq.timeout'] = 60
+    assert config.get_conn_params() == {
+        'host_and_ports': [('localhost', 6163), ('localhost', 6164)],
+        'reconnect_sleep_initial': 0.5,
+        'reconnect_sleep_max': 60,
+        'reconnect_attempts_max': 5,
+        'timeout': 60,
+    }
+
+
+def test_get_conn_params__stomp(config):
+    config.config['connector'] = 'stomp'
+    config.config['plugin.stomp.host'] = 'localhost'
+    config.config['plugin.stomp.port'] = 6163
+    assert config.get_conn_params() == {
+        'host_and_ports': [('localhost', 6163)],
+    }

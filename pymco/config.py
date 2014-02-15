@@ -12,6 +12,8 @@ from .security import SecurityProvider
 from .serializers import SerializerBase
 from . import utils
 
+INFINITE = 9999999999999999999
+
 
 def lookup_with_default(fnc):
     '''
@@ -207,6 +209,35 @@ class Config(collections.Mapping):
                 params['ssl_ca_certs'] = self.config.get(prefix + '.ca', None)
 
         return params
+
+    def get_conn_params(self):
+        """Get STOMP connection parameters for current configuration.
+
+        Returns:
+            ``params``: It will return a dictionary with stomp.py connection
+            like key/values.
+        """
+        connector = self.config['connector']
+        prefix = 'plugin.{0}.'.format(connector)
+
+        if connector == 'stomp':
+            return {'host_and_ports': self.get_host_and_ports()}
+
+        return {
+            'host_and_ports': self.get_host_and_ports(),
+            'reconnect_sleep_initial':
+            self.getfloat(prefix + 'initial_reconnect_delay', default=0.01),
+            #'reconnect_sleep_increase': ,
+            #'reconnect_sleep_jitter': ,
+            'reconnect_sleep_max':
+            self.getfloat(prefix + 'max_recconnect_delay', default=30.0),
+            # Stomp gem, by default, try an infinite number of times
+            # Stomp.py doesn't support it, so just use a really big number
+            'reconnect_attempts_max':
+            self.getfloat(prefix + 'max_recconect_attempts', default=INFINITE),
+            'timeout':
+            self.getfloat(prefix + 'timeout', default=None),
+        }
 
     @staticmethod
     def from_configfile(configfile):
