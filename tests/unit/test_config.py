@@ -45,6 +45,22 @@ def test_getint_default(config):
     assert config.getint('missing', default=1) == 1
 
 
+def test_getfloat(config):
+    '''Tests :py:method:`Config.getfloat` happy path.'''
+    assert config.getfloat('plugin.activemq.pool.size') == 2.0
+
+
+def test_getfloat_missing(config):
+    '''Tests :py:method:`Config.getfloat` bad path.'''
+    with pytest.raises(KeyError):
+        config.getfloat('missing')
+
+
+def test_getfloat_default(config):
+    '''Tests :py:method:`Config.getfloat` bad path with default.'''
+    assert config.getfloat('missing', default=1.0) == 1.0
+
+
 def test_getboolean(config):
     '''Tests :py:method:`Config.getboolean` happy path.'''
     truly = ('y', 'true', '1')

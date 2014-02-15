@@ -53,6 +53,11 @@ class Config(collections.Mapping):
         return int(self.__getitem__(key))
 
     @lookup_with_default
+    def getfloat(self, key):
+        '''Get float option by key.'''
+        return float(self.__getitem__(key))
+
+    @lookup_with_default
     def getboolean(self, key):
         '''Get bool option by key.'''
         value = self.__getitem__(key)
