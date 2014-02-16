@@ -172,3 +172,19 @@ def test_default_connection(conn_mock, get_conn_params, config):
     connector = ConnectorFake(config=config)
     assert connector.connection is conn_mock.return_value
     conn_mock.assert_called_once_with(**{})
+
+
+@mock.patch('pymco.config.Config.get_conn_params')
+@mock.patch('stomp.connect.StompConnection11')
+def test_default_connection__rabbitmq(conn_mock, get_conn_params, config):
+    config.config['connector'] = 'rabbitmq'
+    config.config['plugin.rabbitmq.vhost'] = 'mcollective'
+    config.config['plugin.rabbitmq.pool.size'] = 1
+    config.config['plugin.rabbitmq.pool.1.host'] = 'localhost'
+    config.config['plugin.rabbitmq.pool.1.port'] = 61612
+    config.config['plugin.rabbitmq.pool.1.user'] = 'mcollective'
+    config.config['plugin.rabbitmq.pool.1.password'] = 'marionette'
+    get_conn_params.return_value = {}
+    connector = ConnectorFake(config=config)
+    assert connector.connection is conn_mock.return_value
+    conn_mock.assert_called_once_with(**{'vhost': 'mcollective'})

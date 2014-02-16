@@ -3,8 +3,6 @@
 """
 from __future__ import absolute_import
 
-import stomp
-
 from . import Connector
 
 
@@ -24,9 +22,3 @@ class RabbitMQConnector(Connector):
             agent=agent,
             collective=collective,
         )
-
-    @classmethod
-    def default_connection(cls, config):
-        """Creates a :py:class:`stomp.Connection` object with defaults"""
-        return stomp.Connection(host_and_ports=config.get_host_and_ports(),
-                                vhost=config['plugin.rabbitmq.vhost'])

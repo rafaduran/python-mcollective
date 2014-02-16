@@ -171,6 +171,9 @@ class BaseConnector(object):
     def default_connection(cls, config):
         """Creates a :py:class:`stomp.Connection` object with defaults"""
         params = config.get_conn_params()
+        if config['connector'] == 'rabbitmq':
+            params['vhost'] = config['plugin.rabbitmq.vhost']
+
         return connect.StompConnection11(**params)
 
 
