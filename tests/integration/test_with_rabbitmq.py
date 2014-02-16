@@ -26,6 +26,10 @@ class TestWithRabbitMQMCo23x(base.MCollective23x, RabbitMQTestCase):
     '''MCollective integration test case.'''
 
 
+class TestWithRabbitMQMCo24x(base.MCollective24x, RabbitMQTestCase):
+    '''MCollective integration test case.'''
+
+
 class TestWithRabbitMQSSLMCo23x(base.MCollective23x, RabbitMQTestCase):
     """MCollective integration test case."""
     CTXT = {

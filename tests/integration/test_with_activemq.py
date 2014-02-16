@@ -25,6 +25,10 @@ class TestWithActiveMQMCo23x(base.MCollective23x, ActiveMQTestCase):
     '''MCollective integration test case.'''
 
 
+class TestWithActiveMQMCo24x(base.MCollective24x, ActiveMQTestCase):
+    """MCollective integration test case."""
+
+
 class TestWithActiveMQSSLMCo23x(base.MCollective23x, ActiveMQTestCase):
     '''MCollective integration test case.'''
     CTXT = {

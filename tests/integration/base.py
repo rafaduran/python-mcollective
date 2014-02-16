@@ -128,3 +128,8 @@ class MCollective23x(object):
 class MCollective20x(object):
     '''Mcollective 2.0.x branch integration tests with RabbitMQ'''
     rev = '2.0.x'
+
+
+class MCollective24x(object):
+    '''Mcollective 2.4.x branch integration tests'''
+    rev = '2.4.x'
