@@ -177,39 +177,6 @@ class Config(collections.Mapping):
 
         return params
 
-    def get_ssl_parameters(self, current_host_and_port=None):
-        """Get SSL parameters for the current host and port.
-
-        Params:
-            ``current_host_and_port``: two-tuple where the first element is the
-            host and second is the port. This parameter is not required for
-            ``stomp`` connector.
-
-        Returns:
-            ``ssl_parameters``: A dict-like object where eack key is a Stomp.py
-            connection objcts SSL parameter.
-        """
-        connector = self.config['connector']
-        if connector != 'activemq':
-            raise ValueError('Only ActiveMQ connector support SSL parameters')
-
-        prefix = 'plugin.activemq.pool.'
-        params = {
-            'use_ssl': False,
-            'ssl_cert_file': None,
-            'ssl_key_file': None,
-            'ssl_ca_certs': None,
-        }
-        for index,  host_and_port in enumerate(self.get_host_and_ports(), 1):
-            if host_and_port == current_host_and_port:
-                prefix += '{index}.ssl'.format(index=index)
-                params['use_ssl'] = self.getboolean(prefix, default=False)
-                params['ssl_cert_file'] = self.config.get(prefix + '.cert', None)
-                params['ssl_key_file'] = self.config.get(prefix + '.key', None)
-                params['ssl_ca_certs'] = self.config.get(prefix + '.ca', None)
-
-        return params
-
     def get_conn_params(self):
         """Get STOMP connection parameters for current configuration.
 
