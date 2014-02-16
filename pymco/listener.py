@@ -17,7 +17,7 @@ class CurrentHostPortListener(listener.ConnectionListener):
     password for each host, so we need track the current host and port in order
     to be able to get the right user and password when logging.
     """
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.current_host = None
         self.curent_port = None
 

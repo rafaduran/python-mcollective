@@ -3,8 +3,12 @@
 -------------------------
 python-mcollective connectors for MCollective.
 """
+from __future__ import absolute_import
+
 import abc
 import itertools
+
+from stomp import connect
 
 from .. import exc
 from .. import listener
@@ -34,6 +38,7 @@ class BaseConnector(object):
             self.connection = connection
 
         self.set_listeners()
+        self.set_ssl()
 
     def connect(self, wait=None):
         """Connect to MCollective middleware."""
@@ -63,7 +68,7 @@ class BaseConnector(object):
         Returns:
             ``self``: so you can chain calls.
         """
-        self.connection.send(body=self.security.serialize(self.security.sign(msg)),
+        self.connection.send(body=self.security.encode(msg),
                              destination=destination,
                              **kwargs)
         return self
@@ -144,7 +149,8 @@ class BaseConnector(object):
     def set_listeners(self):
         """Set default listeners."""
         for key, value in self.listeners.items():
-            self.connection.set_listener(key, value())
+            self.connection.set_listener(key, value(config=self.config,
+                                                    connector=self))
 
     def get_current_host_and_port(self):
         """Get the current host and port from the tracker listener.
@@ -155,6 +161,20 @@ class BaseConnector(object):
         """
         tracker = self.connection.get_listener('tracker')
         return tracker.get_host(), tracker.get_port()
+
+    def set_ssl(self):
+        """Set the SSL configuration for the current connection."""
+        for params in self.config.get_ssl_params():
+            self.connection.transport.set_ssl(**params)
+
+    @classmethod
+    def default_connection(cls, config):
+        """Creates a :py:class:`stomp.Connection` object with defaults"""
+        params = config.get_conn_params()
+        if config['connector'] == 'rabbitmq':
+            params['vhost'] = config['plugin.rabbitmq.vhost']
+
+        return connect.StompConnection11(**params)
 
 
 def get_target(self, agent, collective, topciprefix=None):
@@ -182,16 +202,8 @@ def get_reply_target(self, agent, collective):
     """
 
 
-def default_connection(cls, config):
-    """Creates a :py:class:`stomp.Connection` object with defaults.
-
-    This method should be defined as a classmethod.
-    """
-
-
 # Building Metaclass here for Python 2/3 compatibility
 Connector = abc.ABCMeta('Connector', (BaseConnector,), {
     'get_target': abc.abstractmethod(get_target),
     'get_reply_target': abc.abstractmethod(get_reply_target),
-    'default_connection': abc.abstractmethod(default_connection),
 })

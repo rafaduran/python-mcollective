@@ -1,7 +1,10 @@
 '''Common helpers for integration tests.'''
+from __future__ import print_function
 import os
 import signal
 import subprocess
+import sys
+import traceback
 import time
 
 from pymco import config
@@ -76,6 +79,25 @@ class IntegrationTestCase(object):
         assert msg[':senderagent'] == simple_action.agent
         assert msg[':requestid'] == self.msg[':requestid']
 
+    def dump_threads(self):
+        """Dump all threads information for debugging purposes.
+
+        Recipe taken from http://stackoverflow.com/a/7317379/2832939
+        """
+        print("\n*** STACKTRACE - START ***\n", file=sys.stderr)
+        code = []
+        for threadId, stack in sys._current_frames().items():
+            code.append("\n# ThreadID: %s" % threadId)
+            for filename, lineno, name, line in traceback.extract_stack(stack):
+                code.append('File: "%s", line %d, in %s' % (filename,
+                                                            lineno, name))
+                if line:
+                    code.append("  %s" % (line.strip()))
+
+        for line in code:
+            print(line, file=sys.stderr)
+        print("\n*** STACKTRACE - END ***\n", file=sys.stderr)
+
     def setup(self):
         self.setup_mcollective()
 
@@ -106,3 +128,8 @@ class MCollective23x(object):
 class MCollective20x(object):
     '''Mcollective 2.0.x branch integration tests with RabbitMQ'''
     rev = '2.0.x'
+
+
+class MCollective24x(object):
+    '''Mcollective 2.4.x branch integration tests'''
+    rev = '2.4.x'

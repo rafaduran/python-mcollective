@@ -1,7 +1,9 @@
 """Tests for python-mcollective base connector."""
 import pytest
+import six
 
 from pymco import connector
+from pymco import exc
 from pymco.test.utils import mock
 
 
@@ -18,20 +20,20 @@ class ConnectorFake(connector.Connector):
     def get_reply_target(self):
         pass
 
-    @classmethod
-    def default_connection(cls, config):
-        pass
-
 
 @pytest.fixture
 def fake_connector(config, conn_mock):
     return ConnectorFake(config=config, connection=conn_mock)
 
 
-@mock.patch('pymco.connector.Connector.set_listeners')
-def test_set_listeners(set_listeners, config, conn_mock):
-    ConnectorFake(config=config, connection=conn_mock)
-    set_listeners.assert_called_once_with()
+def test_set_listeners(config, conn_mock):
+    listener = mock.Mock()
+    with mock.patch.dict(ConnectorFake.listeners, {'tracker': listener}):
+        connector = ConnectorFake(config=config, connection=conn_mock)
+
+    conn_mock.set_listener.assert_called_once_with('tracker',
+                                                   listener.return_value)
+    listener.assert_called_once_with(connector=connector, config=config)
 
 
 @mock.patch('pymco.config.Config.get_security')
@@ -90,3 +92,99 @@ def test_get_current_host_and_port(fake_connector, conn_mock):
     conn_mock.get_listener.assert_called_once_with('tracker')
     conn_mock.get_listener.return_value.get_host.assert_called_once_with()
     conn_mock.get_listener.return_value.get_port.assert_called_once_with()
+
+
+@mock.patch('pymco.connector.Connector.security')
+def test_send(security, fake_connector, conn_mock):
+    assert fake_connector.send('foo', 'destination') is fake_connector
+    conn_mock.send.assert_called_with(body=security.encode('foo'),
+                                      destination='destination')
+
+
+def test_subcscribe(fake_connector, conn_mock):
+    assert fake_connector.subscribe('destination', id='some-id') is fake_connector
+    conn_mock.subscribe.assert_called_once_with('destination', id='some-id')
+
+
+@mock.patch.object(six.moves.builtins, 'next')
+@mock.patch('pymco.connector.Connector.id_generator')
+def test_subscribe_no_id(id_generator, next, fake_connector, conn_mock):
+    next.return_value = 1
+    assert fake_connector.subscribe('destination') is fake_connector
+    conn_mock.subscribe.assert_called_once_with('destination', id=1)
+    next.assert_called_once_with(id_generator)
+
+
+def test_set_ssl(config, conn_mock):
+    calls = [
+        mock.call(for_hosts=(('localhost', 6163),),
+                  cert_file='tests/fixtures/activemq_cert.pem',
+                  key_file='tests/fixtures/activemq_private.pem',
+                  ca_certs='tests/fixtures/ca.pem'),
+        mock.call(for_hosts=(('localhost', 6164),),
+                  cert_file='tests/fixtures/activemq_cert.pem',
+                  key_file='tests/fixtures/activemq_private.pem',
+                  ca_certs='tests/fixtures/ca.pem'),
+    ]
+    ConnectorFake(config, conn_mock)
+    assert conn_mock.transport.set_ssl.call_args_list == calls
+
+
+@mock.patch('pymco.listener.SingleResponseListener',
+            **{'return_value.responses.__len__.return_value': 1})
+class TestReceive:
+    def patch_connection(self, fake_connector):
+        return mock.patch.multiple(fake_connector,
+                                   connect=mock.DEFAULT,
+                                   subscribe=mock.DEFAULT,
+                                   disconnect=mock.DEFAULT)
+
+    def test_receive__sets_single_response_listener(self,
+                                                    listener,
+                                                    fake_connector,
+                                                    conn_mock):
+        fake_connector.receive(5)
+        assert mock.call('response_listener', listener.return_value
+                         ) in conn_mock.set_listener.call_args_list
+
+    def test_receive__sets_the_right_timeout(self,
+                                             listener,
+                                             fake_connector,
+                                             conn_mock):
+        fake_connector.receive(5)
+        listener.assert_called_once_with(timeout=5,
+                                         config=fake_connector.config)
+
+    def test_receive__raises_timeout_error_if_no_message(self,
+                                                         listener,
+                                                         fake_connector,
+                                                         conn_mock):
+        listener.return_value.responses.__len__.return_value = 0
+        with self.patch_connection(fake_connector):
+            with pytest.raises(exc.TimeoutError):
+                fake_connector.receive(5)
+
+
+@mock.patch('pymco.config.Config.get_conn_params')
+@mock.patch('stomp.connect.StompConnection11')
+def test_default_connection(conn_mock, get_conn_params, config):
+    get_conn_params.return_value = {}
+    connector = ConnectorFake(config=config)
+    assert connector.connection is conn_mock.return_value
+    conn_mock.assert_called_once_with(**{})
+
+
+@mock.patch('pymco.config.Config.get_conn_params')
+@mock.patch('stomp.connect.StompConnection11')
+def test_default_connection__rabbitmq(conn_mock, get_conn_params, config):
+    config.config['connector'] = 'rabbitmq'
+    config.config['plugin.rabbitmq.vhost'] = 'mcollective'
+    config.config['plugin.rabbitmq.pool.size'] = 1
+    config.config['plugin.rabbitmq.pool.1.host'] = 'localhost'
+    config.config['plugin.rabbitmq.pool.1.port'] = 61612
+    config.config['plugin.rabbitmq.pool.1.user'] = 'mcollective'
+    config.config['plugin.rabbitmq.pool.1.password'] = 'marionette'
+    get_conn_params.return_value = {}
+    connector = ConnectorFake(config=config)
+    assert connector.connection is conn_mock.return_value
+    conn_mock.assert_called_once_with(**{'vhost': 'mcollective'})

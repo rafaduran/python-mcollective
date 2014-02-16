@@ -27,12 +27,23 @@ direct_addressing = yes
 direct_addressing_threshold = 5
 
 connector = activemq
+plugin.activemq.pool.size = 2
 plugin.activemq.pool.1.port = 6163
 plugin.activemq.pool.1.host = localhost
-plugin.activemq.pool.size = 1
 plugin.activemq.pool.1.password = secret
 plugin.activemq.pool.1.user = mcollective
-plugin.activemq.pool.1.ssl = false
+plugin.activemq.pool.1.ssl = true
+plugin.activemq.pool.1.ssl.ca = tests/fixtures/ca.pem
+plugin.activemq.pool.1.ssl.key = tests/fixtures/activemq_private.pem
+plugin.activemq.pool.1.ssl.cert = tests/fixtures/activemq_cert.pem
+plugin.activemq.pool.2.port = 6164
+plugin.activemq.pool.2.host = localhost
+plugin.activemq.pool.2.password = secret
+plugin.activemq.pool.2.user = mcollective
+plugin.activemq.pool.2.ssl = true
+plugin.activemq.pool.2.ssl.ca = tests/fixtures/ca.pem
+plugin.activemq.pool.2.ssl.key = tests/fixtures/activemq_private.pem
+plugin.activemq.pool.2.ssl.cert = tests/fixtures/activemq_cert.pem
 
 factsource = yaml
 plugin.yaml = /path/to/facts.yaml

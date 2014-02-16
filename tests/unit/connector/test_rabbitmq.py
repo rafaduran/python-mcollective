@@ -50,12 +50,3 @@ def test_get_target(connector):
 def test_get_reply_target(connector):
     assert connector.get_reply_target(agent='agent', collective='collective') == (
         '/queue/collective_reply_agent')
-
-
-@mock.patch('stomp.Connection')
-def test_default_connection(conn_class, config):
-    rabbitmq.RabbitMQConnector(config=config)
-    conn_class.assert_called_once_with(
-        host_and_ports=config.get_host_and_ports(),
-        vhost=config['plugin.rabbitmq.vhost'],
-    )

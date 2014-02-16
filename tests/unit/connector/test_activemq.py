@@ -21,3 +21,15 @@ def test_get_reply_target(getpid, connector):
     getpid.return_value = 12345
     assert connector.get_reply_target(collective='collective', agent='agent') == (
         '/queue/collective.reply.mco1_12345')
+
+
+@mock.patch('pymco.connector.Connector.security',
+            new_callable=mock.PropertyMock)
+def test_send__msg_priority(security, connector, conn_mock, config):
+    config.config['plugin.activemq.priority'] = 4
+    connector.send('foo', 'spam')
+    conn_mock.send.assert_called_once_with(
+        body=security.return_value.encode('foo'),
+        destination='spam',
+        priority=4,
+    )

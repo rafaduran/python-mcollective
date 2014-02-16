@@ -7,10 +7,12 @@ import six
 from six.moves import configparser
 
 from .connector import Connector
-from .exc import ConfigLookupError
+from .import exc
 from .security import SecurityProvider
 from .serializers import SerializerBase
 from . import utils
+
+INFINITE = 9999999999999999999
 
 
 def lookup_with_default(fnc):
@@ -51,6 +53,11 @@ class Config(collections.Mapping):
     def getint(self, key):
         '''Get int option by key.'''
         return int(self.__getitem__(key))
+
+    @lookup_with_default
+    def getfloat(self, key):
+        '''Get float option by key.'''
+        return float(self.__getitem__(key))
 
     @lookup_with_default
     def getboolean(self, key):
@@ -136,9 +143,101 @@ class Config(collections.Mapping):
                 return (self.config[user_key.format(index=index)],
                         self.config[pass_key.format(index=index)])
         else:
-            raise ConfigLookupError('{0} is not in the configuration for {1} '
-                                    'connector'.format(current_host_and_port,
-                                                       connector))
+            raise exc.ConfigLookupError(
+                '{0} is not in the configuration for {1} connector'.format(
+                    current_host_and_port, connector))
+
+    def get_ssl_params(self):
+        """Get SSL configuration for current connector
+
+        Returns:
+            ``ssl_params``: An iterable of SSL configuration parameters to be
+            used with :py:meth:`stomp.Transport.set_ssl`.
+        """
+        connector = self.config['connector']
+        if connector not in ('activemq', 'rabbitmq'):
+            return ()
+
+        params = []
+        prefix = 'plugin.{0}.pool'.format(connector)
+        for index in range(1, self.getint(prefix + '.size') + 1):
+            current_prefix = '{prefix}.{index}'.format(prefix=prefix,
+                                                       index=index)
+            for_hosts = ((self.config.get(current_prefix + '.host'),
+                          self.getint(current_prefix + '.port')),)
+            current_prefix += '.ssl'
+            if self.getboolean(current_prefix, default=False):
+                params.append({
+                    'for_hosts': for_hosts,
+                    'cert_file': self.config.get(current_prefix + '.cert',
+                                                 None),
+                    'key_file': self.config.get(current_prefix + '.key', None),
+                    'ca_certs': self.config.get(current_prefix + '.ca', None),
+                })
+
+        return params
+
+    def get_ssl_parameters(self, current_host_and_port=None):
+        """Get SSL parameters for the current host and port.
+
+        Params:
+            ``current_host_and_port``: two-tuple where the first element is the
+            host and second is the port. This parameter is not required for
+            ``stomp`` connector.
+
+        Returns:
+            ``ssl_parameters``: A dict-like object where eack key is a Stomp.py
+            connection objcts SSL parameter.
+        """
+        connector = self.config['connector']
+        if connector != 'activemq':
+            raise ValueError('Only ActiveMQ connector support SSL parameters')
+
+        prefix = 'plugin.activemq.pool.'
+        params = {
+            'use_ssl': False,
+            'ssl_cert_file': None,
+            'ssl_key_file': None,
+            'ssl_ca_certs': None,
+        }
+        for index,  host_and_port in enumerate(self.get_host_and_ports(), 1):
+            if host_and_port == current_host_and_port:
+                prefix += '{index}.ssl'.format(index=index)
+                params['use_ssl'] = self.getboolean(prefix, default=False)
+                params['ssl_cert_file'] = self.config.get(prefix + '.cert', None)
+                params['ssl_key_file'] = self.config.get(prefix + '.key', None)
+                params['ssl_ca_certs'] = self.config.get(prefix + '.ca', None)
+
+        return params
+
+    def get_conn_params(self):
+        """Get STOMP connection parameters for current configuration.
+
+        Returns:
+            ``params``: It will return a dictionary with stomp.py connection
+            like key/values.
+        """
+        connector = self.config['connector']
+        prefix = 'plugin.{0}.'.format(connector)
+
+        if connector == 'stomp':
+            return {'host_and_ports': self.get_host_and_ports()}
+
+        return {
+            'host_and_ports': self.get_host_and_ports(),
+            'reconnect_sleep_initial':
+            self.getfloat(prefix + 'initial_reconnect_delay', default=0.01),
+            #'reconnect_sleep_increase': ,
+            #'reconnect_sleep_jitter': ,
+            'reconnect_sleep_max':
+            self.getfloat(prefix + 'max_recconnect_delay', default=30.0),
+            # Stomp gem, by default, try an infinite number of times
+            # Stomp.py doesn't support it, so just use a really big number
+            'reconnect_attempts_max':
+            self.getfloat(prefix + 'max_recconect_attempts', default=INFINITE),
+            'timeout':
+            self.getfloat(prefix + 'timeout', default=None),
+        }
 
     @staticmethod
     def from_configfile(configfile):

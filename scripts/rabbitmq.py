@@ -85,6 +85,13 @@ def main():
                                     type="direct",
                                     auth=ADMIN_AUTH,
                                     durable=True))
+    assert_success(declare_exchange(name='mcollective_reply',
+                                    auto_delete=False,
+                                    vhost="/mcollective",
+                                    internal=False,
+                                    type="direct",
+                                    auth=ADMIN_AUTH,
+                                    durable=True))
 
 
 if __name__ == '__main__':
