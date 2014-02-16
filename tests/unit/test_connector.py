@@ -20,10 +20,6 @@ class ConnectorFake(connector.Connector):
     def get_reply_target(self):
         pass
 
-    @classmethod
-    def default_connection(cls, config):
-        pass
-
 
 @pytest.fixture
 def fake_connector(config, conn_mock):
@@ -167,3 +163,12 @@ class TestReceive:
         with self.patch_connection(fake_connector):
             with pytest.raises(exc.TimeoutError):
                 fake_connector.receive(5)
+
+
+@mock.patch('pymco.config.Config.get_conn_params')
+@mock.patch('stomp.connect.StompConnection11')
+def test_default_connection(conn_mock, get_conn_params, config):
+    get_conn_params.return_value = {}
+    connector = ConnectorFake(config=config)
+    assert connector.connection is conn_mock.return_value
+    conn_mock.assert_called_once_with(**{})

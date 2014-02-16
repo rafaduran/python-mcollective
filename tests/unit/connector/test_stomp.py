@@ -1,11 +1,9 @@
 """
 Tests for StompConnector
 """
-from __future__ import absolute_import
 import pytest
 
 from pymco.connector import stomp
-from pymco.test.utils import mock
 
 CONFIGSTR = '''
 topicprefix = /topic/
@@ -43,13 +41,6 @@ def config():
 @pytest.fixture
 def connector(config, conn_mock):
     return stomp.StompConnector(config, connection=conn_mock)
-
-
-@mock.patch('stomp.Connection')
-def test_default_connection(conn, config):
-    connector = stomp.StompConnector(config=config)
-    assert connector.connection is conn.return_value
-    conn.assert_called_once_with(host_and_ports=[('localhost', 61613)])
 
 
 def test_get_target(connector, config):

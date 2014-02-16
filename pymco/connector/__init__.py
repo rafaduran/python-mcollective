@@ -3,8 +3,12 @@
 -------------------------
 python-mcollective connectors for MCollective.
 """
+from __future__ import absolute_import
+
 import abc
 import itertools
+
+from stomp import connect
 
 from .. import exc
 from .. import listener
@@ -163,6 +167,12 @@ class BaseConnector(object):
         for params in self.config.get_ssl_params():
             self.connection.transport.set_ssl(**params)
 
+    @classmethod
+    def default_connection(cls, config):
+        """Creates a :py:class:`stomp.Connection` object with defaults"""
+        params = config.get_conn_params()
+        return connect.StompConnection11(**params)
+
 
 def get_target(self, agent, collective, topciprefix=None):
     """Get the message target for the given agent and collective.
@@ -189,16 +199,8 @@ def get_reply_target(self, agent, collective):
     """
 
 
-def default_connection(cls, config):
-    """Creates a :py:class:`stomp.Connection` object with defaults.
-
-    This method should be defined as a classmethod.
-    """
-
-
 # Building Metaclass here for Python 2/3 compatibility
 Connector = abc.ABCMeta('Connector', (BaseConnector,), {
     'get_target': abc.abstractmethod(get_target),
     'get_reply_target': abc.abstractmethod(get_reply_target),
-    'default_connection': abc.abstractmethod(default_connection),
 })

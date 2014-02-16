@@ -5,10 +5,10 @@ Contains ActiveMQ specific connector.
 """
 import os
 
-from .stomp import StompConnector
+from . import Connector
 
 
-class ActiveMQConnector(StompConnector):
+class ActiveMQConnector(Connector):
     """ActiveMQ middleware specific connector."""
     def send(self, msg, destination, *args, **kwargs):
         """Re-implement :py:meth:`pymco.connector.Connector.send`
