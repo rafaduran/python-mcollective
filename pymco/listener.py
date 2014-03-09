@@ -57,6 +57,13 @@ class ResponseListener(listener.ConnectionListener):
         return self._security
 
     def on_message(self, headers, body):
+        """Received messages hook.
+
+        Args:
+            `headers`: message headers.
+
+            `body`: message body.
+        """
         self.condition.acquire()
         self.responses.append(self.security.deserialize(body))
         self.received += 1

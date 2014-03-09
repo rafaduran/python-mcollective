@@ -1,7 +1,7 @@
 """
-:py:mod:`pymco.connector`
--------------------------
-python-mcollective connectors for MCollective.
+Connectors base
+---------------
+python-mcollective base for MCollective connector plugins.
 """
 from __future__ import absolute_import
 
@@ -180,7 +180,7 @@ class BaseConnector(object):
 def get_target(self, agent, collective, topciprefix=None):
     """Get the message target for the given agent and collective.
 
-    Params:
+    Args:
         ``agent``: MCollective target agent name.
         ``collective``: MCollective target collective.
         ``topicprefix``: Required for older versions of MCollective
@@ -193,7 +193,7 @@ def get_target(self, agent, collective, topciprefix=None):
 def get_reply_target(self, agent, collective):
     """Get the message target for the given agent and collective.
 
-    Params:
+    Args:
         ``agent``: MCollective target agent name.
         ``collective``: MCollective target collective.
     Returns:

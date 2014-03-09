@@ -40,6 +40,9 @@ class SimpleAction(object):
 
         It should subscribe to the reply target, execute the RPC call and wait
         for the result.
+
+        Args:
+            ``timeout``: RPC call timeout.
         """
         self.connector.connect(wait=True)
         reply_target = self.get_reply_target()

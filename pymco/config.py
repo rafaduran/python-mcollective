@@ -1,4 +1,9 @@
-'''python-mcollective configuration module'''
+"""
+:mod:`pymco.config`
+-------------------
+Provides MCollective configuration parsing and an entry point for getting the
+right plugin classes.
+"""
 import collections
 import functools
 import os
@@ -16,9 +21,9 @@ INFINITE = 9999999999999999999
 
 
 def lookup_with_default(fnc):
-    '''
+    """
     Wraps ConfigParser lookups, catching exceptions and providing defaults.
-    '''
+    """
     @functools.wraps(fnc)
     def decorator(self, name, *args, **kwargs):
         try:
@@ -31,7 +36,7 @@ def lookup_with_default(fnc):
 
 
 class Config(collections.Mapping):
-    '''python-mcollective confiugration class.'''
+    """python-mcollective confiugration class."""
     def __init__(self, configdict):
         self.config = configdict
 
@@ -46,22 +51,22 @@ class Config(collections.Mapping):
 
     @lookup_with_default
     def get(self, key):
-        '''Get option by key.'''
+        """Get option by key."""
         return self.__getitem__(key)
 
     @lookup_with_default
     def getint(self, key):
-        '''Get int option by key.'''
+        """Get int option by key."""
         return int(self.__getitem__(key))
 
     @lookup_with_default
     def getfloat(self, key):
-        '''Get float option by key.'''
+        """Get float option by key."""
         return float(self.__getitem__(key))
 
     @lookup_with_default
     def getboolean(self, key):
-        '''Get bool option by key.'''
+        """Get bool option by key."""
         value = self.__getitem__(key)
         if isinstance(value, six.string_types):
             if value.lower() in ('true', 'y', '1'):
@@ -113,7 +118,7 @@ class Config(collections.Mapping):
     def get_user_and_password(self, current_host_and_port=None):
         """Get the user and password for the current host and port.
 
-        Params:
+        Args:
             ``current_host_and_port``: two-tuple where the first element is the
             host and second is the port. This parameter is not required for
             ``stomp`` connector.
@@ -208,13 +213,13 @@ class Config(collections.Mapping):
 
     @staticmethod
     def from_configfile(configfile):
-        '''Reads configfile and returns a new :py:class:`Config` instance'''
+        """Reads configfile and returns a new :py:class:`Config` instance"""
         configstr = open(configfile, 'rt').read()
         return Config.from_configstr(configstr)
 
     @staticmethod
     def from_configstr(configstr, section='default'):
-        '''Parses given string an returns a new :py:class:`Config` instance'''
+        """Parses given string an returns a new :py:class:`Config` instance"""
         config = six.StringIO()
         config.write('[{0}]\n'.format(section))
         config.write(configstr)

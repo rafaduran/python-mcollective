@@ -1,3 +1,8 @@
+"""
+:py:mod:`pymco.security.none`
+-----------------------------
+Contains none specific security provider.
+"""
 import getpass
 
 from . import SecurityProvider
@@ -12,7 +17,10 @@ class NoneProvider(SecurityProvider):
     serializer = yaml.Serializer()
 
     def sign(self, message):
-        """Add the current user as ``:callerid`` key to the message."""
+        """Implement :py:meth:`pymco.security.SecurityProvider.sign`.
+
+        Add the current user as ``:callerid`` key to the message.
+        """
         message[':callerid'] = 'user={0}'.format(getpass.getuser())
         return message
 

@@ -1,3 +1,8 @@
+"""
+Security providers base
+-----------------------
+Provides YAML [de]serialization.
+"""
 from __future__ import print_function
 from __future__ import absolute_import
 
@@ -11,6 +16,7 @@ except ImportError as exc:
 
 
 class Serializer(SerializerBase):
+    """YAML specific serializer."""
     def serialize(self, msg):
         return yaml.safe_dump(dict(msg))
 

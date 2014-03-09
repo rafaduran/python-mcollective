@@ -1,4 +1,8 @@
-"""MCollective security provider implementations."""
+"""
+Security providers base
+-----------------------
+MCollective security providers base.
+"""
 import abc
 
 
@@ -22,6 +26,7 @@ class SecurityProviderBase(object):
 
         Args:
             ``message``: message to be encoded.
+
         Returns:
             ``message``: encoded message.
         """
@@ -32,6 +37,7 @@ class SecurityProviderBase(object):
 
         Args:
             ``message``: message to be decoded.
+
         Returns:
             ``message``: decoded message.
         """
@@ -71,6 +77,7 @@ def sign(self, message):
 
     Args:
         ``message``: message to be signed.
+
     Returns:
         ``message``: signed message.
     """
@@ -81,8 +88,10 @@ def verify(self, message):
 
     Args:
         ``message``: message to be verified.
+
     Returns:
         ``message``: verified message.
+
     Raises:
         :py:exc:`pymco.exc.MessageVerificationError`: If the message
         verification failed.

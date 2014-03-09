@@ -1,6 +1,6 @@
 """
-py:mod:`pymco.serializers`
---------------------------
+Serializers base
+----------------
 pymco Message [de]serialization.
 """
 import abc
@@ -27,6 +27,7 @@ def deserialize(self, msg):
 
 # Building Metaclass here for Python 2/3 compatibility
 SerializerBase = abc.ABCMeta('SerializerBase', (object,), {
+    '__doc__': 'Base class for all serializers.',
     'serialize': abc.abstractmethod(serialize),
     'deserialize': abc.abstractmethod(deserialize),
     'plugins': {

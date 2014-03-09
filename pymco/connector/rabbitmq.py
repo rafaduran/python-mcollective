@@ -1,5 +1,7 @@
 """
-:py:mod:`pymco.connector.stomp`
+:py:mod:`pymco.connector.rabbitmq`
+----------------------------------
+RabbitMQ specific connector plugin.
 """
 from __future__ import absolute_import
 
