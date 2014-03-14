@@ -16,14 +16,10 @@ from . import ctxt as _ctxt
 def get_template(name, package=__package__):
     """Load Jinja 2 template from given package.
 
-    Args:
-        ``name``: template name.
-
-        ``package``: package to be used for loading the template, default is
+    :arg name: template name.
+    :arg package: package to be used for loading the template, default is
         current package.
-
-    Returns:
-        :py:class:`jinja2.environment.Template` object.
+    :return: :py:class:`jinja2.environment.Template` object.
     """
     env = jinja2.Environment(loader=jinja2.PackageLoader(package, 'templates'))
     return env.get_template(name)
@@ -32,11 +28,9 @@ def get_template(name, package=__package__):
 def configfile(ctxt=None):
     """Create a MCollective configuration file.
 
-    Args:
-        ``ctxt``: the ctxt to be used for rendering MCollective configuration
+    :arg dict ctxt: the ctxt to be used for rendering MCollective configuration
         template.
-    Returns:
-        The path where the configuration file has been placed
+    :return: The path where the configuration file has been placed
         (:py:data:`pymco.test.ctxt.TEST_CFG`).
     """
     if not ctxt:

@@ -13,12 +13,9 @@ def import_class(import_path):
     then it just calls to :py:func:`__import__` with the module name and
     :py:func:`getattr` with the module and the class name.
 
-    Params:
-        ``import_path``: A dotted import path string.
-    Returns:
-        ``class``: The class once imported.
-    Raises:
-        :py:exc:`ImportError`
+    :arg import_path: dotted import path string.
+    :return: the class once imported.
+    :raise: :py:exc:`ImportError` if the class can't be imported.
     """
     parts = import_path.split('.')
     mod_str, klass_str = '.'.join(parts[:-1]), parts[-1]
@@ -39,12 +36,10 @@ def import_object(import_path, *args, **kwargs):
     import path and instantiate it using given positional and keyword
     arguments.
 
-    Params:
-        ``import_path``: Same argument as :py:func:`import_class`.
-
-        ``args``: Positional arguments for object instantiation.
-
-        ``kwargs``: Keyword arguments for object instantiation.
+    :arg import_path: Same argument as :py:func:`import_class`.
+    :arg \*args: extra pPositional arguments for object instantiation.
+    :arg \*\*kwargs: extra Keyword arguments for object instantiation.
+    :returns: an object the imported class initialized with given arguments.
     """
     return import_class(import_path)(*args, **kwargs)
 
@@ -54,6 +49,9 @@ def load_rsa_key(filename):
 
     Wrapper over :py:meth:`Crypto.PublicKey.RSA.importKey`, just getting the
     file content first and then just loading the key from it.
+
+    :param filename: RSA key file name.
+    :returns: loaded RSA key.
     """
     # Importing here since Crypto module is only require for the SSL security
     # provider plugin.

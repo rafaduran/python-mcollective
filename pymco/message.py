@@ -36,11 +36,9 @@ class Filter(collections.Mapping):
 
         Roles, cookbooks,... names may be used too.
 
-        Args:
-            ``name``: class, role, cookbook,... name.
+        :param name: class, role, cookbook,... name.
 
-        Returns:
-            ``self``: so filters can be chained.
+        :returns: ``self`` so filters can be chained.
         """
         self._filter['cf_class'].append(name)
         return self
@@ -48,11 +46,8 @@ class Filter(collections.Mapping):
     def add_agent(self, agent):
         """Add new MCollective agent
 
-        Args:
-            ``agent``: MCollective agent name.
-
-        Returns:
-            ``self``: so filters can be chained.
+        :param agent: MCollective agent name.
+        :returns: ``self`` so filters can be chained.
         """
         self._filter['agent'].append(agent)
         return self
@@ -60,16 +55,11 @@ class Filter(collections.Mapping):
     def add_fact(self, fact, value, operator=None):
         """Add a new Facter fact based filter.
 
-        Args:
-            ``fact``: fact name.
-
-            ``value``: fact value.
-
-            ``operator``: Operator to be applied when comparing the fact. Valid
-            values are: ==, <=, >=, <, >, !=.
-
-        Returns:
-            ``self``: so filters can be chained.
+        :param fact: fact name.
+        :param value: fact value.
+        :param operator: Operator to be applied when comparing the fact. Valid
+            values are: ==, <=, >=, <, >, !=. Optional parameter.
+        :returns: ``self`` so filters can be chained.
         """
         toappend = {':fact': fact, ':value': value}
         if operator:
@@ -83,11 +73,8 @@ class Filter(collections.Mapping):
     def add_identity(self, identity):
         """Adds new identities
 
-        Args:
-            ``identity``: MCollective identity value.
-
-        Returns:
-            ``self``: so filters can be chained.
+        :param identity: MCollective identity value.
+        :returns: ``self`` so filters can be chained.
         """
         self._filter['identity'].append(identity)
         return self
@@ -107,6 +94,17 @@ class Message(collections.MutableMapping):
 
     This class implements :py:class:`collections.MutableMapping` interface, so
     it can be used as read/write mapping (dictionary).
+
+    :param body: the message body. It must be serializable using current
+        serialization method.
+    :param agent: message target agent.
+    :param config: :py:class:`pymco.config.Config` instance.
+    :param filter_: :py:class:`Filter` instance. This parameter is optional.
+    :param kwargs: Extra keyword arguments. You can set the target
+        ``collective`` or the message ``ttl`` using them.
+    :raise: :py:exc:`pymco.exc.ImproperlyConfigured` if configuration has no
+        ``identity`` or ``collective`` is not set neither in ``kwargs`` nor in
+        configuration.
     """
     def __init__(self, body, agent, config, filter_=None, **kwargs):
         if not filter_:

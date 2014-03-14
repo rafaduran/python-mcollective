@@ -9,20 +9,16 @@ import abc
 def serialize(self, msg):
     """Serialize a MCollective msg.
 
-    Params:
-        ``msg``: message to be serialized.
-    Returns:
-        ``msg``: serialized message.
+    :arg msg: message to be serialized.
+    :return: serialized message.
     """
 
 
 def deserialize(self, msg):
     """De-serialize a MCollective msg.
 
-    Params:
-        ``msg``: message to be de-serialized.
-    Returns:
-        ``msg``: de-serialized message.
+    :arg pymco.message.Message msg: message to be de-serialized.
+    :return: de-serialized message.
     """
 
 # Building Metaclass here for Python 2/3 compatibility

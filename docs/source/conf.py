@@ -33,6 +33,8 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
+    'sphinx.ext.extlinks',
+    'sphinx.ext.intersphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -261,3 +263,7 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {
+    'http://docs.python.org/': None,
+}

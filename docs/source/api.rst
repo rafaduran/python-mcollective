@@ -15,3 +15,4 @@ Contents:
    api/security
    api/serializers
    api/test
+   api/utils
