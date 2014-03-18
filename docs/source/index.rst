@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
    api
+   hacking
 
 Indices and tables
 ==================
