@@ -6,6 +6,8 @@
 Welcome to python-mcollective's documentation!
 ==============================================
 
+.. include:: ../../README.rst
+
 Contents:
 
 .. toctree::

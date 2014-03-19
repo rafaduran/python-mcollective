@@ -1,6 +1,5 @@
 python-mcollective
-==================
-
+------------------
 .. image:: https://travis-ci.org/rafaduran/python-mcollective.png?branch=master
    :target: https://travis-ci.org/rafaduran/python-mcollective
 .. image:: https://coveralls.io/repos/rafaduran/python-mcollective/badge.png?branch=master
@@ -12,6 +11,7 @@ python-mcollective
    :alt: Bitdeli badge
    :target: https://bitdeli.com/free
 
-Work still on progress, inspired by `mcollective-python`_ example.
+Python bindings for `MCollective`_ inspired by `mcollective-python`_ example.
 
 .. _mcollective-python: https://github.com/iwebhosting/mcollective-python
+.. _MCollective: http://puppetlabs.com/mcollective
