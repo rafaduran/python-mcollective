@@ -11,7 +11,7 @@ Welcome to python-mcollective's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    api
    hacking
