@@ -52,8 +52,8 @@ Install it just with pip::
 Contribute
 ----------
 
-* Issue Tracker: github.com/rafaduran/python-mcollective/issues
-* Source Code: github.com/rafaduran/python-mcollective
+* Issue Tracker: https://github.com/rafaduran/python-mcollective/issues
+* Source Code: https://github.com/rafaduran/python-mcollective
 
 Support
 -------
