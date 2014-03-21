@@ -8,7 +8,8 @@ Welcome to python-mcollective's documentation!
 
 .. include:: ../../README.rst
 
-Contents:
+Contents
+--------
 
 .. toctree::
    :maxdepth: 1
