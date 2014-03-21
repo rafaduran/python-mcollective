@@ -25,3 +25,20 @@ Making a ping discovery agent call is just 3 lines::
 
 .. _mcollective-python: https://github.com/iwebhosting/mcollective-python
 .. _MCollective: http://puppetlabs.com/mcollective
+
+Features
+--------
+
+* MCollective 2.0 - 2.4
+
+* Python 2.6 - 3.3
+
+* All MCollective connectors (STOMP, RabbitMQ, ActiveMQ)
+
+* SSL security provider (YAML serialization)
+
+* Battle tested
+
+* MCollective configuration files parsing
+
+* MCollective filters
