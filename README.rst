@@ -42,3 +42,25 @@ Features
 * MCollective configuration files parsing
 
 * MCollective filters
+
+Installation
+------------
+Install it just with pip::
+
+   $ pip install python-mcollective
+
+Contribute
+----------
+
+* Issue Tracker: github.com/rafaduran/python-mcollective/issues
+* Source Code: github.com/rafaduran/python-mcollective
+
+Support
+-------
+
+If you are having issues, please just open an issue on GitHub.
+
+License
+-------
+
+The project is licensed under the BSD license.
