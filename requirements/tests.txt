@@ -8,3 +8,4 @@ pytest-cov
 pyyaml
 # required for SSL testing
 pycrypto
+pytest-timeout
