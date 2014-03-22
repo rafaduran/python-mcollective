@@ -87,6 +87,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     chef.add_recipe       'activemq'
     chef.add_recipe       'activemq_mco'
     chef.add_recipe       'rabbitmq_mco'
+    chef.json = { 'java' => {'oraclejdk7' => { 'install_jce_unlimited'=> false}}}
   end
   # This would be managed by travis
   config.vm.provision :shell, :inline => 'service rabbitmq-server start'
