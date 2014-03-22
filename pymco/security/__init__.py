@@ -1,41 +1,39 @@
-"""MCollective security provider implementations."""
+"""
+Security providers base
+-----------------------
+MCollective security providers base.
+"""
 import abc
 
 
 class SecurityProviderBase(object):
-    """Abstract base class for security providers."""
+    """Abstract base class for security providers.
+
+    :arg config: :py:class:`pymco.config.Config` instance.
+    """
     plugins = {
         'none': 'pymco.security.none.NoneProvider',
         'ssl': 'pymco.security.ssl.SSLProvider',
     }
 
     def __init__(self, config):
-        """Abstract method to be overriden for subclasses.
-
-        Args:
-            ``config``: Configuration instance.
-        """
         self.config = config
 
-    def serialize(self, message):
+    def serialize(self, msg):
         """Serialize message using provided serialization.
 
-        Args:
-            ``message``: message to be encoded.
-        Returns:
-            ``message``: encoded message.
+        :arg pymco.message.Message msg: message to be encoded.
+        :return: encoded message.
         """
-        return self.serializer.serialize(message)
+        return self.serializer.serialize(msg)
 
-    def deserialize(self, message):
+    def deserialize(self, msg):
         """Deserealize message using provided serialization.
 
-        Args:
-            ``message``: message to be decoded.
-        Returns:
-            ``message``: decoded message.
+        :arg pymco.message.Message msg: message to be decoded.
+        :return: decoded message.
         """
-        return self.serializer.deserialize(message)
+        return self.serializer.deserialize(msg)
 
     def encode(self, msg):
         """Encode given message using provided security method.
@@ -43,11 +41,8 @@ class SecurityProviderBase(object):
         Encode will consist just on singing the message and serialize it, so
         we can sent it and verified for the receivers.
 
-        Args:
-            ``msg``: Message to be serialized.
-
-        Returns:
-            ``msg``: Encoded message.
+        :arg pymco.message.Message msg: Message to be serialized.
+        :return: Encoded message.
         """
         return self.serialize(self.sign(msg))
 
@@ -57,35 +52,27 @@ class SecurityProviderBase(object):
         Decode will consist just on de-serialize the given message and verify
         it, raising a verification error if the message can't be verified.
 
-        Args:
-            ``msg``: Message to be serialized.
-
-        Returns:
-            ``msg``: Decoded message, a :py:class:`dict` like object.
+        :arg pymco.message.Message msg: Message to be serialized.
+        :return: Decoded message, a :py:class:`dict` like object.
         """
         return self.verify(self.deserialize(msg))
 
 
-def sign(self, message):
+def sign(self, msg):
     """Signs the given message using provided security method.
 
-    Args:
-        ``message``: message to be signed.
-    Returns:
-        ``message``: signed message.
+    :arg pymco.message.Message msg: message to be signed.
+    :return: signed message.
     """
 
 
-def verify(self, message):
+def verify(self, msg):
     """Verify the given message using provided security method.
 
-    Args:
-        ``message``: message to be verified.
-    Returns:
-        ``message``: verified message.
-    Raises:
-        :py:exc:`pymco.exc.MessageVerificationError`: If the message
-        verification failed.
+    :arg pymco.message.Message msg: message to be verified.
+    :return: verified message.
+    :raise pymco.exc.MessageVerificationError: If the message verification
+        failed.
     """
 
 

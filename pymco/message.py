@@ -1,4 +1,8 @@
-'''pymco messaging objects'''
+"""
+:py:mod:`pymco.message`
+-----------------------
+python-mcollective messaging objects.
+"""
 import collections
 import hashlib
 import time
@@ -9,13 +13,15 @@ from . import exc
 
 
 class Filter(collections.Mapping):
-    '''Provides MCollective filters for pymco. This class implements
-    :py:class:`collections.Mapping` interface, so it can be used as non mutable
-    mapping (read only dict), but mutable using provided add methods. So that,
-    for adding the agent you can just use :py:meth:`add_agent`::
+    """Provides MCollective filters for python-mcollective.
+
+    This class implements :py:class:`collections.Mapping` interface, so it can
+    be used as non mutable mapping (read only dict), but mutable using provided
+    add methods. So that, for adding the agent you can just use
+    :py:meth:`add_agent`::
 
         filter.add_agent('package')
-    '''
+    """
     def __init__(self):
         self._filter = {
             'cf_class': [],
@@ -25,23 +31,39 @@ class Filter(collections.Mapping):
             'compound': [],
         }
 
-    def add_cfclass(self, klass):
-        '''Adds new classes/recipes/cookbooks/roles applied by your
-        configuration management system.'''
-        self._filter['cf_class'].append(klass)
+    def add_cfclass(self, name):
+        """Add new class applied by your configuration management system.
+
+        Roles, cookbooks,... names may be used too.
+
+        :param name: class, role, cookbook,... name.
+
+        :returns: ``self`` so filters can be chained.
+        """
+        self._filter['cf_class'].append(name)
         return self
 
     def add_agent(self, agent):
-        '''Adds new agents'''
+        """Add new MCollective agent
+
+        :param agent: MCollective agent name.
+        :returns: ``self`` so filters can be chained.
+        """
         self._filter['agent'].append(agent)
         return self
 
     def add_fact(self, fact, value, operator=None):
-        '''Adds new facts'''
+        """Add a new Facter fact based filter.
+
+        :param fact: fact name.
+        :param value: fact value.
+        :param operator: Operator to be applied when comparing the fact. Valid
+            values are: ==, <=, >=, <, >, !=. Optional parameter.
+        :returns: ``self`` so filters can be chained.
+        """
         toappend = {':fact': fact, ':value': value}
         if operator:
-            if not operator in ('==', '=~', '<=', '=>', '>=', '=<', '>', '<',
-                                '!='):
+            if not operator in ('==', '<=', '>=', '<', '>', '!='):
                 raise exc.BadFilterFactOperator(
                     'Unsuppoerted operator {0}'.format(operator))
             toappend[':operator'] = operator
@@ -49,7 +71,11 @@ class Filter(collections.Mapping):
         return self
 
     def add_identity(self, identity):
-        '''Adds new identities'''
+        """Adds new identities
+
+        :param identity: MCollective identity value.
+        :returns: ``self`` so filters can be chained.
+        """
         self._filter['identity'].append(identity)
         return self
 
@@ -64,9 +90,22 @@ class Filter(collections.Mapping):
 
 
 class Message(collections.MutableMapping):
-    '''Provides MCollective messages for pymco. This class implements
-    :py:class:`collections.MutableMapping` interface, so it can be used as
-    read/write mapping (dictionary).'''
+    """Provides MCollective messages for python-mcollective.
+
+    This class implements :py:class:`collections.MutableMapping` interface, so
+    it can be used as read/write mapping (dictionary).
+
+    :param body: the message body. It must be serializable using current
+        serialization method.
+    :param agent: message target agent.
+    :param config: :py:class:`pymco.config.Config` instance.
+    :param filter_: :py:class:`Filter` instance. This parameter is optional.
+    :param kwargs: Extra keyword arguments. You can set the target
+        ``collective`` or the message ``ttl`` using them.
+    :raise: :py:exc:`pymco.exc.ImproperlyConfigured` if configuration has no
+        ``identity`` or ``collective`` is not set neither in ``kwargs`` nor in
+        configuration.
+    """
     def __init__(self, body, agent, config, filter_=None, **kwargs):
         if not filter_:
             filter_ = Filter()

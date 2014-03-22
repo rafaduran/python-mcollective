@@ -1,4 +1,9 @@
-'''python-mcollective configuration module'''
+"""
+:mod:`pymco.config`
+-------------------
+Provides MCollective configuration parsing and an entry point for getting the
+right plugin classes.
+"""
 import collections
 import functools
 import os
@@ -16,9 +21,11 @@ INFINITE = 9999999999999999999
 
 
 def lookup_with_default(fnc):
-    '''
+    """
     Wraps ConfigParser lookups, catching exceptions and providing defaults.
-    '''
+
+    :arg fnc: Function to be decorated.
+    """
     @functools.wraps(fnc)
     def decorator(self, name, *args, **kwargs):
         try:
@@ -31,7 +38,11 @@ def lookup_with_default(fnc):
 
 
 class Config(collections.Mapping):
-    '''python-mcollective confiugration class.'''
+    """python-mcollective confiugration class.
+
+    :arg dict configdict: a dictionary like object containing configuration as key
+        values.
+    """
     def __init__(self, configdict):
         self.config = configdict
 
@@ -46,22 +57,34 @@ class Config(collections.Mapping):
 
     @lookup_with_default
     def get(self, key):
-        '''Get option by key.'''
+        """Get option by key.
+
+        :arg key: key to look for.
+        """
         return self.__getitem__(key)
 
     @lookup_with_default
     def getint(self, key):
-        '''Get int option by key.'''
+        """Get int option by key.
+
+        :arg key: key to look for.
+        """
         return int(self.__getitem__(key))
 
     @lookup_with_default
     def getfloat(self, key):
-        '''Get float option by key.'''
+        """Get float option by key.
+
+        :arg key: key to look for.
+        """
         return float(self.__getitem__(key))
 
     @lookup_with_default
     def getboolean(self, key):
-        '''Get bool option by key.'''
+        """Get bool option by key.
+
+        :arg key: key to look for.
+        """
         value = self.__getitem__(key)
         if isinstance(value, six.string_types):
             if value.lower() in ('true', 'y', '1'):
@@ -91,8 +114,7 @@ class Config(collections.Mapping):
         The result must follow the :py:class:`stomp.Connection`
         ``host_and_ports`` parameter.
 
-        Returns:
-            ``host_and_ports``: Iterable of two-tuple where the first element
+        :return: Iterable of two-tuple where the first element
             is the host and the second is the port.
         """
         if self.config['connector'] == 'stomp':
@@ -113,18 +135,14 @@ class Config(collections.Mapping):
     def get_user_and_password(self, current_host_and_port=None):
         """Get the user and password for the current host and port.
 
-        Params:
-            ``current_host_and_port``: two-tuple where the first element is the
+        :arg current_host_and_port: two-tuple iterable where the first element is the
             host and second is the port. This parameter is not required for
-            ``stomp`` connector.
-
-        Returns:
-            ``user_and_password``: two-tuple where the first element is the
-            user and the second is the password for the given host and port.
-        Raises:
-            :py:exc:`ValueError`: if connector isn't ``stomp`` and
+            :py:class:`pymco.connector.stomp.StompConnector` connector.
+        :return: Two-tuple where the first element is the user and the second is
+            the password for the given host and port.
+        :raise ValueError: if connector isn't ``stomp`` and
             ``host_and_port`` is not provided.
-            :py:exc:`pymco.exc.ConfigLookupError`: if host and port are not
+        :raise pymco.exc.ConfigLookupError: if host and port are not
             found into the connector list of host and ports.
         """
         connector = self.config['connector']
@@ -150,8 +168,7 @@ class Config(collections.Mapping):
     def get_ssl_params(self):
         """Get SSL configuration for current connector
 
-        Returns:
-            ``ssl_params``: An iterable of SSL configuration parameters to be
+        :return: An iterable of SSL configuration parameters to be
             used with :py:meth:`stomp.Transport.set_ssl`.
         """
         connector = self.config['connector']
@@ -177,45 +194,10 @@ class Config(collections.Mapping):
 
         return params
 
-    def get_ssl_parameters(self, current_host_and_port=None):
-        """Get SSL parameters for the current host and port.
-
-        Params:
-            ``current_host_and_port``: two-tuple where the first element is the
-            host and second is the port. This parameter is not required for
-            ``stomp`` connector.
-
-        Returns:
-            ``ssl_parameters``: A dict-like object where eack key is a Stomp.py
-            connection objcts SSL parameter.
-        """
-        connector = self.config['connector']
-        if connector != 'activemq':
-            raise ValueError('Only ActiveMQ connector support SSL parameters')
-
-        prefix = 'plugin.activemq.pool.'
-        params = {
-            'use_ssl': False,
-            'ssl_cert_file': None,
-            'ssl_key_file': None,
-            'ssl_ca_certs': None,
-        }
-        for index,  host_and_port in enumerate(self.get_host_and_ports(), 1):
-            if host_and_port == current_host_and_port:
-                prefix += '{index}.ssl'.format(index=index)
-                params['use_ssl'] = self.getboolean(prefix, default=False)
-                params['ssl_cert_file'] = self.config.get(prefix + '.cert', None)
-                params['ssl_key_file'] = self.config.get(prefix + '.key', None)
-                params['ssl_ca_certs'] = self.config.get(prefix + '.ca', None)
-
-        return params
-
     def get_conn_params(self):
         """Get STOMP connection parameters for current configuration.
 
-        Returns:
-            ``params``: It will return a dictionary with stomp.py connection
-            like key/values.
+        :return: Dictionary with stomp.py connection like key/values.
         """
         connector = self.config['connector']
         prefix = 'plugin.{0}.'.format(connector)
@@ -241,13 +223,23 @@ class Config(collections.Mapping):
 
     @staticmethod
     def from_configfile(configfile):
-        '''Reads configfile and returns a new :py:class:`Config` instance'''
+        """Reads configfile and returns a new :py:class:`Config` instance
+
+        :arg configfile: path to the configuration file to be parsed.
+        :return: :py:class:`Config` instance.
+        """
         configstr = open(configfile, 'rt').read()
         return Config.from_configstr(configstr)
 
     @staticmethod
     def from_configstr(configstr, section='default'):
-        '''Parses given string an returns a new :py:class:`Config` instance'''
+        """Parses given string an returns a new :py:class:`Config` instance
+
+        :arg configstr: configuration file content as string.
+        :arg section: dummy section to be used for parsing configuration as
+            INI file.
+        :return: :py:class:`Config` instance.
+        """
         config = six.StringIO()
         config.write('[{0}]\n'.format(section))
         config.write(configstr)

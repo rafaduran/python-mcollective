@@ -32,35 +32,31 @@ class SSLProvider(SecurityProvider):
         self._caller_id = None
         self._serializer = None
 
-    def sign(self, message):
+    def sign(self, msg):
         """Implement :py:meth:`pymco.security.SecurityProvider.sign`."""
-        message[':callerid'] = self.callerid
-        message[':hash'] = self.get_hash(message)
-        return message
+        msg[':callerid'] = self.callerid
+        msg[':hash'] = self.get_hash(msg)
+        return msg
 
-    def verify(self, message):
+    def verify(self, msg):
         """Implement :py:meth:`pymco.security.SecurityProvider.verify`."""
-        hash_ = SHA.new(message[':body'].encode('utf8'))
+        hash_ = SHA.new(msg[':body'].encode('utf8'))
         verifier = PKCS1_v1_5.new(self.server_public_key)
-        signature = base64.b64decode(message[':hash'])
+        signature = base64.b64decode(msg[':hash'])
 
         if not verifier.verify(hash_, signature):
             raise exc.VerificationError(
-                'Message {0} can\'t be verified'.format(message))
+                'Message {0} can\'t be verified'.format(msg))
 
-        return message
+        return msg
 
-    def get_hash(self, message):
+    def get_hash(self, msg):
         """Get the hash for the given message.
 
-        Params:
-            ``message``: A dict like object, usually a
-            :py:class:`pymco.message.Message` instance.
-
-        Returns:
-            ``hash``: Message hash so the receiver can verify the message.
+        :arg pymco.message.Message msg: message to get hash for.
+        :return: message hash so the receiver can verify the message.
         """
-        hashed_signature = SHA.new(message[':body'].encode('utf8'))
+        hashed_signature = SHA.new(msg[':body'].encode('utf8'))
         signer = PKCS1_v1_5.new(self.private_key)
         hashed_signature = signer.sign(hashed_signature)
         return base64.b64encode(hashed_signature)

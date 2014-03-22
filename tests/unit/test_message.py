@@ -47,7 +47,7 @@ def test_filter_add_fact(filter_):
 def test_filter_add_fact_operators(filter_):
     '''Tests :py:method:`pymco.message.Filter.add_fact` accepts only
     MCollective supported operators.'''
-    for operator in ('==', '=~', '<=', '=>', '>=', '=<', '>', '<', '!='):
+    for operator in ('==', '<=', '>=', '>', '<', '!='):
         filter_.add_fact(fact='country', value='/uk/', operator=operator)
 
     with pytest.raises(exc.BadFilterFactOperator):

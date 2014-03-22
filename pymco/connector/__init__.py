@@ -1,7 +1,7 @@
 """
-:py:mod:`pymco.connector`
--------------------------
-python-mcollective connectors for MCollective.
+Connectors base
+---------------
+python-mcollective base for MCollective connector plugins.
 """
 from __future__ import absolute_import
 
@@ -15,7 +15,13 @@ from .. import listener
 
 
 class BaseConnector(object):
-    """Base abstract class for MCollective connectors."""
+    """Base abstract class for MCollective connectors.
+
+    :arg pymco.config.Config config: configuration instance.
+    :arg stomp.Connection connection: connection object. Optional
+        parameter, if not given :py:meth:`default_connection` result
+        will be used.
+    """
     listeners = {'tracker': listener.CurrentHostPortListener}
 
     plugins = {
@@ -41,7 +47,11 @@ class BaseConnector(object):
         self.set_ssl()
 
     def connect(self, wait=None):
-        """Connect to MCollective middleware."""
+        """Connect to MCollective middleware.
+
+        :arg bool wait: wait for connection to be established or not.
+        :return: ``self``
+        """
         if not self.connection.connected:
             self.connection.start()
             user, password = self.config.get_user_and_password(
@@ -53,7 +63,10 @@ class BaseConnector(object):
         return self
 
     def disconnect(self):
-        """Disconnet from MCollective middleware."""
+        """Disconnet from MCollective middleware.
+
+        :return: ``self``
+        """
         if self.connection.is_connected():
             self.connection.disconnect()
 
@@ -62,11 +75,10 @@ class BaseConnector(object):
     def send(self, msg, destination, *args, **kwargs):
         """Send an MCollective message.
 
-        Args:
-            ``msg``: message to be sent.
-
-        Returns:
-            ``self``: so you can chain calls.
+        :arg pymco.message.Message msg: message to be sent.
+        :arg \*args: extra positional arguments.
+        :arg \*\*kwargs: extra keyword arguments.
+        :return: ``self``.
         """
         self.connection.send(body=self.security.encode(msg),
                              destination=destination,
@@ -76,15 +88,10 @@ class BaseConnector(object):
     def subscribe(self, destination, id=None, *args, **kwargs):
         """Subscribe to MCollective queue.
 
-        Args:
-            ``destination``: Target to subscribe.
-
-            ``args``: extra positional arguments.
-
-            ``kwargs``: extra keyword arguments.
-
-        Returns:
-            ``self``: so you can chain calls.
+        :arg destination: Target to subscribe.
+        :arg \*args: extra positional arguments.
+        :arg \*\*kwargs: extra keyword arguments.
+        :return: ``self``.
         """
         if not id:
             id = self.id
@@ -95,31 +102,21 @@ class BaseConnector(object):
     def unsubscribe(self, destination, *args, **kwargs):
         """Unsubscribe to MCollective queue.
 
-        Args:
-            ``destination``: Target to unsubscribe.
-
-            ``args``: extra positional arguments.
-
-            ``kwargs``: extra keyword arguments.
-
-        Returns:
-            ``self``: so you can chain calls.
+        :arg destination: Target to unsubscribe.
+        :arg \*args: extra positional arguments.
+        :arg \*\*kwargs: extra keyword arguments.
+        :return: ``self``.
         """
 
     def receive(self, timeout, *args, **kwargs):
         """Subscribe to MCollective topic queue and wait for just one message.
 
-        Args:
-            ``timeout``: how long we should wait for the message.
-
-            ``args``: extra positional arguments.
-
-            ``kwargs``: extra keyword arguments.
-
-        Returns:
-            ``message``: received message.
-
-        Raises: :py:exc:`pymco.exc.TimeoutError`
+        :arg float timeout: how long we should wait for the message in seconds.
+        :arg \*args: extra positional arguments.
+        :arg \*\*kwargs: extra keyword arguments.
+        :return: received message.
+        :raise: :py:exc:`pymco.exc.TimeoutError` if expected messages doesn't
+            come in given ``timeout`` seconds.
         """
         response_listener = listener.SingleResponseListener(timeout=timeout,
                                                             config=self.config)
@@ -155,9 +152,8 @@ class BaseConnector(object):
     def get_current_host_and_port(self):
         """Get the current host and port from the tracker listener.
 
-        Returns:
-            ``current_host_and_port``: A two-tuple, where the first element is
-            the current host and the second the current port.
+        :return: A two-tuple, where the first element is the current host and
+            the second the current port.
         """
         tracker = self.connection.get_listener('tracker')
         return tracker.get_host(), tracker.get_port()
@@ -169,23 +165,27 @@ class BaseConnector(object):
 
     @classmethod
     def default_connection(cls, config):
-        """Creates a :py:class:`stomp.Connection` object with defaults"""
+        """Creates a :py:class:`stomp.Connection` object with defaults
+
+        :return: :py:class:`stomp.Connection` object.
+        """
         params = config.get_conn_params()
         if config['connector'] == 'rabbitmq':
             params['vhost'] = config['plugin.rabbitmq.vhost']
 
         return connect.StompConnection11(**params)
 
+    def foo(self):
+        pass
+
 
 def get_target(self, agent, collective, topciprefix=None):
     """Get the message target for the given agent and collective.
 
-    Params:
-        ``agent``: MCollective target agent name.
-        ``collective``: MCollective target collective.
-        ``topicprefix``: Required for older versions of MCollective
-    Returns:
-        ``target``: Message target string representation for given agent and
+    :arg agent: MCollective target agent name.
+    :arg collective: MCollective target collective.
+    :arg topicprefix: Required for older versions of MCollective
+    :return: Message target string representation for given agent and
         collective.
     """
 
@@ -193,11 +193,9 @@ def get_target(self, agent, collective, topciprefix=None):
 def get_reply_target(self, agent, collective):
     """Get the message target for the given agent and collective.
 
-    Params:
-        ``agent``: MCollective target agent name.
-        ``collective``: MCollective target collective.
-    Returns:
-        ``reply_target``: Message reply target string representation for given
+    :arg agent: MCollective target agent name.
+    :arg collective: MCollective target collective.
+    :return: message reply target string representation for given
         agent and collective.
     """
 

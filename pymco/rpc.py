@@ -6,7 +6,14 @@ MCollective RPC calls support.
 
 
 class SimpleAction(object):
-    """Single RPC call to MCollective"""
+    """Single RPC call to MCollective
+
+    :arg config: :py:class:`pymco.config.Config` instance.
+    :arg msg: A dictionary like object, usually a
+        :py:class:`pymco.message.Message` instance.
+    :arg \*\*kwargs: extra keyword arguments. Set the collective here if you
+        aren't targeting the main collective.
+    """
     def __init__(self, config, msg, agent, **kwargs):
         self.config = config
         self.msg = msg
@@ -22,7 +29,10 @@ class SimpleAction(object):
         return self._connector
 
     def get_target(self):
-        """MCollective RPC call target."""
+        """MCollective RPC call target.
+
+        :return: middleware target for the request.
+        """
         return self.connector.get_target(collective=self.collective,
                                          agent=self.agent)
 
@@ -31,6 +41,8 @@ class SimpleAction(object):
 
         This should build the subscription target required for listening replies
         to this RPC call.
+
+        :return: middleware target for the response.
         """
         return self.connector.get_reply_target(collective=self.collective,
                                                agent=self.agent)
@@ -40,6 +52,11 @@ class SimpleAction(object):
 
         It should subscribe to the reply target, execute the RPC call and wait
         for the result.
+
+        :arg timeout: RPC call timeout.
+        :return: a dictionary like object with response.
+        :raise: :py:exc:`pymco.exc.TimeoutError` if expected messages don't
+            arrive in ``timeout`` seconds.
         """
         self.connector.connect(wait=True)
         reply_target = self.get_reply_target()
