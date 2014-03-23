@@ -54,6 +54,7 @@ Contribute
 
 * Issue Tracker: https://github.com/rafaduran/python-mcollective/issues
 * Source Code: https://github.com/rafaduran/python-mcollective
+* Documentation: http://python-mcollective.readthedocs.org/en/latest/
 
 Support
 -------
