@@ -16,6 +16,7 @@ Contents
 
    api
    hacking
+   tests
 
 Indices and tables
 ==================
