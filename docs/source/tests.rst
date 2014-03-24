@@ -25,6 +25,11 @@ In order to run MCollective locally you will need:
 * RabbitMQ or ActiveMQ running: you can use provided `Vagrant`_ setup or just
   install one of them locally.
 
+* Clone Git submodules if you didn't clone the repository recursively::
+
+  $ git submodule init
+  $ git submodule update
+
 * Install dependencies, from repository root::
 
   $ bundle install
@@ -32,21 +37,21 @@ In order to run MCollective locally you will need:
 * Then you need configuration files placed in the repository root, into
   ``examples`` directory you will find some configuration examples::
 
-      $ cp examples/server.23x.activemq.cfg server.cfg
-      $ cp examples/server.23x.activemq.cfg client.cfg
+     $ cp examples/server.23x.activemq.cfg server.cfg
+     $ cp examples/server.23x.activemq.cfg client.cfg
 
-   Edit configuration files to fix paths for your working directory.
+  Edit configuration files to fix paths for your working directory.
 
 * Then you should be able to run both, the daemon and the client::
 
-      $ scripts/mcollectived
+     $ scripts/mcollectived
 
-   From another terminal::
+  From another terminal::
 
-      $ scripts/mco ping
+     $ scripts/mco ping
 
-   Now everything should be working and you should see ``mco ping`` output,
-   otherwise you will need review steps before.
+  Now everything should be working and you should see ``mco ping`` output,
+  otherwise you will need review steps before.
 
 This is also required for running integration tests, since they spawn
 MCollective daemons so we can make RPC calls to them.
