@@ -4,10 +4,19 @@ set -eu
 ROOT="`dirname $0`/.."
 ROOT=`readlink -m $ROOT`
 
-wget http://apache.rediris.es/activemq/apache-activemq/5.8.0/apache-activemq-5.8.0-bin.tar.gz
-tar -xvzf apache-activemq-5.8.0-bin.tar.gz
-sudo mv apache-activemq-5.8.0 /opt
-sudo ln -sf /opt/apache-activemq-5.8.0/ /opt/activemq
+if [[ ! -f apache-activemq-5.8.0-bin.tar.gz ]]; then
+    wget http://apache.rediris.es/activemq/apache-activemq/5.8.0/apache-activemq-5.8.0-bin.tar.gz
+fi
+
+if [[ ! -d /opt/apache-activemq-5.8.0 ]]; then
+    tar -xvzf apache-activemq-5.8.0-bin.tar.gz
+    sudo mv apache-activemq-5.8.0 /opt
+fi
+
+if [[ ! -L /opt/activemq ]]; then
+    sudo ln -sf /opt/apache-activemq-5.8.0/ /opt/activemq
+fi
+
 sudo adduser -system activemq --shell /bin/bash
 sudo ln -sf /opt/activemq/bin/activemq /etc/init.d/
 sudo update-rc.d activemq defaults
