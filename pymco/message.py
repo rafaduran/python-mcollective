@@ -63,7 +63,7 @@ class Filter(collections.Mapping):
         """
         toappend = {':fact': fact, ':value': value}
         if operator:
-            if not operator in ('==', '<=', '>=', '<', '>', '!='):
+            if operator not in ('==', '<=', '>=', '<', '>', '!='):
                 raise exc.BadFilterFactOperator(
                     'Unsuppoerted operator {0}'.format(operator))
             toappend[':operator'] = operator

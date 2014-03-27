@@ -209,8 +209,8 @@ class Config(collections.Mapping):
             'host_and_ports': self.get_host_and_ports(),
             'reconnect_sleep_initial':
             self.getfloat(prefix + 'initial_reconnect_delay', default=0.01),
-            #'reconnect_sleep_increase': ,
-            #'reconnect_sleep_jitter': ,
+            # 'reconnect_sleep_increase': ,
+            # 'reconnect_sleep_jitter': ,
             'reconnect_sleep_max':
             self.getfloat(prefix + 'max_recconnect_delay', default=30.0),
             # Stomp gem, by default, try an infinite number of times

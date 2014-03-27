@@ -6,14 +6,13 @@
 Welcome to python-mcollective's documentation!
 ==============================================
 
-.. include:: ../../README.rst
-
 Contents
 --------
 
 .. toctree::
    :maxdepth: 1
 
+   readme
    api
    hacking
    tests
