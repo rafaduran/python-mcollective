@@ -10,7 +10,6 @@ import itertools
 
 from stomp import connect
 
-from .. import exc
 from .. import listener
 
 
@@ -115,16 +114,11 @@ class BaseConnector(object):
         :arg \*args: extra positional arguments.
         :arg \*\*kwargs: extra keyword arguments.
         :return: received message.
-        :raise: :py:exc:`pymco.exc.TimeoutError` if expected messages doesn't
-            come in given ``timeout`` seconds.
         """
         response_listener = listener.SingleResponseListener(timeout=timeout,
                                                             config=self.config)
         self.connection.set_listener('response_listener', response_listener)
         response_listener.wait_on_message()
-
-        if len(response_listener.responses) == 0:
-            raise exc.TimeoutError
 
         return response_listener.responses
 

@@ -9,6 +9,8 @@ import time
 
 from stomp import listener
 
+from . import exc
+
 
 class CurrentHostPortListener(listener.ConnectionListener):
     """Listener tracking current host and port.
@@ -90,11 +92,16 @@ class ResponseListener(listener.ConnectionListener):
     def wait_on_message(self):
         """Wait until we get a message.
 
+        :raise: :py:exc:`pymco.exc.TimeoutError` if expected messages doesn't
+            come in given ``timeout`` seconds.
         :return: ``self``.
         """
         self.condition.acquire()
         self._wait_loop(self.timeout)
         self.condition.release()
+        if self.received < self.count:
+            raise exc.TimeoutError
+
         self.received = 0
         return self
 

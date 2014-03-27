@@ -3,7 +3,6 @@ import pytest
 import six
 
 from pymco import connector
-from pymco import exc
 from pymco.test.utils import mock
 
 
@@ -154,15 +153,6 @@ class TestReceive:
         fake_connector.receive(5)
         listener.assert_called_once_with(timeout=5,
                                          config=fake_connector.config)
-
-    def test_receive__raises_timeout_error_if_no_message(self,
-                                                         listener,
-                                                         fake_connector,
-                                                         conn_mock):
-        listener.return_value.responses.__len__.return_value = 0
-        with self.patch_connection(fake_connector):
-            with pytest.raises(exc.TimeoutError):
-                fake_connector.receive(5)
 
 
 @mock.patch('pymco.config.Config.get_conn_params')
