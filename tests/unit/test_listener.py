@@ -3,6 +3,7 @@ Tests for pymco.listener
 """
 import pytest
 
+from pymco import exc
 from pymco import listener
 from pymco.test.utils import mock
 
@@ -72,6 +73,13 @@ def test_wait_on_message__runs_wait_loop(result_listener, condition):
         result_listener.received = result_listener.count + 1
         result_listener.wait_on_message()
     wait_loop.assert_called_once_with(result_listener.timeout)
+
+
+@mock.patch('pymco.listener.ResponseListener._wait_loop')
+def test_wait_on_message__raises(wait_loop, result_listener, condition):
+    result_listener.received = 0
+    with pytest.raises(exc.TimeoutError):
+        result_listener.wait_on_message()
 
 
 def test_wait_loop__exits_when_count_is_reached(result_listener, condition):
