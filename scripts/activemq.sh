@@ -5,7 +5,7 @@ ROOT="`dirname $0`/.."
 ROOT=`readlink -m $ROOT`
 
 if [[ ! -f apache-activemq-5.8.0-bin.tar.gz ]]; then
-    wget http://apache.rediris.es/activemq/apache-activemq/5.8.0/apache-activemq-5.8.0-bin.tar.gz
+    wget http://apache.mirror.anlx.net/activemq/apache-activemq/5.8.0/apache-activemq-5.8.0-bin.tar.gz
 fi
 
 if [[ ! -d /opt/apache-activemq-5.8.0 ]]; then
