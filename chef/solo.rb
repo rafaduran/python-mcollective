@@ -1,6 +1,7 @@
+basedir = File.expand_path(File.join '..', (File.dirname __FILE__))
+cookbook_path [File.join(basedir, 'extra_cookbooks'), File.join(basedir, 'cookbooks/ci_environment')]
 file_cache_path    "/var/chef/cache"
 file_backup_path   "/var/chef/backup"
-cookbook_path ["/tmp/vagrant-chef-1/chef-solo-1/cookbooks", "/tmp/vagrant-chef-1/chef-solo-2/cookbooks"]
 log_level :debug
 verbose_logging    false
 
