@@ -9,7 +9,6 @@ sudo rabbitmq-plugins enable rabbitmq_stomp
 ${ROOT}/rabbitmq.py
 
 if [ $TRAVIS == "true" ]; then
-    echo "llega"
     sudo cp ${ROOT}/../extra_cookbooks/rabbitmq_mco/templates/default/rabbitmq.config.erb \
         /etc/rabbitmq/rabbitmq.config
     sudo sed -i 's/<%= node.rabbitmq.high_memory_watermark %>/0.04/' /etc/rabbitmq/rabbitmq.config
