@@ -1,0 +1,14 @@
+{
+  "java": {
+    "oraclejdk7": {
+      "install_jce_unlimited": false
+    }
+  },
+  "run_list": [
+    "recipe[apt]",
+    "recipe[rabbitmq::with_management_plugin]",
+    "recipe[activemq]",
+    "recipe[activemq_mco]",
+    "recipe[rabbitmq_mco]"
+  ]
+}
