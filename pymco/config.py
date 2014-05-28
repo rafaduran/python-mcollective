@@ -7,6 +7,7 @@ right plugin classes.
 import collections
 import functools
 import os
+import socket
 
 import six
 from six.moves import configparser
@@ -45,6 +46,10 @@ class Config(collections.Mapping):
     """
     def __init__(self, configdict):
         self.config = configdict
+        # The mcollective docs state that identity should default to hostname
+        # when not explicitly set
+        if not self.config.get('identity'):
+            self.config['identity'] = socket.gethostname()
 
     def __len__(self):
         return len(self.config)
