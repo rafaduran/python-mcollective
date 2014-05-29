@@ -14,6 +14,11 @@ REQ = set([dep.name
 TREQ = set([dep.name or dep.url
             for dep in req.parse_requirements('requirements/tests.txt')]) - REQ
 
+try:
+    import importlib
+except ImportError:
+    REQ.add('importlib')
+
 
 class PyTest(test.test):
     def finalize_options(self):
