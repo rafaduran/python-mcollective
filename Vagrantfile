@@ -54,6 +54,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # chef.add_recipe     "git"
 
     # chef.add_recipe     "java::openjdk7"
+    chef.add_recipe     "java"
     # chef.add_recipe     "leiningen"
 
     chef.add_recipe     "rabbitmq::with_management_plugin"
@@ -84,8 +85,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # chef.add_recipe     "hbase::ppa"
     # chef.add_recipe     "pypy::ppa"
     # chef.add_recipe     "pypy::ppa"
-    chef.add_recipe       'activemq'
-    chef.add_recipe       'activemq_mco'
     chef.add_recipe       'rabbitmq_mco'
     chef.json = { 'java' => {'oraclejdk7' => { 'install_jce_unlimited'=> false}}}
   end
@@ -94,4 +93,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision :shell, :inline => 'cp /vagrant/scripts/rabbitmq.py /tmp'
   # Script to be run by travis too
   config.vm.provision :shell, :path => 'scripts/rabbitmq.sh'
+  config.vm.provision :shell, :inline => '/vagrant/scripts/activemq.sh'
 end
