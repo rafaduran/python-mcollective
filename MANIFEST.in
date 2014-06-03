@@ -1,4 +1,4 @@
 recursive-include requirements *.txt
 recursive-include pymco/test/templates *.jinja
-include README.md
+include README.rst
 include LICENSE.txt
