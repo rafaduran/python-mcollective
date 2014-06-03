@@ -1,5 +1,5 @@
-basedir = File.expand_path(File.join '..', (File.dirname __FILE__))
-cookbook_path [File.join(basedir, 'extra_cookbooks'), File.join(basedir, 'cookbooks/ci_environment')]
+basedir = File.join(File.dirname(__FILE__), '..')
+cookbook_path [File.expand_path(File.join(basedir, 'cookbooks', 'ci_environment'))]
 file_cache_path    "/var/chef/cache"
 file_backup_path   "/var/chef/backup"
 log_level :debug

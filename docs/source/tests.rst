@@ -24,10 +24,16 @@ Running integration tests without Vagrant
 ActiveMQ and RabbitMQ locally. Next steps will guide you for getting both
 working. From repository ``chef`` directory:
 
-* Install Chef if you don't have it installed::
+* Install Chef if you don't have it installed
 
-  $ sudo apt-get -y install ruby-bundler rubygems
-  $ sudo bundle install
+   * Non RVM users::
+
+      $ sudo apt-get -y install ruby-bundler rubygems
+      $ sudo bundle install
+
+   * RVM users::
+
+      $ bundle install
 
 * Run chef-solo::
 
@@ -35,9 +41,9 @@ working. From repository ``chef`` directory:
 
 Then from repository root:
 
-* Run ``rabbitmq.sh`` script::
+* Run ``local.sh`` script::
 
-  $ sudo scripts/rabbitmq.sh
+  $ sudo scripts/local.sh
 
 Local MCollective setup
 -----------------------
