@@ -15,6 +15,16 @@ except ImportError as exc:
     raise exc
 
 
+def ruby_object_constructor(loader, suffix, node):
+    """YAML constructor for Ruby objects.
+
+    This constructor may be registered with '!ruby/object:' tag as multi
+    constructor supporting Ruby objects. This will handle give objects as maps,
+    so any non mapping based object may produce some issue.
+    """
+    return loader.construct_yaml_map(node)
+
+
 def symbol_constructor(loader, node):
     """YAML constructor for Ruby symbols.
 
@@ -31,10 +41,8 @@ class RubyCompatibleLoader(yaml.SafeLoader):
 
 
 RubyCompatibleLoader.add_constructor(u'!ruby/sym', symbol_constructor)
-RubyCompatibleLoader.add_constructor(
-    u'!ruby/object:Puppet::Resource',
-    RubyCompatibleLoader.construct_yaml_map,
-)
+RubyCompatibleLoader.add_multi_constructor(u'!ruby/object:',
+                                           ruby_object_constructor)
 
 
 class Serializer(SerializerBase):
