@@ -1,4 +1,7 @@
 """Tests YAML serializer"""
+import mock
+
+from pymco.serializers import yaml as _yaml
 
 
 def test_serialize(yaml, msg):
@@ -27,3 +30,17 @@ def test_deserialize(yaml, yaml_response):
         ':msgtime': 1384022186,
         ':body': 'pong',
     }
+
+
+def test_symbol_constructor():
+    loader, node = mock.Mock(), mock.Mock()
+    assert _yaml.symbol_constructor(loader, node) == loader.construct_scalar.return_value
+    loader.construct_scalar.assert_called_once_with(node)
+
+
+def test_ruby_object_constructor():
+    loader, node = mock.Mock(), mock.Mock()
+    assert _yaml.ruby_object_constructor(
+        loader, 'Puppet:Resuource', node
+    ) == loader.construct_yaml_map.return_value
+    loader.construct_yaml_map.assert_called_once_with(node)

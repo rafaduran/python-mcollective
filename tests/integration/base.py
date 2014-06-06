@@ -26,7 +26,7 @@ CTXT = {
 }
 
 
-class IntegrationTestCase(object):
+class BaseIntegrationTestCase(object):
     def setup_cfg(self):
         ctxt = self.get_ctxt()
         utils.configfile(ctxt=ctxt)
@@ -59,25 +59,6 @@ class IntegrationTestCase(object):
     def teardown_mcollective(self):
         pid = int(open(PIDFILE, 'rt').read())
         os.kill(pid, signal.SIGTERM)
-
-    def ping_call_params(self):
-        self.msg = message.Message(body=test_ctxt.MSG['body'],
-                                   agent=test_ctxt.MSG['agent'],
-                                   config=self.config)
-        return dict(agent='discovery',
-                    action='ping',
-                    msg=self.msg,
-                    config=self.config)
-
-    def test_ping_call(self):
-        '''Tests simple RPC actions.'''
-        simple_action = rpc.SimpleAction(**self.ping_call_params())
-        result = simple_action.call()
-        # Only one agent running, but it might send multiple pings
-        assert len(result) >= 1
-        msg = result[0]
-        assert msg[':senderagent'] == simple_action.agent
-        assert msg[':requestid'] == self.msg[':requestid']
 
     def dump_threads(self):
         """Dump all threads information for debugging purposes.
@@ -115,6 +96,27 @@ class IntegrationTestCase(object):
         return ctxt
 
 
+class IntegrationTestCase(BaseIntegrationTestCase):
+    def ping_call_params(self):
+        self.msg = message.Message(body=test_ctxt.MSG['body'],
+                                   agent=test_ctxt.MSG['agent'],
+                                   config=self.config)
+        return dict(agent='discovery',
+                    action='ping',
+                    msg=self.msg,
+                    config=self.config)
+
+    def test_ping_call(self):
+        '''Tests simple RPC actions.'''
+        simple_action = rpc.SimpleAction(**self.ping_call_params())
+        result = simple_action.call()
+        # Only one agent running, but it might send multiple pings
+        assert len(result) >= 1
+        msg = result[0]
+        assert msg[':senderagent'] == simple_action.agent
+        assert msg[':requestid'] == self.msg[':requestid']
+
+
 class MCollective22x(object):
     '''Mcollective 2.2.x branch integration tests with RabbitMQ'''
     rev = '2.2.x'
@@ -132,4 +134,9 @@ class MCollective20x(object):
 
 class MCollective24x(object):
     '''Mcollective 2.4.x branch integration tests'''
+    rev = '2.4.x'
+
+
+class MCollectiveCurrent(object):
+    '''Mcollective current version branch integration tests'''
     rev = '2.4.x'
