@@ -42,17 +42,17 @@ class TestOnMessage():
         condition.notify.assert_called_once_with()
         condition.release.assert_called_once_with()
 
-    def test_deseralize_message(self, get_security, result_listener):
-        deserialize = get_security.return_value.deserialize
-        deserialize.return_value = {'foo': 'spam'}
+    def test_decode_message(self, get_security, result_listener):
+        decode = get_security.return_value.decode
+        decode.return_value = {'foo': 'spam'}
         result_listener.on_message(body='---\nfoo: spam', headers={})
-        deserialize.assert_called_once_with('---\nfoo: spam')
+        decode.assert_called_once_with('---\nfoo: spam')
 
     def test_appends_messages(self, get_security, result_listener):
         result_listener.on_message(body='---\nfoo: spam', headers={})
-        deserialize = get_security.return_value.deserialize
-        deserialize.assert_called_once_with('---\nfoo: spam')
-        assert result_listener.responses == [deserialize.return_value]
+        decode = get_security.return_value.decode
+        decode.assert_called_once_with('---\nfoo: spam')
+        assert result_listener.responses == [decode.return_value]
 
 
 def test_wait_on_message__acquire_release_condition(result_listener, condition):
