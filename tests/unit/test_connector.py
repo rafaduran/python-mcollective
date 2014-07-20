@@ -188,3 +188,19 @@ def test_default_connection__rabbitmq(conn_mock, get_conn_params, config):
     connector = ConnectorFake(config=config)
     assert connector.connection is conn_mock.return_value
     conn_mock.assert_called_once_with(**{'vhost': 'mcollective'})
+
+
+def test_use_b64__disabled(config, fake_connector):
+    assert fake_connector.use_b64 is False
+
+
+def test_use_b64__enabled(config, fake_connector):
+    for value in ('1', 'y', 'true'):
+        config.config['plugin.activemq.base64'] = value
+        assert fake_connector.use_b64 is True
+
+
+def test_use_b64__non_activmeq(config, fake_connector):
+    config.config['plugin.activemq.base64'] = 'true'
+    config.config['connector'] = 'rabbitmq'
+    assert fake_connector.use_b64 is False
