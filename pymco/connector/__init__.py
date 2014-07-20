@@ -175,9 +175,6 @@ class BaseConnector(object):
 
         return connect.StompConnection11(**params)
 
-    def foo(self):
-        pass
-
 
 def get_target(self, agent, collective, topciprefix=None):
     """Get the message target for the given agent and collective.
