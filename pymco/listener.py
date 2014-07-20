@@ -82,7 +82,7 @@ class ResponseListener(listener.ConnectionListener):
         :arg body: message body.
         """
         self.condition.acquire()
-        self.responses.append(self.security.deserialize(body))
+        self.responses.append(self.security.decode(body))
         self.received += 1
         self.condition.notify()
         self.condition.release()

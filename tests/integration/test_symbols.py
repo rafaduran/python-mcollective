@@ -25,7 +25,7 @@ class TestMCllectiveSymbols(base.BaseIntegrationTestCase, base.MCollectiveCurren
                                       agent='demo',
                                       action='mounts',
                                       config=self.config)
-        result = simple_rpc.call()
+        result = simple_rpc.call(timeout=15)
         assert len(result) == 1
         res_msg = result[0]
         assert res_msg['senderagent'] == 'demo'

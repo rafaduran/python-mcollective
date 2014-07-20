@@ -12,6 +12,12 @@ def test_init_configfile():
     conf = _config.Config.from_configfile(configfile=ctxt.TEST_CFG)
     assert conf['connector'] == 'activemq'
 
+def test_default_identity():
+    '''Tests :py:method:`Congfig.__init__` no identity'''
+    _ctxt = ctxt.DEFAULT_CTXT.copy()
+    del _ctxt['identity']
+    conf = _config.Config(_ctxt)
+    assert conf.get('identity') != None
 
 def test_get(config):
     '''Tests :py:method:`Config.get` happy path.'''

@@ -109,7 +109,7 @@ class IntegrationTestCase(BaseIntegrationTestCase):
     def test_ping_call(self):
         '''Tests simple RPC actions.'''
         simple_action = rpc.SimpleAction(**self.ping_call_params())
-        result = simple_action.call()
+        result = simple_action.call(timeout=15)
         # Only one agent running, but it might send multiple pings
         assert len(result) >= 1
         msg = result[0]

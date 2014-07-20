@@ -4,6 +4,7 @@ Security providers base
 MCollective security providers base.
 """
 import abc
+import base64
 
 
 class SecurityProviderBase(object):
@@ -35,7 +36,7 @@ class SecurityProviderBase(object):
         """
         return self.serializer.deserialize(msg)
 
-    def encode(self, msg):
+    def encode(self, msg, b64=False):
         """Encode given message using provided security method.
 
         Encode will consist just on singing the message and serialize it, so
@@ -44,9 +45,12 @@ class SecurityProviderBase(object):
         :arg pymco.message.Message msg: Message to be serialized.
         :return: Encoded message.
         """
-        return self.serialize(self.sign(msg))
+        signed_msg = self.serialize(self.sign(msg))
+        if b64:
+            signed_msg = base64.b64encode(signed_msg)
+        return signed_msg
 
-    def decode(self, msg):
+    def decode(self, msg, b64=False):
         """Decode given message using provided security method.
 
         Decode will consist just on de-serialize the given message and verify
@@ -55,6 +59,8 @@ class SecurityProviderBase(object):
         :arg pymco.message.Message msg: Message to be serialized.
         :return: Decoded message, a :py:class:`dict` like object.
         """
+        if b64:
+            msg = base64.b64decode(msg)
         return self.verify(self.deserialize(msg))
 
 

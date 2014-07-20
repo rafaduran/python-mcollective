@@ -10,8 +10,9 @@ import os
 try:
     from Crypto.Signature import PKCS1_v1_5
     from Crypto.Hash import SHA
-except ImportError:
+except ImportError as exc:
     print('You need install pycrypto for using SSL security provider')
+    raise exc
 
 from .. import exc
 from . import SecurityProvider

@@ -80,7 +80,7 @@ class BaseConnector(object):
         :arg \*\*kwargs: extra keyword arguments.
         :return: ``self``.
         """
-        self.connection.send(body=self.security.encode(msg),
+        self.connection.send(body=self.security.encode(msg, b64=self.use_b64),
                              destination=destination,
                              **kwargs)
         return self
@@ -142,6 +142,14 @@ class BaseConnector(object):
             self._security = self.config.get_security()
 
         return self._security
+
+    @property
+    def use_b64(self):
+        """Determines if the message should be base64 encoded."""
+        if self.config['connector'] != 'activemq':
+            return False
+
+        return self.config.getboolean('plugin.activemq.base64', default=False)
 
     def set_listeners(self):
         """Set default listeners."""
