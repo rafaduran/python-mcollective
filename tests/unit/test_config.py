@@ -12,12 +12,14 @@ def test_init_configfile():
     conf = _config.Config.from_configfile(configfile=ctxt.TEST_CFG)
     assert conf['connector'] == 'activemq'
 
+
 def test_default_identity():
     '''Tests :py:method:`Congfig.__init__` no identity'''
     _ctxt = ctxt.DEFAULT_CTXT.copy()
     del _ctxt['identity']
     conf = _config.Config(_ctxt)
-    assert conf.get('identity') != None
+    assert conf.get('identity') is not None
+
 
 def test_get(config):
     '''Tests :py:method:`Config.get` happy path.'''
@@ -69,8 +71,8 @@ def test_getfloat_default(config):
 
 def test_getboolean(config):
     '''Tests :py:method:`Config.getboolean` happy path.'''
-    truly = ('y', 'true', '1')
-    falsy = ('n', 'false', '0')
+    truly = ('y', 'true', '1', 'yes')
+    falsy = ('n', 'false', '0', 'no')
     for expected, values in ((True, truly), (False, falsy)):
         with mock.patch.dict(config.config,
                              dict([(val, val) for val in values])):

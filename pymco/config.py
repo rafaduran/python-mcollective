@@ -6,6 +6,7 @@ right plugin classes.
 """
 import collections
 import functools
+import logging
 import os
 import socket
 
@@ -18,6 +19,7 @@ from .security import SecurityProvider
 from .serializers import SerializerBase
 from . import utils
 
+LOG = logging.getLogger(__name__)
 INFINITE = 9999999999999999999
 
 
@@ -44,12 +46,14 @@ class Config(collections.Mapping):
     :arg dict configdict: a dictionary like object containing configuration as key
         values.
     """
-    def __init__(self, configdict):
+    def __init__(self, configdict, logger=LOG):
         self.config = configdict
         # The mcollective docs state that identity should default to hostname
         # when not explicitly set
         if not self.config.get('identity'):
             self.config['identity'] = socket.gethostname()
+        self.logger = logger
+        self.logger.debug("initialized Config")
 
     def __len__(self):
         return len(self.config)
@@ -88,11 +92,14 @@ class Config(collections.Mapping):
     def getboolean(self, key):
         """Get bool option by key.
 
+        Acceptable truly values are: true, y, 1 and yes, thought MCollective
+        only officially supports 1.
+
         :arg key: key to look for.
         """
         value = self.__getitem__(key)
         if isinstance(value, six.string_types):
-            if value.lower() in ('true', 'y', '1'):
+            if value.lower() in ('true', 'y', '1', 'yes'):
                 value = True
             else:
                 value = False
@@ -101,16 +108,19 @@ class Config(collections.Mapping):
     def get_connector(self):
         """Get connector based on MCollective settings."""
         import_path = Connector.plugins[self.config['connector']]
+        self.logger.debug("connector import path: {i}".format(i=import_path))
         return utils.import_object(import_path, config=self)
 
     def get_security(self):
         """Get security plugin based on MCollective settings."""
         import_path = SecurityProvider.plugins[self.config['securityprovider']]
+        self.logger.debug("securityprovider import path: {i}".format(i=import_path))
         return utils.import_object(import_path, config=self)
 
     def get_serializer(self, key):
         """Get serializer based on MCollective settings."""
         import_path = SerializerBase.plugins[self.config[key]]
+        self.logger.debug("serializer import path: {i}".format(i=import_path))
         return utils.import_object(import_path)
 
     def get_host_and_ports(self):
@@ -157,7 +167,7 @@ class Config(collections.Mapping):
             raise ValueError('"host_and_port" parameter is required for {0} '
                              'connector'.format(connector))
 
-        for index,  host_and_port in enumerate(self.get_host_and_ports(), 1):
+        for index, host_and_port in enumerate(self.get_host_and_ports(), 1):
             if host_and_port == current_host_and_port:
                 prefix = 'plugin.{connector}.pool.'.format(
                     connector=self.config['connector'])

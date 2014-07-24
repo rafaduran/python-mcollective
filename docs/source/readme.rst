@@ -20,7 +20,7 @@ Features
 
 * MCollective 2.0 - 2.4
 
-* Python 2.6 - 3.3
+* Python 2.6 - 3.4
 
 * All MCollective connectors (STOMP, RabbitMQ, ActiveMQ)
 

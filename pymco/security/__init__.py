@@ -5,6 +5,9 @@ MCollective security providers base.
 """
 import abc
 import base64
+import logging
+
+LOG = logging.getLogger(__name__)
 
 
 class SecurityProviderBase(object):
@@ -17,8 +20,9 @@ class SecurityProviderBase(object):
         'ssl': 'pymco.security.ssl.SSLProvider',
     }
 
-    def __init__(self, config):
+    def __init__(self, config, logger=LOG):
         self.config = config
+        self.logger = logger
 
     def serialize(self, msg):
         """Serialize message using provided serialization.
@@ -46,7 +50,11 @@ class SecurityProviderBase(object):
         :return: Encoded message.
         """
         signed_msg = self.serialize(self.sign(msg))
+        # TODO(rafaduran): b64 enconding/decoding should it's an ActiveMQ
+        #                  specific feature and thus should be managed by
+        #                  ActiveMQ connector.
         if b64:
+            self.logger.debug("base64 encoding signed message")
             signed_msg = base64.b64encode(signed_msg)
         return signed_msg
 
@@ -60,8 +68,13 @@ class SecurityProviderBase(object):
         :return: Decoded message, a :py:class:`dict` like object.
         """
         if b64:
+            self.logger.debug("base64 decoding message")
             msg = base64.b64decode(msg)
-        return self.verify(self.deserialize(msg))
+        else:
+            self.logger.debug("NOT base64 decoding message")
+        deserialized = self.deserialize(msg)
+        self.logger.debug("deserialized message: {d}".format(d=deserialized))
+        return self.verify(deserialized)
 
 
 def sign(self, msg):

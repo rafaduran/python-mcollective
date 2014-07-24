@@ -7,11 +7,14 @@ from __future__ import absolute_import
 
 import abc
 import itertools
+import logging
 
 from stomp import connect
 
 from .. import exc
 from .. import listener
+
+LOG = logging.getLogger(__name__)
 
 
 class BaseConnector(object):
@@ -32,7 +35,9 @@ class BaseConnector(object):
 
     id_generator = itertools.count()
 
-    def __init__(self, config, connection=None):
+    def __init__(self, config, connection=None, logger=LOG):
+        self.logger = logger
+        self.logger.debug("initializing connector")
         self.config = config
         self._security = None
         self._started = False
@@ -56,10 +61,11 @@ class BaseConnector(object):
             self.connection.start()
             user, password = self.config.get_user_and_password(
                 self.get_current_host_and_port())
+            self.logger.debug("connecting to middleware...")
             self.connection.connect(username=user,
                                     passcode=password,
                                     wait=wait)
-
+            self.logger.debug("connected to middleware.")
         return self
 
     def disconnect(self):
@@ -68,6 +74,7 @@ class BaseConnector(object):
         :return: ``self``
         """
         if self.connection.is_connected():
+            self.logger.debug("disconnecting")
             self.connection.disconnect()
 
         return self
@@ -80,6 +87,7 @@ class BaseConnector(object):
         :arg \*\*kwargs: extra keyword arguments.
         :return: ``self``.
         """
+        self.logger.debug("sending message to {d}: {m}".format(d=destination, m=msg))
         self.connection.send(body=self.security.encode(msg, b64=self.use_b64),
                              destination=destination,
                              **kwargs)
@@ -118,12 +126,17 @@ class BaseConnector(object):
         :raise: :py:exc:`pymco.exc.TimeoutError` if expected messages doesn't
             come in given ``timeout`` seconds.
         """
+        self.logger.debug("setting up SingleResponseListener, timeout={t}".format(t=timeout))
         response_listener = listener.SingleResponseListener(timeout=timeout,
-                                                            config=self.config)
+                                                            config=self.config,
+                                                            connector=self)
         self.connection.set_listener('response_listener', response_listener)
+        self.logger.debug("listener waiting for message...")
         response_listener.wait_on_message()
+        self.logger.debug("listener wait exited.")
 
         if len(response_listener.responses) == 0:
+            self.logger.debug("listener got 0 responses, raising TimeoutError")
             raise exc.TimeoutError
 
         return response_listener.responses
@@ -147,9 +160,12 @@ class BaseConnector(object):
     def use_b64(self):
         """Determines if the message should be base64 encoded."""
         if self.config['connector'] != 'activemq':
+            self.logger.debug("not using ActiveMQ; not using base64")
             return False
 
-        return self.config.getboolean('plugin.activemq.base64', default=False)
+        config_b64 = self.config.getboolean('plugin.activemq.base64', default=False)
+        self.logger.debug("config plugin.activemq.base64={c}".format(c=config_b64))
+        return config_b64
 
     def set_listeners(self):
         """Set default listeners."""

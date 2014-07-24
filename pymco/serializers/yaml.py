@@ -8,6 +8,8 @@ from __future__ import absolute_import
 
 from . import SerializerBase
 
+import logging
+
 try:
     import yaml
 except ImportError as exc:
@@ -31,9 +33,9 @@ def symbol_constructor(loader, node):
     This constructor may be registered with '!ruby/sym' tag in order to
     support Ruby symbols serialization (you can use
     :py:meth:`register_constructors` for that), so it just need return the
-    string scalar representation of the key.
+    string scalar representation of the key (including the leading colon).
     """
-    return loader.construct_scalar(node)
+    return ':{value}'.format(value=node.value)
 
 
 class RubyCompatibleLoader(yaml.SafeLoader):
@@ -47,8 +49,14 @@ RubyCompatibleLoader.add_multi_constructor(u'!ruby/object:',
 
 class Serializer(SerializerBase):
     """YAML specific serializer."""
+
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+
     def serialize(self, msg):
+        self.logger.debug("serializing with YAML")
         return yaml.safe_dump(dict(msg))
 
     def deserialize(self, msg):
+        self.logger.debug("deserializing with YAML")
         return yaml.load(msg, Loader=RubyCompatibleLoader)

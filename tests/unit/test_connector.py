@@ -152,7 +152,8 @@ class TestReceive:
                                              fake_connector,
                                              conn_mock):
         fake_connector.receive(5)
-        listener.assert_called_once_with(timeout=5,
+        listener.assert_called_once_with(connector=fake_connector,
+                                         timeout=5,
                                          config=fake_connector.config)
 
     def test_receive__raises_timeout_error_if_no_message(self,

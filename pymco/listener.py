@@ -4,10 +4,13 @@
 stomp.py listeners for python-mcollective.
 """
 import functools
+import logging
 import threading
 import time
 
 from stomp import listener
+
+LOG = logging.getLogger(__name__)
 
 
 class CurrentHostPortListener(listener.ConnectionListener):
@@ -54,9 +57,12 @@ class ResponseListener(listener.ConnectionListener):
         for synchronization purposes, but you can use any object
         implementing the :py:meth:`wait` method and accepting a ``timeout``
         argument.
-        """
-    def __init__(self, config, count, timeout=30, condition=None):
+    """
+    def __init__(self, config, connector, count, timeout=30, condition=None,
+                 logger=LOG):
+        self.logger = logger
         self.config = config
+        self.connector = connector
         self._security = None
         self.timeout = timeout
         if not condition:
@@ -66,6 +72,7 @@ class ResponseListener(listener.ConnectionListener):
         self.received = 0
         self.responses = []
         self.count = count
+        self.logger.debug("initializing ResponseListener, timeout={t}".format(t=timeout))
 
     @property
     def security(self):
@@ -81,19 +88,31 @@ class ResponseListener(listener.ConnectionListener):
         :arg headers: message headers.
         :arg body: message body.
         """
+        self.logger.debug("on_message headers={h} body={b}".format(h=headers, b=body))
         self.condition.acquire()
-        self.responses.append(self.security.decode(body))
-        self.received += 1
-        self.condition.notify()
-        self.condition.release()
+        useb64 = self.connector.use_b64
+        # TODO(jantman): for testing purposes at least, if an exception is raised when
+        # decoding the message, we log the exception and continue on like we never got
+        # the message.
+        try:
+            decoded = self.security.decode(body, b64=useb64)
+            self.responses.append(decoded)
+            self.received += 1
+            self.condition.notify()
+            self.condition.release()
+        except Exception as e:
+            self.logger.debug("Exception caught when decoding message body")
+            self.logger.exception(e)
 
     def wait_on_message(self):
         """Wait until we get a message.
 
         :return: ``self``.
         """
+        self.logger.debug("waiting until we receive a message")
         self.condition.acquire()
         self._wait_loop(self.timeout)
+        self.logger.debug("left wait loop")
         self.condition.release()
         self.received = 0
         return self

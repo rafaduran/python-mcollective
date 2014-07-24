@@ -33,9 +33,8 @@ def test_deserialize(yaml, yaml_response):
 
 
 def test_symbol_constructor():
-    loader, node = mock.Mock(), mock.Mock()
-    assert _yaml.symbol_constructor(loader, node) == loader.construct_scalar.return_value
-    loader.construct_scalar.assert_called_once_with(node)
+    loader, node = mock.Mock(), mock.Mock(value='foo')
+    assert _yaml.symbol_constructor(loader, node) == ':foo'
 
 
 def test_ruby_object_constructor():
