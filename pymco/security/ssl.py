@@ -18,6 +18,9 @@ from .. import exc
 from . import SecurityProvider
 from .. import utils
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class SSLProvider(SecurityProvider):
     """Provide SSL security provider plugin.
