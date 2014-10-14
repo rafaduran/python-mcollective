@@ -4,7 +4,7 @@
 python-mcollective utils that don't fit elsewhere.
 """
 import importlib
-
+from ssl import PEM_cert_to_DER_cert
 import logging
 
 def import_class(import_path):
@@ -61,8 +61,10 @@ def load_rsa_key(filename):
     logger.debug("reading RSA key from {f}".format(f=filename))
     with open(filename, 'rt') as key:
         content = key.read()
-    logger.debug("RSA key: {c}".format(c=content))
-    logger.debug("Importing RSA key - RSA.importKey()")
+    if content.startswith('-----BEGIN'):
+        logger.debug("found ASCII-armored PEM certificate; converting to DER")
+        content = PEM_cert_to_DER_cert(content)
+    logger.debug("Importing RSA key")
     k = RSA.importKey(content)
     logger.debug("returning key")
     return k
