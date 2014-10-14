@@ -159,9 +159,12 @@ class BaseConnector(object):
     def use_b64(self):
         """Determines if the message should be base64 encoded."""
         if self.config['connector'] != 'activemq':
+            self.logger.debug("not using ActiveMQ; not using base64")
             return False
 
-        return self.config.getboolean('plugin.activemq.base64', default=False)
+        config_b64 = self.config.getboolean('plugin.activemq.base64', default=False)
+        self.logger.debug("config plugin.activemq.base64={c}".format(c=config_b64))
+        return config_b64
 
     def set_listeners(self):
         """Set default listeners."""

@@ -38,6 +38,7 @@ class SSLProvider(SecurityProvider):
 
     def sign(self, msg):
         """Implement :py:meth:`pymco.security.SecurityProvider.sign`."""
+        self.logger.debug("signing message")
         msg[':callerid'] = self.callerid
         msg[':hash'] = self.get_hash(msg)
         return msg
@@ -47,10 +48,14 @@ class SSLProvider(SecurityProvider):
         hash_ = SHA.new(msg[':body'].encode('utf8'))
         verifier = PKCS1_v1_5.new(self.server_public_key)
         signature = base64.b64decode(msg[':hash'])
+        self.logger.debug("verifying message")
 
         if not verifier.verify(hash_, signature):
+            self.logger.debug("message NOT verified")
             raise exc.VerificationError(
                 'Message {0} can\'t be verified'.format(msg))
+        else:
+            self.logger.debug("message verified")
 
         return msg
 
@@ -75,8 +80,10 @@ class SSLProvider(SecurityProvider):
         if not self._caller_id:
             caller_id = os.path.basename(
                 self.config['plugin.ssl_client_public']).split('.')[0]
+            self.logger.debug("setting caller_id by certificate name")
             self._caller_id = 'cert={0}'.format(caller_id)
 
+        self.logger.debug("callerid={c}".format(c=self._caller_id))
         return self._caller_id
 
     def _load_rsa_key(self, key, cache):

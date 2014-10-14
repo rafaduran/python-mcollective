@@ -51,6 +51,7 @@ class SecurityProviderBase(object):
         """
         signed_msg = self.serialize(self.sign(msg))
         if b64:
+            self.logger.debug("base64 encoding signed message")
             signed_msg = base64.b64encode(signed_msg)
         return signed_msg
 
@@ -64,6 +65,7 @@ class SecurityProviderBase(object):
         :return: Decoded message, a :py:class:`dict` like object.
         """
         if b64:
+            self.logger.debug("base64 decoding message")
             msg = base64.b64decode(msg)
         return self.verify(self.deserialize(msg))
 
