@@ -91,7 +91,11 @@ class ResponseListener(listener.ConnectionListener):
         self.logger.debug("on_message headers={h} body={b}".format(h=headers, b=body))
         self.condition.acquire()
         useb64 = self.connector.use_b64
-        self.responses.append(self.security.decode(body, b64=useb64))
+        try:
+            decoded = self.security.decode(body, b64=useb64)
+        except e:
+            self.logger.exception("Exception caught when decoding message body")
+        self.responses.append(decoded)
         self.received += 1
         self.condition.notify()
         self.condition.release()
