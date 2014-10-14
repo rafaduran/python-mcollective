@@ -128,7 +128,8 @@ class BaseConnector(object):
         """
         self.logger.debug("setting up SingleResponseListener, timeout={t}".format(t=timeout))
         response_listener = listener.SingleResponseListener(timeout=timeout,
-                                                            config=self.config)
+                                                            config=self.config,
+                                                            connector=self)
         self.connection.set_listener('response_listener', response_listener)
         self.logger.debug("listener waiting for message...")
         response_listener.wait_on_message()

@@ -13,8 +13,16 @@ def condition():
 
 
 @pytest.fixture
-def result_listener(config, condition):
-    return listener.ResponseListener(config, condition=condition, count=2)
+def connector():
+    return mock.Mock()
+
+
+@pytest.fixture
+def result_listener(config, condition, connector):
+    return listener.ResponseListener(config,
+                                     connector=connector,
+                                     condition=condition,
+                                     count=2)
 
 
 @pytest.fixture
@@ -23,9 +31,9 @@ def track_listener():
 
 
 @mock.patch('threading.Condition')
-def test_default_condition(cond, config):
+def test_default_condition(cond, config, connector):
     """Tests condition is a new threading.Condition by default."""
-    res_lis = listener.ResponseListener(config, 1)
+    res_lis = listener.ResponseListener(config, connector=connector, count=1)
     assert res_lis.condition == cond.return_value
 
 
@@ -36,22 +44,25 @@ def test_given_condition_is_used(result_listener, condition):
 
 @mock.patch('pymco.config.Config.get_security')
 class TestOnMessage():
-    def test_acquire_notify_release_condtion(self, get_security, result_listener, condition):
+    def test_acquire_notify_release_condtion(self,
+                                             get_security,
+                                             result_listener,
+                                             condition):
         result_listener.on_message(body='---\nfoo: spam', headers={})
         condition.acquire.assert_called_once_with()
         condition.notify.assert_called_once_with()
         condition.release.assert_called_once_with()
 
-    def test_decode_message(self, get_security, result_listener):
+    def test_decode_message(self, get_security, result_listener, connector):
         decode = get_security.return_value.decode
         decode.return_value = {'foo': 'spam'}
         result_listener.on_message(body='---\nfoo: spam', headers={})
-        decode.assert_called_once_with('---\nfoo: spam')
+        decode.assert_called_once_with('---\nfoo: spam', b64=connector.use_b64)
 
-    def test_appends_messages(self, get_security, result_listener):
+    def test_appends_messages(self, get_security, result_listener, connector):
         result_listener.on_message(body='---\nfoo: spam', headers={})
         decode = get_security.return_value.decode
-        decode.assert_called_once_with('---\nfoo: spam')
+        decode.assert_called_once_with('---\nfoo: spam', b64=connector.use_b64)
         assert result_listener.responses == [decode.return_value]
 
 

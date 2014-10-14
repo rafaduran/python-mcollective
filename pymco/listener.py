@@ -57,10 +57,12 @@ class ResponseListener(listener.ConnectionListener):
         for synchronization purposes, but you can use any object
         implementing the :py:meth:`wait` method and accepting a ``timeout``
         argument.
-        """
-    def __init__(self, config, count, timeout=30, condition=None, logger=LOG):
+    """
+    def __init__(self, config, connector, count, timeout=30, condition=None,
+                 logger=LOG):
         self.logger = logger
         self.config = config
+        self.connector = connector
         self._security = None
         self.timeout = timeout
         if not condition:
@@ -88,7 +90,8 @@ class ResponseListener(listener.ConnectionListener):
         """
         self.logger.debug("on_message headers={h} body={b}".format(h=headers, b=body))
         self.condition.acquire()
-        self.responses.append(self.security.decode(body))
+        useb64 = self.connector.use_b64
+        self.responses.append(self.security.decode(body, b64=useb64))
         self.received += 1
         self.condition.notify()
         self.condition.release()

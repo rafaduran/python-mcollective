@@ -67,6 +67,8 @@ class SecurityProviderBase(object):
         if b64:
             self.logger.debug("base64 decoding message")
             msg = base64.b64decode(msg)
+        else:
+            self.logger.debug("NOT base64 decoding message")
         return self.verify(self.deserialize(msg))
 
 
