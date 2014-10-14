@@ -83,7 +83,7 @@ def load_rsa_key(filename):
     logger.debug("KEY: {c}".format(c=content))
     if content.startswith('-----BEGIN CERTIFICATE-----'):
         logger.debug("found ASCII-armored PEM certificate; converting to DER")
-        content = pem_to_drt(content)
+        content = pem_to_der(content)
     logger.debug("Importing RSA key")
     k = RSA.importKey(content)
     logger.debug("returning key")
