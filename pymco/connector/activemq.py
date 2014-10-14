@@ -13,9 +13,10 @@ LOG = logging.getLogger(__name__)
 
 class ActiveMQConnector(Connector):
     """ActiveMQ middleware specific connector."""
-
-    def __init__(self, logger=LOG):
-        self.logger = logger
+    def __init__(self, config, connection=None, logger=LOG):
+        super(ActiveMQConnector, self).__init__(config,
+                                                connection=connection,
+                                                logger=logger)
 
     def send(self, msg, destination, *args, **kwargs):
         """Re-implement :py:meth:`pymco.connector.Connector.send`
