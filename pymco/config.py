@@ -96,7 +96,7 @@ class Config(collections.Mapping):
         """
         value = self.__getitem__(key)
         if isinstance(value, six.string_types):
-            if value.lower() in ('true', 'y', '1'):
+            if value.lower() in ('true', 'y', '1', 'yes'):
                 value = True
             else:
                 value = False
