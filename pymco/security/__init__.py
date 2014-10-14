@@ -5,9 +5,9 @@ MCollective security providers base.
 """
 import abc
 import base64
-
 import logging
-logger = logging.getLogger(__name__)
+
+LOG = logging.getLogger(__name__)
 
 
 class SecurityProviderBase(object):
@@ -20,8 +20,9 @@ class SecurityProviderBase(object):
         'ssl': 'pymco.security.ssl.SSLProvider',
     }
 
-    def __init__(self, config):
+    def __init__(self, config, logger=LOG):
         self.config = config
+        self.logger = logger
 
     def serialize(self, msg):
         """Serialize message using provided serialization.

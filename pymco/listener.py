@@ -4,13 +4,14 @@
 stomp.py listeners for python-mcollective.
 """
 import functools
+import logging
 import threading
 import time
 
 from stomp import listener
 
-import logging
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
+
 
 class CurrentHostPortListener(listener.ConnectionListener):
     """Listener tracking current host and port.
@@ -57,7 +58,8 @@ class ResponseListener(listener.ConnectionListener):
         implementing the :py:meth:`wait` method and accepting a ``timeout``
         argument.
         """
-    def __init__(self, config, count, timeout=30, condition=None):
+    def __init__(self, config, count, timeout=30, condition=None, logger=LOG):
+        self.logger = logger
         self.config = config
         self._security = None
         self.timeout = timeout
@@ -68,7 +70,7 @@ class ResponseListener(listener.ConnectionListener):
         self.received = 0
         self.responses = []
         self.count = count
-        logger.debug("initializing ResponseListener, timeout={t}".format(t=timeout))
+        self.logger.debug("initializing ResponseListener, timeout={t}".format(t=timeout))
 
     @property
     def security(self):
@@ -84,7 +86,7 @@ class ResponseListener(listener.ConnectionListener):
         :arg headers: message headers.
         :arg body: message body.
         """
-        logger.debug("on_message headers={h} body={b}".format(h=headers, b=body))
+        self.logger.debug("on_message headers={h} body={b}".format(h=headers, b=body))
         self.condition.acquire()
         self.responses.append(self.security.decode(body))
         self.received += 1
@@ -96,10 +98,10 @@ class ResponseListener(listener.ConnectionListener):
 
         :return: ``self``.
         """
-        logger.debug("waiting until we receive a message")
+        self.logger.debug("waiting until we receive a message")
         self.condition.acquire()
         self._wait_loop(self.timeout)
-        logger.debug("left wait loop")
+        self.logger.debug("left wait loop")
         self.condition.release()
         self.received = 0
         return self

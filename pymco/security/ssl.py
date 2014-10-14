@@ -5,6 +5,7 @@ Contains SSL security provider plugin.
 """
 from __future__ import print_function
 import base64
+import logging
 import os
 
 try:
@@ -18,8 +19,7 @@ from .. import exc
 from . import SecurityProvider
 from .. import utils
 
-import logging
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class SSLProvider(SecurityProvider):
@@ -29,8 +29,8 @@ class SSLProvider(SecurityProvider):
     http://docs.puppetlabs.com/mcollective/reference/plugins/security_ssl.html
     for further information.
     """
-    def __init__(self, config):
-        super(SSLProvider, self).__init__(config=config)
+    def __init__(self, config, logger=LOG):
+        super(SSLProvider, self).__init__(config=config, logger=logger)
         self._private_key = None
         self._server_public_key = None
         self._caller_id = None
