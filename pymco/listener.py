@@ -93,7 +93,7 @@ class ResponseListener(listener.ConnectionListener):
         useb64 = self.connector.use_b64
         try:
             decoded = self.security.decode(body, b64=useb64)
-        except e:
+        except Exception, e:
             self.logger.exception("Exception caught when decoding message body")
         self.responses.append(decoded)
         self.received += 1
