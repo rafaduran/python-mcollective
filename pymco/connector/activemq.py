@@ -7,6 +7,8 @@ import os
 
 from . import Connector
 
+import logging
+logger = logging.getLogger(__name__)
 
 class ActiveMQConnector(Connector):
     """ActiveMQ middleware specific connector."""
@@ -18,19 +20,24 @@ class ActiveMQConnector(Connector):
         if 'plugin.activemq.priority' in self.config:
             kwargs['priority'] = self.config['plugin.activemq.priority']
 
+        logger.debug("ActiveMQ send destination={d}".format(d=destination))
         super(ActiveMQConnector, self).send(msg, destination, *args, **kwargs)
 
     def get_target(self, agent, collective):
         """Implement :py:meth:`pymco.connector.Connector.get_target`"""
-        return '/topic/{collective}.{agent}.agent'.format(
+        target = '/topic/{collective}.{agent}.agent'.format(
             agent=agent,
             collective=collective,
         )
+        logger.debug("ActiveMQConnector target: {t}".format(t=target))
+        return target
 
     def get_reply_target(self, agent, collective):
         """Implement :py:meth:`pymco.connector.Connector.get_reply_target`"""
-        return '/queue/{collective}.reply.{identity}_{pid}'.format(
+        target = '/queue/{collective}.reply.{identity}_{pid}'.format(
             collective=collective,
             identity=self.config['identity'],
             pid=os.getpid(),
         )
+        logger.debug("ActiveMQConnector reply target: {t}".format(t=target))
+        return target

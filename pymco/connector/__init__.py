@@ -35,6 +35,7 @@ class BaseConnector(object):
     id_generator = itertools.count()
 
     def __init__(self, config, connection=None):
+        logger.debug("initializing connector")
         self.config = config
         self._security = None
         self._started = False

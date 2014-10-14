@@ -4,6 +4,8 @@
 MCollective RPC calls support.
 """
 
+import logging
+logger = logging.getLogger(__name__)
 
 class SimpleAction(object):
     """Single RPC call to MCollective
@@ -15,6 +17,7 @@ class SimpleAction(object):
         aren't targeting the main collective.
     """
     def __init__(self, config, msg, agent, **kwargs):
+        logger.debug("init rpc.SimpleAction")
         self.config = config
         self.msg = msg
         self.agent = agent
@@ -58,12 +61,17 @@ class SimpleAction(object):
         :raise: :py:exc:`pymco.exc.TimeoutError` if expected messages don't
             arrive in ``timeout`` seconds.
         """
+        logger.debug("connecting, wait=True")
         self.connector.connect(wait=True)
         reply_target = self.get_reply_target()
+        logger.debug("subscribing to destination={r}".format(r=reply_target))
         self.connector.subscribe(destination=reply_target)
+        logger.debug("sending")
         self.connector.send(self.msg,
                             self.get_target(),
                             **{'reply-to': reply_target})
+        logger.debug("receiving replies, timeout={t}".format(t=timeout))
         result = self.connector.receive(timeout=timeout)
+        logger.debug("disconnecting")
         self.connector.disconnect()
         return result
