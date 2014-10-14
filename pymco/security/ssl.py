@@ -88,6 +88,7 @@ class SSLProvider(SecurityProvider):
 
     def _load_rsa_key(self, key, cache):
         if not cache:
+            self.logger.debug("RSA key {k} not in cache; loading from {c}".format(k=key, c=self.config[key]))
             cache = self._server_public_key = utils.load_rsa_key(self.config[key])
 
         return cache

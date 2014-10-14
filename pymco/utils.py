@@ -5,6 +5,7 @@ python-mcollective utils that don't fit elsewhere.
 """
 import importlib
 
+import logging
 
 def import_class(import_path):
     """Import a class based on given dotted import path string.
@@ -56,7 +57,12 @@ def load_rsa_key(filename):
     # Importing here since Crypto module is only require for the SSL security
     # provider plugin.
     from Crypto.PublicKey import RSA
+    logger = logging.getLogger(__name__)
+    logger.debug("reading RSA key from {f}".format(f=filename))
     with open(filename, 'rt') as key:
         content = key.read()
-
-    return RSA.importKey(content)
+    logger.debug("RSA key: {c}".format(c=content))
+    logger.debug("Importing RSA key - RSA.importKey()")
+    k = RSA.importKey(content)
+    logger.debug("returning key")
+    return k
