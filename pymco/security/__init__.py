@@ -69,7 +69,9 @@ class SecurityProviderBase(object):
             msg = base64.b64decode(msg)
         else:
             self.logger.debug("NOT base64 decoding message")
-        return self.verify(self.deserialize(msg))
+        deserialized = self.deserialize(msg)
+        self.logger.debug("deserialized message: {d}".format(d=deserialized))
+        return self.verify(deserialized)
 
 
 def sign(self, msg):
