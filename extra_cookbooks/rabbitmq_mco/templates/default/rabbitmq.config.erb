@@ -4,6 +4,7 @@
 
 [
 	{rabbit, [
+                {ssl_allow_poodle_attack, true},
                 {vm_memory_high_watermark, <%= node.rabbitmq.high_memory_watermark %>},
 		{ssl_options, [
 			{cacertfile,"/etc/rabbitmq/ca.pem"},
