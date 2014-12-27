@@ -5,9 +5,9 @@ python-mcollective utils that don't fit elsewhere.
 """
 import importlib
 from Crypto.Util.asn1 import DerSequence
-from Crypto.PublicKey import RSA
 from binascii import a2b_base64
 import logging
+
 
 def import_class(import_path):
     """Import a class based on given dotted import path string.
@@ -46,23 +46,25 @@ def import_object(import_path, *args, **kwargs):
     """
     return import_class(import_path)(*args, **kwargs)
 
+
 def pem_to_der(pem):
     """
     convert an ascii-armored PEM certificate string to a DER encoded certificate
 
     from: http://stackoverflow.com/a/12921889
     """
-    lines = pem.replace(" ",'').split()
+    lines = pem.replace(" ", '').split()
     der = a2b_base64(''.join(lines[1:-1]))
 
-    # Extract subjectPublicKeyInfo field from X.509 certificate (see RFC3280)
+    # Extract subject_public_key_info field from X.509 certificate (see RFC3280)
     cert = DerSequence()
     cert.decode(der)
-    tbsCertificate = DerSequence()
-    tbsCertificate.decode(cert[0])
-    subjectPublicKeyInfo = tbsCertificate[6]
+    tbs_certificate = DerSequence()
+    tbs_certificate.decode(cert[0])
+    subject_public_key_info = tbs_certificate[6]
     # this can be passed to RSA.importKey()
-    return subjectPublicKeyInfo
+    return subject_public_key_info
+
 
 def load_rsa_key(filename):
     """Read filename and try to load its contents as an RSA key.

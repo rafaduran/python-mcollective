@@ -100,7 +100,8 @@ class ResponseListener(listener.ConnectionListener):
             self.condition.notify()
             self.condition.release()
         except Exception, e:
-            self.logger.exception("Exception caught when decoding message body")
+            self.logger.debug("Exception caught when decoding message body")
+            self.logger.exception(e)
 
     def wait_on_message(self):
         """Wait until we get a message.

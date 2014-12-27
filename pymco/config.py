@@ -164,7 +164,7 @@ class Config(collections.Mapping):
             raise ValueError('"host_and_port" parameter is required for {0} '
                              'connector'.format(connector))
 
-        for index,  host_and_port in enumerate(self.get_host_and_ports(), 1):
+        for index, host_and_port in enumerate(self.get_host_and_ports(), 1):
             if host_and_port == current_host_and_port:
                 prefix = 'plugin.{connector}.pool.'.format(
                     connector=self.config['connector'])
