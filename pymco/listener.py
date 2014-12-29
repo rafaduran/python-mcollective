@@ -99,7 +99,7 @@ class ResponseListener(listener.ConnectionListener):
             self.received += 1
             self.condition.notify()
             self.condition.release()
-        except Exception, e:
+        except Exception as e:
             self.logger.debug("Exception caught when decoding message body")
             self.logger.exception(e)
 
