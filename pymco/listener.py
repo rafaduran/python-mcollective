@@ -91,8 +91,9 @@ class ResponseListener(listener.ConnectionListener):
         self.logger.debug("on_message headers={h} body={b}".format(h=headers, b=body))
         self.condition.acquire()
         useb64 = self.connector.use_b64
-        # TODO for testing purposes at least, if an exception is raised when decoding the message,
-        # we log the exception and continue on like we never got the message
+        # TODO(jantman): for testing purposes at least, if an exception is raised when
+        # decoding the message, we log the exception and continue on like we never got
+        # the message.
         try:
             decoded = self.security.decode(body, b64=useb64)
             self.responses.append(decoded)
