@@ -6,11 +6,11 @@ Making a ping discovery agent call is just 3 lines::
    >>> config = config.Config.from_configfile('client.cfg')
    >>> msg = message.Message(body='ping', agent='discovery', config=config)
    >>> pprint.pprint(rpc.SimpleAction(config=config, msg=msg, agent='discovery').call())
-   [{':body': 'pong',
-     ':msgtime': 1395419893,
-     ':requestid': '003ba8142857ccb42cfc4d51262739ecafd43aca',
-     ':senderagent': 'discovery',
-     ':senderid': 'mco1'}]
+   [{'body': 'pong',
+     'msgtime': 1395419893,
+     'requestid': '003ba8142857ccb42cfc4d51262739ecafd43aca',
+     'senderagent': 'discovery',
+     'senderid': 'mco1'}]
 
 .. _mcollective-python: https://github.com/iwebhosting/mcollective-python
 .. _MCollective: http://puppetlabs.com/mcollective
@@ -20,7 +20,7 @@ Features
 
 * MCollective 2.0 - 2.4
 
-* Python 2.6 - 3.3
+* Python 2.6 - 3.4
 
 * All MCollective connectors (STOMP, RabbitMQ, ActiveMQ)
 

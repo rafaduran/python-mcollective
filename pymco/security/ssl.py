@@ -44,7 +44,13 @@ class SSLProvider(SecurityProvider):
         return msg
 
     def verify(self, msg):
-        """Implement :py:meth:`pymco.security.SecurityProvider.verify`."""
+        """Implement :py:meth:`pymco.security.SecurityProvider.verify`.
+
+        .. warning::
+            This works because YAML serializer converts symbols to strings, but
+            if MCollective ever changes symbols represetnation (e.g.: :foo
+            instead of !ruby/symbol foo), this will need some review.
+        """
         hash_ = SHA.new(msg['body'].encode('utf8'))
         verifier = PKCS1_v1_5.new(self.server_public_key)
         signature = base64.b64decode(msg['hash'])
