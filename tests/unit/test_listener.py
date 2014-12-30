@@ -1,6 +1,7 @@
 """
 Tests for pymco.listener
 """
+from yaml import scanner
 import pytest
 
 from pymco import listener
@@ -18,8 +19,14 @@ def connector():
 
 
 @pytest.fixture
-def result_listener(config, condition, connector):
+def logger():
+    return mock.Mock()
+
+
+@pytest.fixture
+def result_listener(config, condition, connector, logger):
     return listener.ResponseListener(config,
+                                     logger=logger,
                                      connector=connector,
                                      condition=condition,
                                      count=2)
@@ -64,6 +71,16 @@ class TestOnMessage():
         decode = get_security.return_value.decode
         decode.assert_called_once_with('---\nfoo: spam', b64=connector.use_b64)
         assert result_listener.responses == [decode.return_value]
+
+    def test_exceptions_are_logged(self, get_security, result_listener, logger):
+        exc = scanner.ScannerError()
+        get_security.return_value.decode.side_effect = exc
+        result_listener.on_message(body='--- :this is not valid yaml:', headers={})
+
+        logger.debug.assert_has_calls(
+            mock.call('Exception caught when decoding message body')
+        )
+        logger.exception.assert_called_once_with(exc)
 
 
 def test_wait_on_message__acquire_release_condition(result_listener, condition):
