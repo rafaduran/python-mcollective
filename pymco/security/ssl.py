@@ -51,9 +51,9 @@ class SSLProvider(SecurityProvider):
             if MCollective ever changes symbols represetnation (e.g.: :foo
             instead of !ruby/symbol foo), this will need some review.
         """
-        hash_ = SHA.new(msg['body'].encode('utf8'))
+        hash_ = SHA.new(msg[':body'].encode('utf8'))
         verifier = PKCS1_v1_5.new(self.server_public_key)
-        signature = base64.b64decode(msg['hash'])
+        signature = base64.b64decode(msg[':hash'])
         self.logger.debug("verifying message")
 
         if not verifier.verify(hash_, signature):

@@ -27,12 +27,12 @@ def hash_():
 @pytest.fixture
 def reply(hash_):
     return {
-        'body': '--- pong\n...\n',
-        'hash': hash_,
-        'msgtime': 1388859129,
-        'requestid': 'ZGRkZmRhNDhiMTFjZTJkM2YxNzliYWIyNWFlOWExZDM=',
-        'senderagent': 'discovery',
-        'senderid': 'mco1',
+        ':body': '--- pong\n...\n',
+        ':hash': hash_,
+        ':msgtime': 1388859129,
+        ':requestid': 'ZGRkZmRhNDhiMTFjZTJkM2YxNzliYWIyNWFlOWExZDM=',
+        ':senderagent': 'discovery',
+        ':senderid': 'mco1',
     }
 
 
@@ -119,9 +119,9 @@ def test_get_hash(sha, private_key, signer, encode, ssl_provider, msg):
 @mock.patch('Crypto.Hash.SHA.new')
 def test_verify__ok(sha, server_public, verifier, ssl_provider, reply):
     assert ssl_provider.verify(reply) == reply
-    sha.assert_called_once_with(reply['body'].encode('utf8'))
+    sha.assert_called_once_with(reply[':body'].encode('utf8'))
     verifier.assert_called_once_with(server_public.return_value)
-    signature = base64.b64decode(reply['hash'])
+    signature = base64.b64decode(reply[':hash'])
     verifier.return_value.verify.assert_called_once_with(sha.return_value, signature)
 
 

@@ -28,8 +28,8 @@ class TestMCllectiveSymbols(base.BaseIntegrationTestCase, base.MCollectiveCurren
         result = simple_rpc.call(timeout=15)
         assert len(result) == 1
         res_msg = result[0]
-        assert res_msg['senderagent'] == 'demo'
-        assert res_msg['requestid'] == msg[':requestid']
+        assert res_msg[':senderagent'] == 'demo'
+        assert res_msg[':requestid'] == msg[':requestid']
 
     def get_ctxt(self):
         ctxt = super(TestMCllectiveSymbols, self).get_ctxt()

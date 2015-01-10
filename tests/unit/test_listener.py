@@ -78,7 +78,7 @@ class TestOnMessage():
         result_listener.on_message(body='--- :this is not valid yaml:', headers={})
 
         logger.debug.assert_has_calls(
-            mock.call('Exception caught when decoding message body')
+            [mock.call('Exception caught when decoding message body')]
         )
         logger.exception.assert_called_once_with(exc)
 
