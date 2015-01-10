@@ -171,7 +171,7 @@ def test_default_connection(conn_mock, get_conn_params, config):
     get_conn_params.return_value = {}
     connector = ConnectorFake(config=config)
     assert connector.connection is conn_mock.return_value
-    conn_mock.assert_called_once_with(**{})
+    conn_mock.assert_called_once_with(**{'try_loopback_connect': False})
 
 
 @mock.patch('pymco.config.Config.get_conn_params')
@@ -187,7 +187,8 @@ def test_default_connection__rabbitmq(conn_mock, get_conn_params, config):
     get_conn_params.return_value = {}
     connector = ConnectorFake(config=config)
     assert connector.connection is conn_mock.return_value
-    conn_mock.assert_called_once_with(**{'vhost': 'mcollective'})
+    conn_mock.assert_called_once_with(**{'vhost': 'mcollective',
+                                         'try_loopback_connect': False})
 
 
 def test_use_b64__disabled(config, fake_connector):

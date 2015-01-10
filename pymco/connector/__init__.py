@@ -181,7 +181,7 @@ class BaseConnector(object):
         if config['connector'] == 'rabbitmq':
             params['vhost'] = config['plugin.rabbitmq.vhost']
 
-        return connect.StompConnection11(**params)
+        return connect.StompConnection11(try_loopback_connect=False, **params)
 
 
 def get_target(self, agent, collective, topciprefix=None):
