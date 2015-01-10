@@ -217,11 +217,11 @@ class Config(collections.Mapping):
             # 'reconnect_sleep_increase': ,
             # 'reconnect_sleep_jitter': ,
             'reconnect_sleep_max':
-            self.getfloat(prefix + 'max_recconnect_delay', default=30.0),
+            self.getfloat(prefix + 'max_reconnect_delay', default=30.0),
             # Stomp gem, by default, try an infinite number of times
             # Stomp.py doesn't support it, so just use a really big number
             'reconnect_attempts_max':
-            self.getfloat(prefix + 'max_recconect_attempts', default=INFINITE),
+            self.getfloat(prefix + 'max_reconnect_attempts', default=INFINITE),
             'timeout':
             self.getfloat(prefix + 'timeout', default=None),
         }

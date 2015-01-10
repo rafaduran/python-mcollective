@@ -189,8 +189,8 @@ def test_get_conn_params__defaults(config):
 
 def test_get_conn_params__custom(config):
     config.config['plugin.activemq.initial_reconnect_delay'] = 0.5
-    config.config['plugin.activemq.max_recconnect_delay'] = 60
-    config.config['plugin.activemq.max_recconect_attempts'] = 5
+    config.config['plugin.activemq.max_reconnect_delay'] = 60
+    config.config['plugin.activemq.max_reconnect_attempts'] = 5
     config.config['plugin.activemq.timeout'] = 60
     assert config.get_conn_params() == {
         'host_and_ports': [('localhost', 6163), ('localhost', 6164)],
