@@ -69,8 +69,8 @@ def test_getfloat_default(config):
 
 def test_getboolean(config):
     '''Tests :py:method:`Config.getboolean` happy path.'''
-    truly = ('y', 'true', '1')
-    falsy = ('n', 'false', '0')
+    truly = ('y', 'true', '1', 'yes')
+    falsy = ('n', 'false', '0', 'no')
     for expected, values in ((True, truly), (False, falsy)):
         with mock.patch.dict(config.config,
                              dict([(val, val) for val in values])):

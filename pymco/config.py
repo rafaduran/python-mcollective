@@ -92,6 +92,9 @@ class Config(collections.Mapping):
     def getboolean(self, key):
         """Get bool option by key.
 
+        Acceptable truly values are: true, y, 1 and yes, thought MCollective
+        only officially supports 1.
+
         :arg key: key to look for.
         """
         value = self.__getitem__(key)
