@@ -50,6 +50,9 @@ class SecurityProviderBase(object):
         :return: Encoded message.
         """
         signed_msg = self.serialize(self.sign(msg))
+        # TODO(rafaduran): b64 enconding/decoding should it's an ActiveMQ
+        #                  specific feature and thus should be managed by
+        #                  ActiveMQ connector.
         if b64:
             self.logger.debug("base64 encoding signed message")
             signed_msg = base64.b64encode(signed_msg)
