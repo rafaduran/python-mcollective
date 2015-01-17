@@ -36,7 +36,9 @@ Installation
 ------------
 Install it just with pip::
 
-   $ pip install python-mcollective
+   $ pip install --pre python-mcollective
+
+The ``pre`` argument is required since there is no stable releases yet.
 
 Contribute
 ----------
