@@ -3,9 +3,8 @@
 ---------------------
 python-mcollective utils that don't fit elsewhere.
 """
+import binascii
 import importlib
-from Crypto.Util.asn1 import DerSequence
-from binascii import a2b_base64
 import logging
 
 
@@ -48,13 +47,21 @@ def import_object(import_path, *args, **kwargs):
 
 
 def pem_to_der(pem):
-    """
-    convert an ascii-armored PEM certificate string to a DER encoded certificate
+    """Convert an ascii-armored PEM certificate to a DER encoded certificate
 
-    from: http://stackoverflow.com/a/12921889
+    See http://stackoverflow.com/a/12921889 for details. Python ``ssl`` module
+    has it own method for this, but it shouldn't work properly and this method
+    is required.
+
+    :arg str pem: The PEM certificate as string.
     """
+    # TODO(rafaduran): report and/or fix Python ssl method.
+
+    # Importing here since Crypto module is only require for the SSL security
+    # provider plugin.
+    from Crypto.Util.asn1 import DerSequence
     lines = pem.replace(" ", '').split()
-    der = a2b_base64(''.join(lines[1:-1]))
+    der = binascii.a2b_base64(''.join(lines[1:-1]))
 
     # Extract subject_public_key_info field from X.509 certificate (see RFC3280)
     cert = DerSequence()
@@ -82,7 +89,9 @@ def load_rsa_key(filename):
     logger.debug("reading RSA key from {f}".format(f=filename))
     with open(filename, 'rt') as key:
         content = key.read()
+
     if content.startswith('-----BEGIN CERTIFICATE-----'):
+        # TODO(rafadruan): this lacks testing.
         logger.debug("found ASCII-armored PEM certificate; converting to DER")
         content = pem_to_der(content)
     logger.debug("Importing RSA key")
