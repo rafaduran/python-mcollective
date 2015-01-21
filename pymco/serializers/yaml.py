@@ -55,7 +55,7 @@ class Serializer(SerializerBase):
 
     def serialize(self, msg):
         self.logger.debug("serializing with YAML")
-        return yaml.safe_dump(dict(msg))
+        return yaml.safe_dump(dict(msg), default_flow_style=False)
 
     def deserialize(self, msg):
         self.logger.debug("deserializing with YAML")

@@ -22,6 +22,29 @@ def test_serialize(yaml, msg):
 """
 
 
+def test_serialize_data(yaml, msg_with_data):
+    assert yaml.serialize(msg_with_data) == """:agent: puppet
+:body:
+  :action: runonce
+  :data:
+    :noop: true
+    :process_results: true
+  :ssl_msgtime: 1421878604
+  :ssl_ttl: 60
+:collective: mcollective
+:filter:
+  agent: []
+  cf_class: []
+  compound: []
+  fact: []
+  identity: []
+:msgtime: 123
+:requestid: 6ef11a5053008b54c03ca934972fdfa45448439d
+:senderid: mco1
+:ttl: 60
+"""
+
+
 def test_deserialize(yaml, yaml_response):
     assert yaml.deserialize(yaml_response) == {
         ':senderid': 'mco1',

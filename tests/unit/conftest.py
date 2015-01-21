@@ -96,6 +96,28 @@ def msg(config, filter_):
 
 
 @pytest.fixture
+def msg_with_data(config, filter_):
+    """Creates :py:class:`pymco.message.Message` instance with some data."""
+    # Importing here since py-cov will ignore code imported on conftest files
+    # imports
+    from pymco import message
+    with mock.patch('time.time') as time:
+        with mock.patch('hashlib.sha1') as sha1:
+            time.return_value = ctxt.MSG['msgtime']
+            sha1.return_value.hexdigest.return_value = ctxt.MSG['requestid']
+            body = {
+                ':action': 'runonce',
+                ':data': {':noop': True, ':process_results': True},
+                ':ssl_msgtime': 1421878604,
+                ':ssl_ttl': 60,
+            }
+            return message.Message(body=body,
+                                   agent='puppet',
+                                   filter_=filter_,
+                                   config=config)
+
+
+@pytest.fixture
 def security():
     return mock.Mock()
 
