@@ -6,16 +6,20 @@ except ImportError:
     use_setuptools()
     import setuptools
 
-from pip import req
+from pip import download, req
 from setuptools.command import test
 
-REQ = set([dep.name
-           for dep in req.parse_requirements('requirements/base.txt')])
-TREQ = set([dep.name or dep.url
-            for dep in req.parse_requirements('requirements/tests.txt')]) - REQ
+pipsess = download.PipSession()
+
+REQ = set(
+    [dep.name for dep in
+     req.parse_requirements('requirements/base.txt', session=pipsess)])
+TREQ = set(
+    [dep.name or dep.url for dep in
+     req.parse_requirements('requirements/tests.txt', session=pipsess)]) - REQ
 
 try:
-    import importlib
+    import importlib  # noqa
 except ImportError:
     REQ.add('importlib')
 
