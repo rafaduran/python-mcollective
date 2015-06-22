@@ -15,9 +15,9 @@ install:
   - gem install bundle
   - bundle install --without dev
   - scripts/deps
-  - pip freeze | grep d2to1 || pip install d2to1 --use-mirrors
-  - pip install coveralls --use-mirrors
-  - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install importlib --use-mirrors; fi"
+  - pip freeze | grep d2to1 || pip install d2to1
+  - pip install coveralls
+  - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install importlib; fi"
   - pip install -r requirements/flake8.txt --use-mirrors
 # command to run tests
 script:
